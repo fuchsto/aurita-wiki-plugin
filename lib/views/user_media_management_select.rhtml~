@@ -1,0 +1,22 @@
+<%
+  folder_select_box.style    = 'width: 100%; '
+  folder_select_box.id       = 'media_asset_folder_select'
+  folder_select_box.onchange = gui.link_to(:controller   => 'Wiki::User_Media_Asset_Folder', 
+                                           :action       => :select_image, 
+                                           :image_dom_id => image_dom_id, 
+                                           :media_asset_folder_id => '$(\'media_asset_folder_select\').value', 
+                                           :element      => :media_folder_content)
+%>
+
+<div class="choose_from_media_asset_list" style="overflow-x: hidden; height: 100%; width: 100%; ">
+
+  <div id=media_asset_folders" style="padding-left: 0px; " >
+    <%= folder_select_box.string %>
+  </div>
+
+  <div id="media_folder_content" style="overflow-y: auto; overflow-x: hidden; height: 270px; width: 333px; ">
+    <%= folder_content %>
+  </div>
+  
+</div>
+

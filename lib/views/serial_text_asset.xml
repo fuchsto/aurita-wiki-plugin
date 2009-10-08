@@ -1,0 +1,13 @@
+      <text_asset content_id="<%= text_asset.content_id %>", 
+                  text_asset_id="<%= text_asset.text_asset_id %>"
+                  asset_id="<%= text_asset.asset_id %>" 
+                  tags="<%= text_asset.tags %>" 
+                  version="<%= text_asset.version %>" 
+                  user_group_id="<%= text_asset.user_group_id %>" >
+        <text>
+          <%= text_asset.text %>
+        </text>
+        <subs>
+          <% subs.each do |sub| %><%= sub.serialize %><% end %>
+        </subs>
+      </text_asset>

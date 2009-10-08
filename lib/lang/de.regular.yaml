@@ -1,0 +1,139 @@
+
+public--article--title : Titel
+public--article--template_id : Stil
+
+public--text_asset--text : Text
+
+public--media_folder--folder_id_parent : In Ordner
+public--media_folder--phyical_path : Name
+
+public--media_asset_folder--physical_path : Ordnername
+public--media_asset_folder--access : Zugriff erlauben f&uuml;r
+
+public--media_asset--title : Titel
+public--media_asset--description : Beschreibung
+description : Beschreibung
+by : von
+versions : Versionen
+
+files : Dateien
+
+articles : Artikel
+recently_changed_articles : Zuletzt ge&auml;ndert
+recently_viewed_articles : Zuletzt gelesen
+article_index : Alle Artikel
+return_to_default_view : Zur&uuml;ck
+
+media_bookmarks : Medien
+
+bookmark_article : Artikel merken
+recommend_article : Artikel empfehlen
+new_recommendation : Artikelempfehlung - &apos;\1&apos; 
+recommendation_text : \1 empfielt Ihnen den Artikel [appurl=\3]\2[/appurl]
+
+article : Artikel
+edit_article : Bearbeiten
+delete_article : L&ouml;schen
+write_new_article : Neuer Artikel
+used_in_articles : Eingebunden in
+
+text : Text
+add_text : Neuer Text
+add_content : Inhalt hinzuf&uuml;gen
+container : Absatz
+delete_container : Absatz l&ouml;schen
+add_container : Neuer Absatz
+edit_container : Absatz bearbeiten
+edit_text : Text bearbeiten
+delete_text : Text l&ouml;schen
+
+new_folder : Neuer Ordner
+media_folder : Ordner
+add_folder : Neuer Ordner
+add_subfolder : Neuer Unterordner
+create_folder : Neuer Ordner
+edit_folder : Ordner bearbeiten
+toplevel : Hauptebene
+delete_folder : Ordner l&ouml;schen
+folder : Ordner
+parent_folder : Unterordner von
+folder_has_been_deleted : Ordner wurde gel&ouml;scht
+
+add_container_before : Neuer Absatz davor 
+add_container_after : Neuer Absatz danach
+reorder : Sortieren
+upload : Upload
+upload_file_to_folder : Datei in Ordner laden
+filetype : Typ
+filesize : Gr&ouml;&szlig;e
+created : Erstellt
+changed : Ver&auml;ndert
+last_changed : Letzte &Auml;nderung
+last_changed_at : Zuletzt ge&auml;ndert am
+uploaded_at : Upload am
+
+edit_asset : Datei bearbeiten
+delete_asset : Datei l&ouml;schen
+edit_image : Bild nachbearbeiten
+source_folder : Ordner
+
+random_image : Zufallsbild
+unpublished_articles : Meine Artikel
+
+article_is_locked : Sie haben keine Berechtigung, diesen Artikel zu bearbeiten
+
+edit_article_permissions : Berechtigungen
+
+text_asset_blank_text : Geben Sie hier den Text f&uuml;r den Absatz ein
+
+switch_table_view_rows : Tabellenansicht
+switch_table_view_cols : Spaltenansicht
+
+edit_attachments : Dateianh&auml;nge
+select_folder : Ordner w&auml;hlen
+
+asset : Datei
+version : Version
+version_created : Version erstellt am
+new_asset_version : Neue Version
+download_version : Version downloaden
+rollback_version : Version wiederherstellen
+download_asset : Download
+bookmark_asset : Datei merken
+recommend_asset : Datei versenden
+
+article_does_not_exist : Artikel existiert nicht (mehr). 
+
+no_permission_to_access_article : Sie haben keine Berechtigung f&uuml;r diesen Artikel
+article_owned_by_user : Artikel wurde angelegt von Benutzer {1}&nbsp;
+article_is_in_category : in Benutzergruppe {1}
+
+create_articles : Artikel erstellen
+create_public_folders : Ordner au&szlig;erhalb des Benutzerordners erstellen
+edit_foreign_articles : Fremde Artikel bearbeiten
+reactivate_foreign_article_versions : Versionen fremder Artikel wiederherstellen
+
+file_is_being_uploaded : Datei wird im Hintergrund auf den Server geladen. 
+
+download_as_pdf : PDF
+pdf_created_at : Stand vom 
+
+grid_view : Anzeige als Kacheln
+table_view : Anzeige als Tabelle
+
+todo_container : Aufgabenliste
+form_container : Formular
+
+query_too_short : Bitte geben Sie einen l&auml;ngeren Suchbegriff ein
+
+no_permission_to_edit_folder : Sie k&ouml;nnen diesen Ordner nicht bearbeiten
+
+media_asset_download_stats : Downloads
+
+file_has_been_uploaded_to : Datei wurde angelegt unter 
+
+media_statistics : Statistik
+show_media_statistics : Dateien
+show_user_statistics : Benutzer
+
+private_folder : Eigene Dateien

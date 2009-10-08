@@ -1,0 +1,36 @@
+
+<% 
+ folders.each do |e| 
+   indent = e[:indent]
+   folder = e[:folder]
+   indent_width = 10 + (indent.to_i-1) * 10
+%>
+
+     <div id="folder_<%= folder.media_asset_folder_id %>" 
+          style="cursor: pointer; width: 100%; "
+          class="box_hierarchy_entry box_hierarchy_entry_level_<%= indent %>"
+          <%= gui.context_menu(:entity => folder, :id => "folder_#{folder.media_asset_folder_id}", 
+                               :params => { :media_folder_id__parent => media_folder_id } ) %>
+          onclick="<%= gui.link_to(folder) %> 
+          <% if folder.has_subfolders? then %>
+              Aurita.Wiki.load_media_asset_folder_level(<%= folder.media_asset_folder_id %>, <%= indent.to_i+1 %>); 
+              Aurita.Wiki.change_folder_icon(<%= folder.media_asset_folder_id %>); 
+          <% end %>
+          ">
+            
+        <nobr>
+        <div style="float: left; ">
+      <% if folder.has_subfolders? then %>
+            <img src="/aurita/images/icons/folder_expand.gif" id="folder_expand_icon_<%= folder.media_asset_folder_id %>" />
+      <% else %>
+            <img src="/aurita/images/icons/folder_blank.gif" id="folder_expand_icon_<%= folder.media_asset_folder_id %>" />
+      <% end %>
+        </div>
+        <div class="label link">
+            <%= folder.physical_path.split('/')[-1] %>
+        </div>
+      </nobr>
+     </div>
+     <div id="folder_children_<%= folder.media_asset_folder_id %>"></div>
+
+<% end %>

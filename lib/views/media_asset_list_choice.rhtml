@@ -1,0 +1,26 @@
+
+<% image_count = 0
+   media_assets.each do |asset| 
+%>
+
+   <div id="image_wrap_<%= image_count %>" style="float: left; padding: 3px;  margin: 2px; height: 120px; border: 1px solid #aaaaaa; background-color: #ffffff; width: 80px; ">
+     <div style="height: 80px; overflow: hidden; " onclick="mark_image(<%= image_count %>, 
+                                                                        <%= asset.content_id %>, 
+                                                                        <%= asset.media_asset_id %>, 
+                                                                        '<%= asset.doctype %>', 
+                                                                        '<%= asset.description.to_s.gsub("'", '').gsub('"','') %>');" 
+          id="image_<%= asset.media_asset_id %>">
+<% if asset.is_image? then %>
+       <%= asset.icon(:tiny) %>
+<% else %>
+       <%= asset.icon(:tiny) %>
+       <div style="clear: both; "></div><br />
+       <%= asset.description %>
+<% end %>
+       </div>
+   </div>
+
+<% image_count += 1
+   end 
+%>
+

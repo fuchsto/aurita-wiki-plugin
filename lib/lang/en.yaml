@@ -1,0 +1,98 @@
+
+public--article--title : Title
+public--article--template_id : Style
+
+public--text_asset--text : Text
+
+public--media_folder--folder_id_parent : Parent folder
+public--media_folder--phyical_path : Name
+
+public--media_asset_folder--physical_path : Folder name
+public--media_asset_folder--access : Visible to
+
+public--media_asset--title : Title
+public--media_asset--description : Description
+
+articles : Articles
+recently_changed_articles : Recently changed
+recently_viewed_articles : Recently read
+article_index : All articles
+return_to_default_view : Back
+
+media_bookmarks : Media
+
+bookmark_article : Bookmark article
+recommend_article : Recommend article
+new_recommendation : Article recommendation &apos;\1&apos; 
+recommendation_text : \1 wants you to read [appurl=\3]\2[/appurl]
+
+article : Article
+edit_article : Edit article
+delete_article : Delete article
+write_new_article : New article
+used_in_articles : Used in articles
+
+text : Text
+add_text : Add text
+add_content : Add content
+add_container : Add paragraph
+edit_text : Edit text
+delete_text : Delete text
+
+media_folder : Media folder
+add_folder : Add folder
+add_subfolder : Add subfolder
+edit_folder : Edit folder
+delete_folder : Delete folder
+
+container : Paragraph
+add_container : Add paragraph
+edit_container : Edit paragraph
+delete_container : Delete
+add_container_before : Prepend new container
+add_container_after : Append new container
+reorder : Sort
+upload : Media
+upload_file_to_folder : Upload file
+filetype : File format
+filesize : File size
+created : Created
+last_changed : Last change
+uploaded_at : Uploaded
+
+edit_asset : Edit file
+delete_asset : Delete file
+edit_image : Edit image
+source_folder : Folder
+
+random_image : Random image
+unpublished_articles : My articles
+
+article_is_locked : You are not allowed to edit this article
+
+edit_article_permissions : Edit permissions
+
+new_recommendation : Article recommendation &apos;\1&apos; 
+recommendation_text : \1 wants you to read [appurl=\3]\2[/appurl]
+
+text_asset_blank_text : Enter text here
+
+switch_table_view_rows : Table view
+switch_table_view_cols : Column view
+
+edit_attachments : Edit attachments
+select_folder : Select folder
+
+asset : File
+version : Version
+version_created : Version created on 
+new_asset_version : New version
+download_version : Download this version
+rollback_version : Rollback this version
+download_asset : Download
+bookmark_asset : Bookmark file
+recommend_asset : Send file
+
+recommend_article : Recommend article
+
+article_does_not_exist : Article does not exist or has been deleted

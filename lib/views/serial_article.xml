@@ -1,0 +1,17 @@
+<xml version="1.0">
+  <article article_id="<%= article.article_id %>" 
+           content_id="<%= article.content_id %>" 
+           title="<%= article.title %>" 
+           tags="<%= article.tags %>" 
+           version="<%= article.version %>" 
+           user_group_id="<%= article.user_group_id %>" >
+    <categories>
+      <% categories.each do |cat| %>
+      <category category_id="<%= cat.category_id %>" />
+      <% end %>
+    </categories>
+    <subs>
+      <% subs.each do |sub| %><%= sub.serialize %><% end %>
+    </subs>
+  </article>
+</xml>

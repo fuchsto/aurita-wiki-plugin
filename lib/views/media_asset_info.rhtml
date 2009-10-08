@@ -1,0 +1,188 @@
+
+<div class="section_header">
+  <% if Aurita.user.may_edit_content?(media_asset) then %>
+    <div class="section_header_right">
+      <%= gui.link_to(media_asset, :action => :update_section) { gui.icon_tag(:edit_button) } %>
+      </a> 
+    </div>
+  <% end %>
+  <div class="section_header_left">
+    <h2><%= media_asset.title.to_s %></h2>
+  </div>
+</div>
+<div style="clear: both; "></div>
+
+<div class="section_content">
+
+<div class="topic_inline">
+  <div class="box_body" >
+  <% if media_asset.is_video? then %>
+    <embed 
+      src="/aurita/mediaplayer.swf" 
+      width="420" 
+      height="350"
+      allowscriptaccess="always" 
+      allowfullscreen="true" 
+      flashvars="width=420&height=350&file=/aurita/assets/asset_<%= media_asset.media_asset_id %>.<%= media_asset.mime_extension %>"
+    />
+    <hr />
+
+  <% elsif media_asset.mime_extension == 'mp3' then %>
+
+    <div style="padding-top: 10px; padding-bottom: 10px; ">
+      <object type="application/x-shockwave-flash" data="/aurita/mp3player.swf" width="200" height="20">
+        <param name="movie" value="/aurita/mp3player.mp3" />
+        <param name="bgcolor" value="#ffffff" />
+        <param name="FlashVars" value="mp3=<%= media_asset.url %>" />
+      </object>
+    </div>
+
+  <% else %>
+    <a href="<%= media_asset.url %>" target="_blank" 
+       onclick="window.open('/aurita/assets/asset_<%= media_asset.media_asset_id %>.jpg');" 
+       style="float: left; margin-right: 4px; margin-bottom: 10px; background-color: #ffffff; text-align: center;  "
+       <%= gui.context_menu(:entity => media_asset) %>     
+    >
+      <div id="asset_tools" style="position: absolute; left: 265px; top: 180px; display: none; ">
+        <div class="lore_text_button" style="float: left" onclick="Aurita.call('Media_Asset/perform_bookmark/media_asset_id=<%= media_asset.media_asset_id %>'); Element.toggle(this); "><%= tl(:bookmark_file) %></div>
+        <div class="lore_text_button" style="float: left" onclick="resizeable_popup(500,500,'<%= media_asset.url %>');">+</div>
+      </div>
+      <%= gui.media_asset_thumb(:asset => media_asset, :size => :medium) %></a>
+    </a>
+  <% end %>
+
+  <div style="float: left; ">
+  <table class="listing_2_columns">
+    <tr>
+      <td width="170">
+        <b><%= tl(:category) %></b> 
+      </td>
+      <td>
+        <%= media_asset.categories.map { |category| gui.link_to(category) { category.category_name } }.join(', ') %>
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <b><%= tl(:download) %></b> 
+      </td>
+      <td>
+        <a href="<%= media_asset.url %>" target="_blank"><%= "#{media_asset.title}.#{media_asset.extension.to_s}" %></a>
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <b><%= tl(:filetype) %></b> 
+      </td>
+      <td>
+        <%= media_asset.mime_extension.upcase %>
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <b><%= tl(:filesize) %></b> 
+      </td>
+      <td>
+        <%= media_asset.filesize %>
+      </td>
+    </tr>
+
+  <% if !media_asset.description.empty? then %>
+    <tr>
+      <td>
+     <b><%= tl(:description) %></b> 
+      </td>
+      <td>
+       <%= media_asset.description %>
+      </td>
+    </tr>
+  <% end %>
+
+  <% if articles && articles.length > 0 then %>
+    <tr>
+      <td>
+        <b><%= tl(:used_in_articles) %></b> 
+      </td>
+      <td>
+        <ul class="no_bullets" style="margin-left: 12px; ">
+          <% articles.each do |article| %>
+            <li><%= gui.link_to(article) %></li>
+          <% end %>
+        </ul>
+      </td>
+    </tr>
+  <% end %>
+
+    <tr>
+      <td>
+        <b><%= tl(:uploaded_at) %></b> 
+      </td>
+      <td>
+        <%= Aurita::Datetime.new(media_asset.created).string("%d.%m.%Y - %H:%M:%S") + ' ' << tl(:by) + ' ' << gui.link_to(owner_user_group) { owner_user_group.user_group_name } %>
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <b><%= tl(:last_changed_at) %></b> 
+      </td>
+      <td>
+        <%= Aurita::Datetime.new(media_asset.changed).string("%d.%m.%Y - %H:%M:%S") %>
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <b><%= tl(:source_folder) %></b> 
+      </td>
+      <td>
+        <%= 
+        asset_folder_path.map! { |f|
+          f = gui.link_to(f) { f.physical_path } 
+        }
+        asset_folder_path.join(' / ')
+      %>
+    </tr>
+
+    <tr>
+      <td>
+        <b><%= tl(:tags) %></b>
+      </td>
+      <td>
+        <div id="content_tag_list" style="width: 320px; ">
+          <%= content_tags %>
+        </div>
+      </td>
+    </tr>
+  </table>
+  </div>
+
+  <div style="clear: both;"></div>
+
+ </div>
+</div>
+
+<% if media_asset.version.to_i > 0 then %>
+<div id="media_asset_versions_list" class="topic_inline">
+  <div class="box_header">
+    <div class="header"><%= tl(:versions) %></div>
+  </div>
+  <div class="box_body">
+    <%= media_asset_versions %>
+  <div style="clear: both;"></div>
+  </div>
+</div>
+
+<% end %> 
+
+<div id="user_download_stats">
+  <%= download_stats.string if download_stats %>
+</div>
+
+<div id="content_comment_list">
+ <%= content_comments.string %>
+</div>
+
+</div><!-- send section -->

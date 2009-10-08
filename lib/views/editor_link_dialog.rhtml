@@ -1,0 +1,26 @@
+
+<div style="padding: 10px; width: 262px;">
+
+Link auf Artikel
+<br />
+
+<nobr>
+  <input type="text" id="autocomplete_link_article" name="key" class="lore" style="width: 250px; " />
+</nobr>
+<div id="autocomplete_link_article_choices" class="autocomplete"></div>
+
+<br/>
+<br/>
+
+Link auf Website
+<br/>
+<input type="text" name="link_url" id="editor_link_dialog_url" class="lore" style="width: 250px; " />
+<br/>
+
+<div style="text-align: center; width: 100%; padding-top: 8px; height: 23px; ">
+<%= gui.button(:icon => 'ok', :class => 'submit', :onclick => "set_dialog_link($('editor_link_dialog_url').value);", :style => 'width: 124px; float: left; ' ) { tl(:ok) } %>
+<%= gui.button(:icon => 'cancel', :class => 'cancel', :onclick => 'context_menu_close(); ', :style => 'width: 124px; float: right; margin-right: 0px; float: right; ') { tl(:cancel) } %>
+</div>
+
+</div>
+

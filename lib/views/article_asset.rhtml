@@ -1,0 +1,68 @@
+
+<% 
+%>
+
+<div id="container_<%= container_id %>" >
+<table cellpadding="0" cellspacing="0" width="100%"><tr><td>
+
+	<div style="width: 70%; padding-top: 3px; padding-bottom: 2px; float: left; margin-right: 15px;">
+	    <%= asset[:string].gsub("\n",'<br />') %>
+  </div>
+	<div style="margin: 0px; float: left;">
+	  <% asset_content_id = asset[:instance].content_id
+	     media_assets[asset_content_id].each do |media_asset|
+	  %>
+	  
+	  <div style="background-color: #ffffff; text-align: center; float: left; margin-bottom: 5px; margin-right: 5px; margin-left: 0px; padding: 3px; ">
+	     <%= media_asset[:string] %>
+	  </div>
+	  <% end %>
+	</div>
+
+<% if movie_assets[asset_content_id].first then %>
+    <% movie_assets[asset_content_id].each do |movie_asset| 
+      movie = movie_asset[:instance]
+    %>
+	<embed 
+	  src="/aurita/assets/mediaplayer.swf" 
+	  width="300" 
+	  height="270"
+	  allowscriptaccess="always" 
+	  allowfullscreen="true" 
+	  flashvars="width=300&height=270&file=/aurita/assets/asset_<%= movie.media_asset_id %>.<%= movie.mime_extension %>"
+	/>
+  <% end %>
+<% end %>
+
+<% if file_assets[asset_content_id].first then %>
+<div style="clear: both; " ></div>
+<div <%= context_menu_code %> >
+  <h5>Dateien: </h5>
+	<div style="padding-bottom: 2px; ">
+    <ul style="padding-left: 0px; margin-left: 16px;" >
+    <% file_assets[asset_content_id].each do |file_asset| %>
+      <li>
+<%= file_asset[:wrapper] %>
+        <%= file_asset[:instance].mime.gsub('application/x-','').upcase %>-Datei: 
+        <%= file_asset[:instance].description %> <br />
+    <% if Aurita.user.may_view_content?(file_asset[:instance]) then %>
+        <%= gui.link_to(file_asset[:instance]) { tl(:show_file_info) } %>
+    <% else %>
+        <%= tl(:no_permission_to_file) %>
+    <% end %>
+      </li>
+	  <% end %>
+    </ul>
+  </div>
+</div>
+<% end %>
+
+	<div style="clear: both; ">
+	<% form_assets[asset_content_id].each do |form_list| %>
+	  <%= form_list %>
+	<% end %>
+	</div>
+
+</td></tr></table>
+
+</div>

@@ -1,0 +1,69 @@
+<% 
+  
+  image_height = info[:height]
+  image_width  = info[:width]
+  image_ratio  = info[:ratio]
+
+%>
+
+<div style="float: left; display: block; padding-bottom: 10px; position: absolute; left: 50%; top: 330px; margin-left: -150px; ">
+
+	<div id="image_preview" style="position: absolute; left: 0px; top: 50px; z-index: 521; width: 300px; height: <%= image_height %>px; overflow-x: hidden; overflow-y: hidden; border: 1px solid #cccccc; background-image: url(/aurita/nocache/assets/tmp/asset_<%= media_asset_id %>_show.jpg<%= '?' << rand(1000).to_s %>)">
+	  <div id="crop_line_top" style="cursor: pointer; margin-top: 5px; margin-bottom: 5px; position: absolute; z-index: 520; height: 400px; width: 320px; background-color: black; border-bottom: 1px solid red; left: -10px; top: -405px; "></div>
+	  <div id="crop_line_bottom" style="cursor: pointer; margin-top: 5px; margin-bottom: 5px; position: absolute; z-index: 520; height: 400px; width: 320px; background-color: black; border-top: 1px solid red; left: -10px; top: <%= image_height.to_i - 6 %>px; "></div>
+	  <div id="crop_line_left" style="cursor: pointer; margin-top: 5px; margin-bottom: 5px; position: absolute; z-index: 520; height: <%= image_height + 4 %>px; width: 5px; padding-left: 300px; background-color: black; border-right: 1px solid red; left: -305px; top: -10px; "></div>
+	  <div id="crop_line_right" style="cursor: pointer; margin-top: 5px; margin-bottom: 5px; position: absolute; z-index: 520; height: <%= image_height + 4 %>px; width: 400px; background-color: black; border-left: 1px solid red; left: 299px; top: -10px; "></div>
+	</div>
+
+	<br />
+	
+	</div>
+	
+  <div style="position: absolute; left: 50%; top: 205px; margin-left: -149px; ">
+    <div style="background-color: #acacac; width: 294px; text-align: center; padding: 3px; margin-bottom: 5px; ">
+      <span class="icon_span" onclick="Aurita.ImageEditor.rotate_left(); ">
+         <img src="/aurita/images/icons/rotate_left.gif" alt="links drehen">
+      </span>
+      <span class="icon_span" onclick="Aurita.ImageEditor.rotate_right(); ">
+         <img src="/aurita/images/icons/rotate_right.gif" alt="rechts drehen">
+      </span>
+      <span class="icon_span" onclick="Aurita.ImageEditor.mirror_vertical(); ">
+         <img src="/aurita/images/icons/mirror_h.gif" alt="vertikal spiegeln">
+      </span>
+      <span class="icon_span" onclick="Aurita.ImageEditor.mirror_horizontal(); ">
+         <img src="/aurita/images/icons/mirror_v.gif" alt="horizontal spiegeln">
+      </span>
+      
+      <span class="icon_span" onclick="Aurita.ImageEditor.reset_image(); ">
+         <img src="/aurita/images/icons/undo.gif" alt="reset">
+      </span>
+        
+      <span class="icon_span" onclick="Aurita.ImageEditor.save_image(); ">
+         <img src="/aurita/images/icons/save.gif" alt="speichern">
+      </span>
+    </div>
+
+		Helligkeit <br />				       
+  	<div id="brightness_track" style="width:300px;background-color:#aaa;height:10px; padding-top: 7px; ">
+    	<div id="brightness_handle" style="width:5px;height:10px;background-color:#fb0065;cursor:move;"> </div>
+  	</div>
+  	Farbton <br />
+  	<div id="hue_track" style="width:300px;background-color:#aaa;height:10px; padding-top: 7px; ">
+    	<div id="hue_handle" style="width:5px;height:10px;background-color:#fb0065;cursor:move;"> </div>
+  	</div>
+  	S&auml;ttigung <br />
+  	<div id="saturation_track" style="width:300px;background-color:#aaa;height:10px; padding-top: 7px; ">
+    	<div id="saturation_handle" style="width:5px;height:10px;background-color:#fb0065;cursor:move;"> </div>
+  	</div>
+  	Kontrast <br />
+  	<div id="contrast_track" style="width:300px;background-color:#aaa;height:10px; padding-top: 7px; ">
+    	<div id="contrast_handle" style="width:5px;height:10px;background-color:#fb0065;cursor:move;"> </div>
+  	</div>
+	
+</div>
+
+<script language="javascript">
+	Aurita.ImageEditor.init_crop_lines();
+	Aurita.ImageEditor.active_media_asset_id = <%= media_asset_id %>; 
+	Aurita.ImageEditor.init_image_manipulation_sliders();
+</script>

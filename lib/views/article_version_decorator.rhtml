@@ -1,0 +1,79 @@
+
+<div id="article_<%= article.article_id %>">
+
+  <div class="article_view" id="article_entry_<%= article.article_id %>">
+    <div <%= gui.context_menu(article, :class => 'article_head', :id => "article_title_#{entry_counter}") %> >
+      <h1 class="modifyable"><%= version_dump[:article][:title] %></h1>
+      <br />
+      <div class="article_info darker_bg">
+        <table class="listing_2_columns">
+          <tr>
+            <td width="140"><%= tl(:categories) %></td>
+            <td>
+              <%= article.categories.map { |category| gui.link_to(category) { category.category_name } }.join(', ') %>
+            </td>
+          </tr>
+          <tr>
+            <td><%= tl(:created) %></td>
+            <td>
+              <%= gui.datetime(article.created) %> | <%= gui.link_to(author_user) { author_user.user_group_name } %> 
+            </td>
+          </tr>
+          <tr>
+            <td><%= tl(:last_changed) %></td>
+            <td>
+              <%= gui.datetime(article.changed) %> | <%= gui.link_to(last_change_user) { last_change_user.user_group_name } %>
+            </td>
+          </tr>
+          <tr>
+            <td><%= tl(:download) %></td>
+            <td>
+              <a href="/aurita/Wiki::Article/show_pdf/article_id=<%= article.article_id %>&version=<%= article_version %>">PDF</a>
+            </td>
+          </tr>
+          <tr>
+            <td><%= tl(:version) %></td>
+            <td>
+              <% if active_version.to_i > 0 then %>
+                <span class="link button" 
+                      onclick="<%= gui.link_to(article, :action => :show_version, :version => active_version.to_i-1) %>">
+                   &lt;&lt;
+                </span>
+              <% end %>
+              <select name="article_version" id="article_version" class="varwidth" 
+                onchange="<%= gui.link_to(article, :action => :show_version, :version => '$(\'article_version\').value') %>">
+                <% for version in 0..latest_version.to_i do %>
+                  <option value="<%= version %>" <% if version == active_version.to_i then %>selected="selected"<% end %>>
+                    <%= version %> 
+                  </option>
+                <% end %>
+              </select>
+              <% if active_version.to_i < latest_version.to_i then %>
+                <span class="link button" 
+                      onclick="<%= gui.link_to(article, :action => :show_version, :version => active_version.to_i+1) %>">
+                   &gt;&gt;
+                </span>
+              <% end %>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <%= tl(:tags) %>
+            </td>
+            <td>
+              <div id="content_tag_list">
+                <%= content_tags %>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>	
+    </div>
+
+    <div class="article_content">
+      <%= article_content %>
+    </div>
+
+
+  </div>
+</div>

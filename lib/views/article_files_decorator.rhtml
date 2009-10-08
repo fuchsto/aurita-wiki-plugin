@@ -1,0 +1,15 @@
+
+<div class="article_container_files" >
+  <%= tl(:files) %>
+  <div class="article_container_file_list" >
+    <ul>
+      <% files.each do |file_asset| %>
+        <li <%= gui.context_menu(:entity => file_asset) %>>
+          <div style="float: left; padding-right: 4px; width: 80px; "><%= file_asset.icon(:tiny) %></div>
+          <%= gui.link_to(file_asset) { file_asset.title } %>
+          <div style="clear: both; "></div>
+        </li>
+      <% end %>
+      </ul>
+  </div>
+</div>

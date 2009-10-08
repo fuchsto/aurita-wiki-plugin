@@ -1,0 +1,59 @@
+
+<% 
+  if view == :grid then
+    action = :show_grid
+    switch_view = gui.link_to(folder, :action => :show) { HTML.img(:src => '/aurita/images/icons/table_view.gif', :title => tl(:table_view)) }
+  else
+    action = :show
+    switch_view = gui.link_to(folder, :action => :show_grid) { HTML.img(:src => '/aurita/images/icons/grid_view.gif', :title => tl(:grid_view)) } 
+  end
+
+  full_path = folder.folder_path
+  path = full_path[0..-2].map { |f|
+    gui.link_to(f, :action => action) { f.physical_path }
+  }.join(' | ') 
+  folder_link = gui.link_to(full_path[-1], :action => action) { full_path[-1].physical_path } if full_path[-1]
+
+%>
+<div class="section_header">
+  <div class="section_header_right">
+    <%= switch_view %>
+  </div>
+<% if path.length > 0 then %>
+  <div class="section_header_left">
+    <%= path %>
+  </div>
+<% end %>
+  <div class="section_header_left">
+    <h1><%= folder_link %></h1>
+  </div>
+</div>
+<div style="clear: both; "></div>
+
+<div class="section_content">
+  <div id="upload_file_section">
+    <% if Aurita.user.may_write_to_folder?(folder) then %>
+      <%= gui.button(:class   => 'submit varwidth', 
+                     :icon    => 'add', 
+                     :onclick => gui.link_to(:controller => 'Wiki::Media_Asset', 
+                                             :action     => :add, 
+                                             :element    => :upload_file_section)) { 
+            tl(:upload_file_to_folder) 
+          }
+      %>
+      <% if Aurita.user.may_create_subfolder_in_folder?(folder) then %>
+        <%= gui.button(:class   => 'submit varwidth', 
+                       :icon    => 'add', 
+                       :onclick => gui.link_to(:controller => 'Wiki::Media_Asset_Folder', 
+                                               :action     => :add, 
+                                               :media_folder_id__parent => folder.media_asset_folder_id)) { 
+              tl(:create_folder) 
+            }
+        %>
+      <% end %>
+    <% end %>
+    <div id="media_asset_folder_table_<%= folder.media_asset_folder_id %>">
+      <%= table.string %>
+    </div>
+  </div>
+</div>

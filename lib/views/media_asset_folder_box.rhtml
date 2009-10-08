@@ -1,0 +1,35 @@
+
+<% 
+    displayed_folder_ids = []
+    is_user_folder = true
+    (user_folder + public_folders).each do |hierarchy_entry| 
+      folder = hierarchy_entry[:folder]
+      indent = hierarchy_entry[:indent]
+      indent_width = indent.to_i * 7
+      if(!displayed_folder_ids.include?(folder.media_asset_folder_id)) then
+%>
+      <div <%= gui.context_menu(:entity => folder, :id => "folder_entry_#{folder.media_asset_folder_id}") %>
+           class="box_hierarchy_entry box_hierarchy_entry_level_0" 
+           onclick="<%= gui.link_to(folder) %> 
+                    Aurita.Wiki.load_media_asset_folder_level(<%= folder.media_asset_folder_id %>, <%= indent.to_i+1 %>); 
+                    Aurita.Wiki.change_folder_icon(<%= folder.media_asset_folder_id %>); ">
+          <nobr>
+      <% if folder.has_subfolders? then %>
+          <div style="float: left; padding-left: 0px; padding-right: 3px; ">
+            <img src="/aurita/images/icons/folder_expand.gif" id="folder_expand_icon_<%= folder.media_asset_folder_id %>" />
+          </div>
+      <% else %>
+          <div style="float: left; padding-left: 0px; padding-right: 3px; "><img src="/aurita/images/icons/folder_blank.gif" /></div>
+      <% end %>
+          <span class="label link">
+            <%= if is_user_folder then tl(:private_folder) else folder.physical_path.split('/')[-1] end %>
+          </span>
+      </nobr>
+     </div>
+     <div id="folder_children_<%= folder.media_asset_folder_id %>"></div>
+
+<% 
+    end
+    is_user_folder = false
+  end 
+%>

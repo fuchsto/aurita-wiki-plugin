@@ -1,0 +1,37 @@
+<div id="article_list">
+
+<% 
+   articles.each_with_index do |article, entry_counter| 
+%>
+<% bold = true
+   if !unread_articles or !unread_articles[article.article_id] then 
+     bold = false
+   end
+%>
+
+
+<div class="index_entry article_index_entry" 
+  <%= gui.context_menu(article, 
+                       :params => { :no_inline => 1 }, 
+                       :id => "article_entry_#{article.article_id}")
+  %>
+>
+  <div style="float: left; margin: 0px; width: 47%; margin-right: 14px; ">
+    <b><%= gui.link_to(article) { HTML.span { article.title } } %></b>
+  </div>
+  <div style="float: left; ">
+    <%= tl(:last_changed_at) %> <%= gui.date(article.changed) %> 
+  </div>
+  <div style="clear: both; "></div>
+  <div style="overflow: hidden; padding-top: 3px; padding-bottom: 3px; " >
+    <%= tl(:category) %>: <%= article.categories.map { |category| gui.link_to(category) { category.category_name } }.join(', ') %><br />
+    <%= tl(:tags) %>:
+    <% article.tags.split(' ').each do |tag| %>
+      <%= gui.link_to(:controller => 'App_Main', :action => :find, :key => tag ) { tag } %>
+    <% end %>
+  </div>
+</div>
+
+<% end %>
+
+</div>

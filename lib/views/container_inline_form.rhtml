@@ -1,0 +1,26 @@
+
+<div style="margin-left: 0px; margin-top: 0px; width: 100%; ">
+
+<%= gui.begin_form_for('Wiki::Text_Asset.perform_update', 
+                       :name => "container_form_#{text_asset_id}", 
+                       :id => "container_form_#{text_asset_id}" ) %>
+  <%= gui.hidden_field(:text_asset_id => text_asset_id,
+                       :content_id_parent => content_id_parent,
+                       :content_id_child => content_id_child,
+                       :content_id => content_id) %>
+
+  <div id="text_asset_form" style="margin: -6px; ">
+
+    <div style="z-index: 900">
+      <img class="link" onclick="Aurita.submit_form('container_form_<%= text_asset_id %>');" src="/aurita/images/icons/save.gif" />
+      <img class="link" onclick="Aurita.Editor.save_all(); <%= gui.link_to(article) %>" src="/aurita/images/icons/close.gif" />
+    </div>
+   
+    <textarea name="public.text_asset.text" class="fullwidth full editor" style="width: 100%; clear: both; " id="lore_textarea_<%= text_asset_id %>"><%= text %></textarea>
+
+  </div>
+
+<%= gui.end_form %>
+
+</div>
+

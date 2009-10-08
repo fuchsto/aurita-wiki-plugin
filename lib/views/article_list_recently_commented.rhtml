@@ -1,0 +1,16 @@
+
+<div id="commented_commented_article_list">
+<% commented_articles.each do |commented_article| %>
+
+  <div style="margin-right: 4px; margin-bottom: 5px; ">
+
+      <%= gui.link_to(:article => commented_article.article_id) { commented_article.title } %>
+      <%= commented_article.abs_attr(Content_Comment.user_group_name) %>
+      <br />
+      Benutzer: <%= gui.link_to(:user => commented_article.user_group_name) { commented_article.user_group_name } %>
+      <br />
+      <%= commented_article.message %>
+      <hr />
+  </div>
+<% end %>
+</div>

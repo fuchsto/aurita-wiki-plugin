@@ -1,0 +1,10 @@
+
+<h2>Artikel in dieser Kategorie</h2>
+<% articles.each do |article| %>
+    <div class="article_index_entry">
+      <%= gui.link_to(article) %><br />
+      <small><%= article.tags %></small>
+    </div>
+<% end %>
+<div style="clear: both; "></div>
+

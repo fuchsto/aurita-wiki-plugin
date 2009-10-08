@@ -1,0 +1,14 @@
+
+<div class="message_box">
+  <div>
+    <%= tl(:file_has_been_uploaded_to) %> 
+    <%= media_asset.folder_path.map { |folder| link_to(folder) { folder.physical_path } }.join(' | ') %>
+    |
+    <%= link_to(media_asset) { HTML.b { media_asset.title } } %>
+    <div class="close_button">
+      <a onclick="Aurita.close_info_badge();">
+        X
+      </a>
+    </div>
+  </div>
+</div>

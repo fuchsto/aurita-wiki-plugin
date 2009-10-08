@@ -1,0 +1,16 @@
+
+  <ul class="no_bullets article_title_list" id="recently_viewed_list">
+  <% articles.each do |article| %>
+    <li class="article_title_list"><%= gui.link_to(article) %></li>
+  <% end %>
+
+  </ul>
+
+<div id="recently_viewed_element_template" style="display: none; ">
+  <li class="article_title_list">
+    <a onclick="Aurita.load({ action: '__model__/show/id=__id__' }); return false; " href="/aurita/__model__/show/id=__id__">
+      {title} 
+    </a>
+  </li>
+</div>
+
