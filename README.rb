@@ -1,4 +1,7 @@
 
+
+# This plugin will be split into aurita-media-plugin and aurita-wiki-plugin. 
+#
 # 
 # Aurita wiki plugin
 #
