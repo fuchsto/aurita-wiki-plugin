@@ -16,14 +16,13 @@ Aurita.import_plugin_module :wiki, 'gui/media_asset_list'
 Aurita::Main.import_controller :content_comment
 Aurita::Main.import_controller :category
 Aurita.import_module :gui, :hierarchy_node_select_field
+Aurita.import_plugin_module :wiki, 'gui/multi_file_field'
 
 module Aurita
 module Plugins
 module Wiki
 
   class Media_Asset_Controller < Plugin_Controller
-
-    @@logger = Aurita::Log::Class_Logger.new(self)
 
     guard_interface(:delete, :update, :perform_delete, :perform_update, :edit_info, :move_to_folder) { 
       may_edit = true
@@ -40,7 +39,7 @@ module Wiki
     
     def form_groups
       [
-       :upload_file, 
+       'upload_file[]', 
        Media_Asset.title, 
        Content.tags, 
        Category.category_id, 
@@ -126,6 +125,8 @@ module Wiki
         c.where(c.content_id_child == asset.content_id)
       }
       asset.commit()
+
+      exec_js("Aurita.Wiki.after_media_asset_delete(#{asset.media_asset_id}); ")
     end # }}}
 
     def add
@@ -140,19 +141,19 @@ module Wiki
       category = Category_Selection_List_Field.new()
       if param(:text_asset_id) then
         article = Text_Asset.load(:text_asset_id => param(:text_asset_id)).article
-        category.value = article.category_id if article
+        category.value = [ article.category_id ] if article
         form.add(Hidden_Field.new(:name => :text_asset_id, :value => param(:text_asset_id))) 
       end
       if param(:set_as_profile_image) then
         form.add(Hidden_Field.new(:name => :set_as_profile_image, :value => 1))
         form.fields << :set_as_profile_image
       end
-      file = File_Field.new(:name => :upload_file, :label => tl(:file))
+      file = GUI::Multi_File_Field.new(:name => 'upload_file[]', :label => tl(:file))
       form.add(file)
       form.add(category)
       form[Content.tags] = Tag_Autocomplete_Field.new(:name => Content.tags.to_s, :label => tl(:tags))
       form[Content.tags].required!
-      form[:upload_file].required!
+      form['upload_file[]'].required!
 
       exec_js('Aurita.Main.init_autocomplete_tags();')
 
@@ -209,53 +210,55 @@ module Wiki
 
     def perform_add
     # {{{
-      instance = super()
+      use_decorator :none
+
+
       begin
-        # Instance is created in DB but following attributes are 
-        # not valid until set in Media_Asset_Importer: 
-        #  - mime
-        #  - mime_extension
-        #  - fs_path
-        #  - Any other attribute based on file type of this instance
-        
-        file_info = receive_file(:from_param => :upload_file)
-        # file_info now stores information needed by Media_Asset_Importer 
-        # to handle this file correctly (e.g. create previews, set file name
-        # extension ...)
-        
-        Media_Asset_Importer.new(instance).import(file_info)
-        # Now, after having imported the file via Media_Asset_Importer, 
-        # we have a valid instance. 
-        #
-        @@logger.log('Uploaded image: ' << instance.inspect)
-        if instance && param(:text_asset_id) then
-          text_asset = Text_Asset.load(:text_asset_id => param(:text_asset_id))
-          @@logger.log('CREATING ATTACHMENT')
-          Container.create(:content_id_parent => text_asset.content_id, 
-                           :content_id_child  => instance.content_id, 
-                           :sortpos => 0, 
-                           :content_type => 'IMAGE')
-          text_asset.article.touch
-          @@logger.log('CREATED ATTACHMENT')
-        else
-          @@logger.log('NO ATTACHMENT')
-        end
-        
-        @@logger.log('CATS')
-        Content_Category.create_for(instance, param(:category_ids)) 
-        @@logger.log('END CATS')
-        
-        if param(:set_as_profile_image) then
-          User_Profile.update { |u|
-            u.set(:picture_asset_id => instance.media_asset_id)
-            u.where(User_Profile.user_group_id == Aurita.user.user_group_id)
-          }
-        end
-        
-        return instance 
+
+        param(:upload_file).each { |file_uploaded|
+          instance = super()
+          # Instance is created in DB but following attributes are 
+          # not valid until set in Media_Asset_Importer: 
+          #  - mime
+          #  - mime_extension
+          #  - fs_path
+          #  - Any other attribute based on file type of this instance
+          
+          file_info = receive_file(file_uploaded)
+          # file_info now stores information needed by Media_Asset_Importer 
+          # to handle this file correctly (e.g. create previews, set file name
+          # extension ...)
+          
+          Media_Asset_Importer.new(instance).import(file_info)
+          # Now, after having imported the file via Media_Asset_Importer, 
+          # we have a valid instance. 
+          #
+          log('Uploaded image: ' << instance.inspect)
+          if instance && param(:text_asset_id) then
+            text_asset = Text_Asset.load(:text_asset_id => param(:text_asset_id))
+            log('Creating attachment')
+            Container.create(:content_id_parent => text_asset.content_id, 
+                             :content_id_child  => instance.content_id, 
+                             :sortpos           => 0, 
+                             :content_type      => 'IMAGE')
+            text_asset.article.touch
+            log('Created attachment')
+          else
+            log('No attachment')
+          end
+          
+          Content_Category.create_for(instance, param(:category_ids)) 
+          
+          if param(:set_as_profile_image) then
+            User_Profile.update { |u|
+              u.set(:picture_asset_id => instance.media_asset_id)
+              u.where(User_Profile.user_group_id == Aurita.user.user_group_id)
+            }
+          end
+        }
       rescue ::Exception => excep
-        @@logger.log { 'IMAGE UPLOAD: ' << excep.message } 
-        excep.backtrace.each { |l| @@logger.log { 'IMAGE UPLOAD: ' << l } } 
+        log { 'Error in image upload: ' << excep.message } 
+        excep.backtrace.each { |l| log { l } } 
         instance.delete if instance
         raise excep
       end

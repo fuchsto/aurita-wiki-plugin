@@ -307,7 +307,7 @@ module Wiki
 
     def perform_delete
       super()
-      redirect_to(:show, :article_id => param(:article_id))
+      exec_js("Aurita.Wiki.after_article_delete(#{param(:article_id)}); ")
     end
 
     def perform_publish

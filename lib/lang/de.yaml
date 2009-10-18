@@ -67,6 +67,7 @@ reorder : Sortieren
 upload : Upload
 upload_file : Dateiupload
 upload_file_to_folder : Datei in Ordner laden
+add_another_file : Weitere Datei
 filetype : Typ
 filesize : Gr&ouml;&szlig;e
 created : Erstellt

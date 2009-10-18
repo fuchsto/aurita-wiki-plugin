@@ -17,6 +17,8 @@ module Wiki
 
     @@variants = {}
 
+    @@logger = Aurita::Log::Class_Logger.new(self)
+
     # Add an image variant. Example: 
     #
     #   Media_Asset_Importer.add_variant(:huge) { |image, media_asset|
@@ -25,6 +27,10 @@ module Wiki
     #
     #
     def self.add_variant(name, &block)
+      @@variants[name.to_sym] = block 
+    end
+    # Same as self.add_variant
+    def self.set_variant(name, &block)
       @@variants[name.to_sym] = block 
     end
 
@@ -38,7 +44,7 @@ module Wiki
 
     @@logger = Aurita::Log::Class_Logger.new(self)
     add_variant(:large) { |img, asset|
-      img.resize_to_fit(450,1000).write(Aurita.project_path + "public/assets/large/asset_#{asset.media_asset_id}.jpg") { self.quality = 82 }
+      img.resize_to_fit(1000,1000).write(Aurita.project_path + "public/assets/large/asset_#{asset.media_asset_id}.jpg") { self.quality = 92 }
     }
     add_variant(:medium) { |img, asset|
       img.resize_to_fit(320,320).write(Aurita.project_path + "public/assets/medium/asset_#{asset.media_asset_id}.jpg") { self.quality = 82 }
@@ -84,23 +90,23 @@ module Wiki
     def import(file_info={})
     # {{{ 
       id = @media_asset.media_asset_id
-      Aurita.log('FILE IMPORT | File info: ' << file_info.inspect)
+      @@logger.log('FILE IMPORT | File info: ' << file_info.inspect)
       @media_asset.extension   = file_info[:original_filename].split('.')[-1].downcase if file_info[:original_filename]
       @media_asset.extension ||= file_info[:server_filename].split('.')[-1].downcase
       @media_asset.mime        = file_info[:type]
       @media_asset.filesize    = file_info[:filesize]
       @media_asset.checksum    = file_info[:md5_checksum]
-      Aurita.log('FILE IMPORT | FS path: ' << @media_asset.fs_path)
-      Aurita.log('FILE IMPORT | MIME: ' << @media_asset.mime)
-      Aurita.log('FILE IMPORT | MIME extension: ' << @media_asset.mime_extension)
+      @@logger.log('FILE IMPORT | FS path: ' << @media_asset.fs_path)
+      @@logger.log('FILE IMPORT | MIME: ' << @media_asset.mime)
+      @@logger.log('FILE IMPORT | MIME extension: ' << @media_asset.mime_extension)
       @media_asset.commit
       extension = @media_asset.mime_extension
       FileUtils.move(file_info[:server_filepath], @media_asset.fs_path)
       File.chmod(0777, @media_asset.fs_path)
 
-      Aurita.log('IMAGE UP | Importing')
+      @@logger.log('IMAGE UP | Importing')
       if @media_asset.has_preview? then
-        Aurita.log('FILE IMPORT: Create preview')
+        @@logger.log('FILE IMPORT: Create preview')
         create_thumbnails()
       elsif @media_asset.is_movie? and @media_asset.mime != 'application/x-flv' then
         system('ffmpeg -i ' << @media_asset.fs_path + ' ' << Aurita.project_path + 'public/assets/asset_' << id + '.flv')
@@ -108,9 +114,9 @@ module Wiki
         @media_asset['mime'] = 'application/x-flv'
         @media_asset.commit 
       else 
-        Aurita.log('No preview created')
+        @@logger.log('No preview created')
       end
-      Aurita.log('IMAGE: Exiting')
+      @@logger.log('IMAGE: Exiting')
     end # }}}
     
     # Move current version (filename has no version suffix) to last version 
@@ -128,7 +134,7 @@ module Wiki
             FileUtils.move(@media_asset.fs_path(:size => v), 
                            @media_asset.fs_path(:size => v, :version => @media_asset.version.to_s))
           rescue ::Exception => excep
-            Aurita.log("Could not save version for image variant: #{@media_asset.fs_path(:size => v, :version => @media_asset.version.to_s)}")
+            @@logger.log("Could not save version for image variant: #{@media_asset.fs_path(:size => v, :version => @media_asset.version.to_s)}")
           end
         }
       end
@@ -163,11 +169,14 @@ module Wiki
         ext = @media_asset.mime_extension.dup.downcase
         ext << '[0]' if ext == 'pdf' # Only render first page of PDF
 
+        path = Aurita.project_path(:public, :assets, "asset_#{id}.#{ext}")
+        @@logger.log("IMAGE UP | Path is #{path}")
         # Every image needs a jpeg base image (esp. needed for PDF): 
         begin
-          img = ImageList.new(Aurita.project_path(:public, :assets, "asset_#{id}.#{ext}"))
+          img = ImageList.new(path) 
         rescue ::Exception => e
-          raise ::Exception.new('Error importing file: ' << Aurita.project_path(:public, :assets, "asset_#{id}.#{ext}")) 
+          @@logger.log("IMAGE UP | Error: #{e.message}")
+          raise ::Exception.new('Error importing file: ' << path)
         end
         img.write(Aurita.project_path(:public, :assets, "asset_#{id}.jpg"))
         
@@ -201,8 +210,8 @@ module Wiki
         :original_filename => @media_asset.original_filename
       }
       server_filename = file_info[:server_filename]
-      Aurita.log 'Import file from ' << file_or_filename.inspect
-      Aurita.log 'Import file to ' << Aurita.project_path + 'public/assets/tmp/' << server_filename
+      @@logger.log 'Import file from ' << file_or_filename.inspect
+      @@logger.log 'Import file to ' << Aurita.project_path + 'public/assets/tmp/' << server_filename
       if path_to then
         FileUtils.copy(path_to, Aurita.project_path + 'public/assets/tmp/' << server_filename)
       elsif file then

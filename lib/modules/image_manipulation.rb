@@ -52,7 +52,7 @@ module Wiki
     def open_image
       return if @img_opened
       FileUtils.copy(@media_asset.original_image_path, @img_work_path)
-      FileUtils.copy(@media_asset.original_image_path, @img_org_path)
+    # FileUtils.copy(@media_asset.original_image_path, @img_org_path)
       @img = ImageList.new(@img_work_path)
       @img_opened = true
     end
@@ -241,18 +241,21 @@ module Wiki
       
       variants.each_pair { |variant_name, procedure|
         begin
-          if !(File.exists?(@media_asset.fs_path(:variant => variant_name))) then
-            @@logger.log("Creating image variant #{variant_name}: #{@media_asset.fs_path(:variant => variant_name)}")
-            open_image()
-            img = @img.dup
+          image_in  = @media_asset.fs_path(:extension => 'jpg')
+          image_out = @media_asset.fs_path(:variant   => variant_name)
+          
+          if (File.exists?(image_in) && !(File.exists?(image_out))) then
+            @@logger.log("Creating image variant #{variant_name}: #{image_in}")
+            img = ImageList.new(image_in)
             procedure.call(img, @media_asset)
-            File.chmod(0777, @media_asset.fs_path(:variant => variant_name))
+            File.chmod(0777, image_out)
           else 
             @@logger.log("Skipping image variant #{variant_name}")
-            @@logger.log("as file exists: #{@media_asset.fs_path(:variant => variant_name)}")
+            @@logger.log("as variant exists: #{image_out}")
+            @@logger.log("or input file is missing: #{image_in}")
           end
         rescue ::Exception => excep
-          @@logger.log("Failed to generate image variant: #{@media_asset.fs_path(:variant => variant_name)}")
+          @@logger.log("Failed to generate image variant: #{image_in}")
           @@logger.log("Exception was: #{excep.message}")
           excep.backtrace.each { |l| @@logger.log(l) }
         end

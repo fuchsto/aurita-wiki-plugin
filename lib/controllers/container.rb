@@ -152,8 +152,6 @@ module Wiki
     
     def perform_edit_attachments
 
-      puts param(:selected_media_assets).inspect
-
       text_asset = Text_Asset.load(:text_asset_id => param(:text_asset_id))
       text_asset.parent_article.touch
       marked_image_register = param(:marked_image_register).to_s.split('_') 
@@ -164,7 +162,7 @@ module Wiki
         c.where((Container.content_id_parent == text_asset.content_id) &
                 (Container.content_type == 'IMAGE'))
       }
-      param(:selected_media_assets).each { |content_id|
+      param(:selected_media_assets, []).each { |content_id|
         if content_id.to_i != 0 then
         sortpos += 1
         Container.create(:content_id_child => content_id, 

@@ -48,13 +48,25 @@ module Wiki
       info  = ''
       exten = ''
       media.each { |m|
+
+        thumbnail_string = ''
+        inline_image     = ''
+        thumb_path = m.fs_path(:size => :tiny)
+        if File.exists?(thumb_path) then
+          File.open(thumb_path, "r") { |t|
+            thumbnail_string = t.read
+          }
+          inline_image = Base64.encode64(thumbnail_string)
+        end
+
         exten = m.media_asset_id
         exten = m.mime_extension unless m.has_preview? 
         info = ''
         info = '<b>' << m.title.to_s << '</b><br />' 
         info << m.tags.to_s 
         entry = '<div style="height: 70px; width: 70px; text-align: center; background-color: #cccccc; float: left; ">
-                   <img src="/aurita/assets/tiny/asset_' << exten.to_s + '.jpg" />
+                   <img src="data:image/jpg;base64, 
+' << inline_image + '" />
                  </div>
                  <div style="float: left; color: #555555; margin-left: 4px; width: 320px; overflow: hidden; ">' << info.to_s +  '</div>'
 

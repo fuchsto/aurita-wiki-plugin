@@ -143,7 +143,6 @@ module Wiki
       variant        = params[:size]
       variant      ||= params[:variant]
       filename_ext   = params[:extension] 
-      filename_ext ||= 'jpg'
       folder         = ''
 
       if ma_version.to_i > 0 then 
@@ -152,10 +151,10 @@ module Wiki
         a_id = media_asset_id
       end
       if !variant || variant == :org then 
-      # Path to original file
-        filename_ext = extension()
-      else 
+        filename_ext ||= extension()
+      else
       # Path to thumbnail
+        filename_ext ||= 'jpg'
         folder = "#{variant}/"
       end
       if variant && !has_preview? then
