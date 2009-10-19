@@ -422,7 +422,7 @@ module Wiki
       result = article_string
 
       if Aurita.user.is_registered? then
-        result << render_controller(Content_Comment_Controller, :box, :content_id => article.content_id).string
+      #  result << render_controller(Content_Comment_Controller, :box, :content_id => article.content_id).string
       end
 
       puts result

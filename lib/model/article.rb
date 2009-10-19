@@ -2,6 +2,7 @@
 require('aurita/model')
 Aurita::Main.import_model :content
 Aurita::Main.import_model :content_category
+Aurita::Main.import_model :content_access
 Aurita.import_plugin_model :wiki, :asset
 Aurita.import_plugin_model :wiki, :text_asset
 Aurita.import_plugin_model :wiki, :media_asset

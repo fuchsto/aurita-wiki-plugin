@@ -2,46 +2,75 @@
 <div id="article_<%= article.article_id %>">
 
   <div class="article_view" id="article_entry_<%= article.article_id %>">
-    <div class="article_head" <%= gui.context_menu(article, :id => "article_title_#{entry_counter}") %>>
+    <div <%= gui.context_menu(article, :class => 'article_head', :id => "article_title_#{entry_counter}") %> >
       <h1 class="modifyable"><%= article.title %></h1>
       <br />
-      <div class="article_info">
-        <%= tl(:category) %>: 
-        <% if article.category then %>
-          <%= gui.link_to(article.category) { article.category.category_name } %>
-        <% end %>
-        <br />
-        <%= tl(:created) %>: <%= Aurita::Datetime.new(article.created).string(:eur) %> (<%= gui.link_to(author_user) { author_user.user_group_name } %>) <br />
-        <%= tl(:last_changed) %>: <%= Aurita::Datetime.new(article.changed).string(:eur) %> (<%= gui.link_to(last_change_user) { last_change_user.user_group_name } %>)
-        <br />
-        <%= tl(:version) %>: 
-        <select name="article_version" id="article_version" class="varwidth" 
+      <div class="article_info darker_bg">
+        <table class="listing_2_columns">
+          <tr>
+            <td width="140"><%= tl(:categories) %></td>
+            <td>
+              <%= article.categories.map { |category| gui.link_to(category) { category.category_name } }.join(', ') %>
+            </td>
+          </tr>
+          <tr>
+            <td><%= tl(:created) %></td>
+            <td>
+              <%= gui.datetime(article.created) %> | <%= gui.link_to(author_user) { author_user.user_group_name } %> 
+            </td>
+          </tr>
+          <tr>
+            <td><%= tl(:last_changed) %></td>
+            <td>
+              <%= gui.datetime(article.changed) %> | <%= gui.link_to(last_change_user) { last_change_user.user_group_name } %>
+            </td>
+          </tr>
+          <tr>
+            <td><%= tl(:download) %></td>
+            <td>
+              <a href="/aurita/Wiki::Article/show_pdf/article_id=<%= article.article_id %>&version=<%= article_version %>">PDF</a>
+            </td>
+          </tr>
+          <tr>
+            <td><%= tl(:version) %></td>
+            <td>
+              <select name="article_version" id="article_version" class="varwidth" 
                 onchange="<%= gui.link_to(article, :action => :show_version, :version => '$(\'article_version\').value') %>">
-        <% for version in 0..article_version.to_i do %>
-          <option value="<%= version %>" <% if version == article_version.to_i then %>selected="selected"<% end %>>
-            <%= version %>
-          </option>
-        <% end %>
-        </select>
-        <br />
+                <% for version in 0..article_version.to_i do %>
+                  <option value="<%= version %>" <% if version == article_version.to_i then %>selected="selected"<% end %>>
+                    <%= version %> 
+                  </option>
+                <% end %>
+              </select>
+              (<%= link_to(:controller => 'Wiki::Article_Version', :action => :list, :article_id => article.article_id) { tl(:show_version_list) } %>)
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <%= tl(:tags) %>
+            </td>
+            <td>
+              <div id="content_tag_list">
+                <%= content_tags %>
+              </div>
+            </td>
+          </tr>
+        </table>
 
-        <div id="content_tag_list">
-           <%= content_tags %>
-        </div>
-
-        <%= gui.link_to(article) { tl(:return_to_default_view) } %>
-
+        <div style="height: 10px; "></div>
+        
+        <a class="button icon_button" href="#Wiki::Article/show/article_id=<%= article.article_id %>" >
+          <img src="/aurita/images/icons/save.gif" /> <%= tl(:return_to_default_view) %>
+        </a>
       </div>	
     </div>
-
-    <hr />
 
     <div class="article_content">
       <ul id="article_partials_list">
         <%= article_content %>
       </ul>
     </div>
-          
-  </div>
 
+
+  </div>
 </div>

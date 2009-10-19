@@ -32,26 +32,26 @@
 
 <div class="section_content">
   <div id="upload_file_section">
-    <% if Aurita.user.may_write_to_folder?(folder) then %>
-      <%= gui.button(:class   => 'submit varwidth', 
-                     :icon    => 'add', 
-                     :onclick => gui.link_to(:controller => 'Wiki::Media_Asset', 
-                                             :action     => :add, 
-                                             :element    => :upload_file_section)) { 
-            tl(:upload_file_to_folder) 
-          }
-      %>
-      <% if Aurita.user.may_create_subfolder_in_folder?(folder) then %>
-        <%= gui.button(:class   => 'submit varwidth', 
-                       :icon    => 'add', 
-                       :onclick => gui.link_to(:controller => 'Wiki::Media_Asset_Folder', 
+    <div class="button_bar">
+      <% if Aurita.user.may_write_to_folder?(folder) then %>
+        <%= gui.button(:icon    => 'button_add.gif', 
+                       :onclick => gui.link_to(:controller => 'Wiki::Media_Asset', 
                                                :action     => :add, 
-                                               :media_folder_id__parent => folder.media_asset_folder_id)) { 
-              tl(:create_folder) 
+                                               :element    => :upload_file_section)) { 
+              tl(:upload_file_to_folder) 
             }
         %>
+        <% if Aurita.user.may_create_subfolder_in_folder?(folder) then %>
+          <%= gui.button(:icon    => 'button_add.gif', 
+                         :onclick => gui.link_to(:controller => 'Wiki::Media_Asset_Folder', 
+                                                 :action     => :add, 
+                                                 :media_folder_id__parent => folder.media_asset_folder_id)) { 
+                tl(:create_folder) 
+              }
+          %>
+        <% end %>
       <% end %>
-    <% end %>
+    </div>
     <div id="media_asset_folder_table_<%= folder.media_asset_folder_id %>">
       <%= table.string %>
     </div>

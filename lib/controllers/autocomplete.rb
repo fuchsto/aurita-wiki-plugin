@@ -52,11 +52,12 @@ module Wiki
         thumbnail_string = ''
         inline_image     = ''
         thumb_path = m.fs_path(:size => :tiny)
-        if File.exists?(thumb_path) then
+        if false && File.exists?(thumb_path) then
           File.open(thumb_path, "r") { |t|
             thumbnail_string = t.read
           }
           inline_image = Base64.encode64(thumbnail_string)
+          "<img src=\"data:image/jpg;base64, \n#{inline_image}\" />"
         end
 
         exten = m.media_asset_id
@@ -64,10 +65,7 @@ module Wiki
         info = ''
         info = '<b>' << m.title.to_s << '</b><br />' 
         info << m.tags.to_s 
-        entry = '<div style="height: 70px; width: 70px; text-align: center; background-color: #cccccc; float: left; ">
-                   <img src="data:image/jpg;base64, 
-' << inline_image + '" />
-                 </div>
+        entry = '<div style="height: 70px; width: 70px; text-align: center; background-color: #cccccc; float: left; ">' << m.icon(:tiny) + '</div>
                  <div style="float: left; color: #555555; margin-left: 4px; width: 320px; overflow: hidden; ">' << info.to_s +  '</div>'
 
         media_result.entries << { :class => :autocomplete_image, 

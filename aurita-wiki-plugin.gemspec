@@ -9,15 +9,16 @@ spec = Gem::Specification.new { |s|
   s.description = <<-EOF
 Simple and extensible wiki functionality for Aurita. 
   EOF
-  s.version = '0.5.9'
-  s.author = 'Tobias Fuchs'
-  s.email = 'fuchs@wortundform.de'
-  s.date = Time.now
-  s.files = '*.rb'
-  s.add_dependency('arrayfields', '>= 4.6.0')
-  s.add_dependency('aurita-gui',  '>= 0.5.9')
-  s.add_dependency('lore',        '>= 0.3.8')
-  s.add_dependency('aurita',      '>= 0.5.9')
+  s.version = '0.6.0'
+  s.author  = 'Tobias Fuchs'
+  s.email   = 'twh.fuchst@gmail.com'
+  s.date    = Time.now
+  s.add_dependency('arrayfields',  '>= 4.6.0')
+  s.add_dependency('aurita-gui',   '>= 0.5.9')
+  s.add_dependency('lore',         '>= 0.3.8')
+  s.add_dependency('aurita',       '>= 0.5.9')
+  s.add_dependency('prawn',        '>= 0.4.0')
+  s.add_dependency('prawn-format', '>= 0.1.0')
   s.files = [ 
    'lib/permissions.rb', 
    'lib/model/media_asset_download.rb',
@@ -57,11 +58,9 @@ Simple and extensible wiki functionality for Aurita.
    'lib/modules/gui/media_asset_table.rb',
    'lib/modules/gui/media_asset_folder_thumbnail.rb',
    'lib/modules/gui/widgets.rb',
-   'lib/modules/gui/multi_file_entry_field.rb',
    'lib/modules/gui/media_asset_folder_grid.rb',
    'lib/modules/gui/media_asset_thumbnail.rb',
    'lib/modules/gui/media_asset_list.rb',
-   'lib/modules/gui/multi_file_field.rb',
    'lib/modules/article_hierarchy_visitor.rb',
    'lib/modules/article_hierarchy_sortable_decorator.rb',
    'lib/modules/media_asset_renderer.rb',

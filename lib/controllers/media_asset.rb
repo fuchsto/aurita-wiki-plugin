@@ -16,7 +16,7 @@ Aurita.import_plugin_module :wiki, 'gui/media_asset_list'
 Aurita::Main.import_controller :content_comment
 Aurita::Main.import_controller :category
 Aurita.import_module :gui, :hierarchy_node_select_field
-Aurita.import_plugin_module :wiki, 'gui/multi_file_field'
+Aurita.import_module :gui, :multi_file_field
 
 module Aurita
 module Plugins
