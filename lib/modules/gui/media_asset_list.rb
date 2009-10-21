@@ -123,20 +123,28 @@ module GUI
 
   class Media_Asset_Selection_Thumbnail < Media_Asset_Thumbnail
     def element
-      e = super()
-      
       entry_id  = "selected_media_asset_#{@entity.pkey()}"
       delete_js = "$('#{entry_id}_field').value = ''; Element.hide('#{entry_id}');" 
 
+      e = HTML.div(:class => [ :media_asset_thumbnail, :bright_bg, @thumbnail_size ]) { 
+        HTML.div(:class => [ :image, @thumbnail_size ]) { 
+          HTML.img(:src => @entity.icon_path(:size => @thumbnail_size), 
+                   :title => @entity.description) 
+        } +
+        HTML.div(:class => [:info, :default_bg, @thumbnail_size ]) { 
+          HTML.div.title { 
+              Text_Button.new(:onclick => delete_js, 
+                              :style   => 'float: left; margin-right: 4px; margin-top: 4px; padding: 2px; padding-right: 0px; ',
+                              :icon    => 'delete_small.png').string +
+              @entity.title 
+          } + 
+          HTML.input(:type  => :hidden, 
+                     :id    => "#{entry_id}_field", 
+                     :name  => 'selected_media_assets[]', 
+                     :value => @entity.content_id)
+        }
+      }
       e.id = entry_id
-
-      e << HTML.div.inline_button(:style => 'bottom: 68px; width: 15px !important;') { 
-             HTML.a(:onclick => delete_js) { 'X' } 
-           }
-      e[0] << HTML.input(:type  => :hidden, 
-                         :id    => "#{entry_id}_field", 
-                         :name  => 'selected_media_assets[]', 
-                         :value => @entity.content_id)
       return e
     end
   end

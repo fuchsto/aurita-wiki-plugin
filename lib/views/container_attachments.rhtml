@@ -12,26 +12,27 @@
      
       <div id="media_asset_autocomplete">
         <nobr>
-        <img class="icon" onclick="Aurita.Editor.save_all(); Aurita.submit_form('container_form_<%= text_asset.text_asset_id %>'); " src="/aurita/images/icons/save.gif" />
-        <img class="icon" onclick="Aurita.Editor.save_all(); <%= gui.link_to(article) %>" src="/aurita/images/icons/close.gif" />
-          <input id="autocomplete_media" name="key" type="text" class="lore" 
-                 onKeyUp="Aurita.load({ action: 'Wiki::Media_Asset_Folder/list_choice/key='+$('autocomplete_media').value, 
-                                        element: 'media_folder_content' }); " />
-          <img src="/aurita/images/search.gif" class="icon" />
-          <button style="margin-left: 20px; " 
-                  type="button" 
-                  onclick="<%= gui.link_to(:controller    => 'Wiki::Media_Asset', 
-                                           :action        => :add, 
-                                           :text_asset_id => text_asset.text_asset_id) %>" >
-            <%= tl(:upload_file) %>
-          </button>
+          <img class="icon" onclick="Aurita.Editor.save_all(); Aurita.submit_form('container_form_<%= text_asset.text_asset_id %>'); " src="/aurita/images/icons/save.gif" />
+          <img class="icon" onclick="Aurita.Editor.save_all(); <%= gui.link_to(article) %>" src="/aurita/images/icons/close.gif" />
+            <input id="autocomplete_media" name="key" type="text" class="lore" 
+                   onKeyUp="Aurita.load({ action: 'Wiki::Media_Asset_Folder/list_choice/key='+$('autocomplete_media').value, 
+                                          element: 'media_folder_content' }); " />
+            <img src="/aurita/images/search.gif" class="icon" />
+            <%= gui.button(:onclick => gui.link_to(:controller    => 'Wiki::Media_Asset', 
+                                                   :action        => :add, 
+                                                   :text_asset_id => text_asset.text_asset_id), 
+                           :icon  => 'button_add.gif', 
+                           :class => :form) { 
+                  tl(:upload_file) 
+                } 
+            %>
         </nobr>
       </div>
+
     </div>
     <div>
       <%= media_asset_list %>
     </div>
-
 
   <%= gui.end_form %>
 </div
