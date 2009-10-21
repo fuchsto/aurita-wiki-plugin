@@ -35,15 +35,15 @@ module Wiki
       instance = false
       begin
         base_media_asset = Media_Asset.load(:media_asset_id => param(:media_asset_id))
-        version = (base_media_asset.version.to_i + 1)
-        instance = Media_Asset_Version.create(:media_asset_id => param(:media_asset_id), 
-                                              :user_group_id  => Aurita.user.user_group_id, 
-                                              :version        => version)
+        version          = (base_media_asset.version.to_i + 1)
+        instance         = Media_Asset_Version.create(:media_asset_id => param(:media_asset_id), 
+                                                      :user_group_id  => Aurita.user.user_group_id, 
+                                                      :version        => version)
         base_media_asset.version = version
         base_media_asset.commit
         log('VERSION ATTRIBS: ' << instance.attr.inspect)
         log('VERSION: uploading file')
-        file_info = receive_file(:from_param => :upload_file)
+        file_info = receive_file(param(:upload_file))
         log('VERSION: file uploaded')
         Media_Asset_Importer.new(base_media_asset).import_new_version(file_info)
         redirect_ro(:controller     => 'Wiki::Media_Asset', 

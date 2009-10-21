@@ -212,9 +212,7 @@ module Wiki
     # {{{
       use_decorator :none
 
-
       begin
-
         param(:upload_file).each { |file_uploaded|
           instance = super()
           # Instance is created in DB but following attributes are 
