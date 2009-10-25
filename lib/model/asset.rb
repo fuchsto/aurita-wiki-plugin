@@ -26,6 +26,10 @@ module Wiki
     end
     alias parent_article article
 
+    def accept_visitor(v)
+      v.visit(self)
+    end
+
   end 
 
 end # module

@@ -1,26 +1,26 @@
 <div class="media_asset_selection_list">
 
-  <%= gui.begin_form_for('Wiki::Container.perform_edit_attachments', 
-                         :name => "container_form_#{text_asset.text_asset_id}", 
-                         :id   => "container_form_#{text_asset.text_asset_id}") %>
-    <%= gui.hidden_field(:text_asset_id     => text_asset.text_asset_id,
-                         :content_id_parent => container.content_id_parent,
-                         :content_id_child  => container.content_id_child,
-                         :content_id        => text_asset.content_id) %>
+  <%= gui.begin_form_for('Wiki::Media_Container.perform_update', 
+                         :name => "container_form_#{media_container.asset_id}", 
+                         :id   => "container_form_#{media_container.asset_id}") %>
+    <%= gui.hidden_field(:media_container_id => media_container.media_container_id,
+                         :content_id_parent  => container.content_id_parent,
+                         :asset_id_child     => container.asset_id_child,
+                         :article_content_id => article.content_id) %>
 
     <div class="toolbar">
      
       <div id="media_asset_autocomplete">
         <nobr>
-          <img class="icon" onclick="Aurita.Editor.save_all(); Aurita.submit_form('container_form_<%= text_asset.text_asset_id %>'); " src="/aurita/images/icons/save.gif" />
+          <img class="icon" onclick="Aurita.Editor.save_all(); Aurita.submit_form('container_form_<%= media_container.asset_id %>'); " src="/aurita/images/icons/save.gif" />
           <img class="icon" onclick="Aurita.Editor.save_all(); <%= gui.link_to(article) %>" src="/aurita/images/icons/close.gif" />
             <input id="autocomplete_media" name="key" type="text" class="lore" 
                    onKeyUp="Aurita.load({ action: 'Wiki::Media_Asset_Folder/list_choice/key='+$('autocomplete_media').value, 
                                           element: 'media_folder_content' }); " />
             <img src="/aurita/images/search.gif" class="icon" />
-            <%= gui.button(:onclick => gui.link_to(:controller    => 'Wiki::Media_Asset', 
-                                                   :action        => :add, 
-                                                   :text_asset_id => text_asset.text_asset_id), 
+            <%= gui.button(:onclick => gui.link_to(:controller         => 'Wiki::Media_Asset', 
+                                                   :action             => :add, 
+                                                   :media_container_id => media_container.media_container_id), 
                            :icon  => 'button_add.gif', 
                            :class => :form) { 
                   tl(:upload_file) 

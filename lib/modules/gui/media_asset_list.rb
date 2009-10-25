@@ -141,7 +141,7 @@ module GUI
           HTML.input(:type  => :hidden, 
                      :id    => "#{entry_id}_field", 
                      :name  => 'selected_media_assets[]', 
-                     :value => @entity.content_id)
+                     :value => @entity.media_asset_id)
         }
       }
       e.id = entry_id

@@ -86,7 +86,7 @@ module Wiki
                   )
 
       article = Article.find(1).with(Article.content_id == content_id_parent).entity
-      article.commit_version('ADD:TEXT')
+      article.commit_version('ADD:TEXT_ASSET')
 
       redirect_to(article, :edit_inline_content_id => instance.content_id, 
                            :article_id             => article.article_id, 

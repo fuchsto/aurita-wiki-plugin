@@ -155,3 +155,8 @@ date : Datum
 cannot_be_edited : Sie k&ouml;nnen diesen Inhalt nicht bearbeiten
 
 delete_this_article_partial : Diesen Absatz l&ouml;schen? 
+
+files_partial : Dateien
+text_partial : Text
+media_container : Dateien
+edit_media_container : Dateien bearbeiten

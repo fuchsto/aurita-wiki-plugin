@@ -87,10 +87,6 @@ module Wiki
                           )).entities
     end
 
-    def accept_visitor(v)
-      v.visit(self)
-    end
-
     def inspect
       puts text.to_s[0..200]
     end

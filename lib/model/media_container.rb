@@ -1,15 +1,12 @@
 
 require('aurita')
 Aurita.import_plugin_model :wiki, :asset
+Aurita.import_plugin_model :wiki, :media_container_entry
+
 
 module Aurita
 module Plugins
 module Wiki
-
-  class Media_Container_Entry < Aurita::Model
-    table :media_container_entry, :public
-    primary_key :media_container_entry_id, :media_container_entry_id_seq
-  end
 
   class Media_Container < Asset
 
@@ -19,11 +16,16 @@ module Wiki
 
     has_n Media_Container_Entry, :media_container_id
 
-    def media_assets
+    def media_assets(clause=nil)
       Media_Asset.select { |c|
         c.join(Media_Container_Entry).on(Media_Container_Entry.media_asset_id == Media_Asset.media_asset_id) { |ma|
           ma.order_by(Media_Container_Entry.position, :asc)
-          ma.where(Media_Container_Entry.media_container_id == media_container_id)
+          if clause then
+            ma.where((Media_Container_Entry.media_container_id == media_container_id) & clause)
+          else
+            ma.where(Media_Container_Entry.media_container_id == media_container_id)
+          end
+          ma
         }
       }.to_a
     end

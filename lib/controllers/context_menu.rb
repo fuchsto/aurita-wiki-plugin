@@ -66,9 +66,10 @@ module Wiki
     end
 
     def text_asset()
-      text_asset_id = param(:text_asset_id)
-      content_id    = param(:content_id)
-      text_asset    = Text_Asset.load(:text_asset_id => text_asset_id)
+
+      asset_id_child    = param(:asset_id_child)
+      content_id_parent = param(:content_id_parent)
+      targets = { "article_#{param(:article_id)}" => "Wiki::Article/show/article_id=#{param(:article_id)}" }
 
       article = Article.load(:article_id => param(:article_id))
       if !Aurita.user.may_edit_content?(article) then 
@@ -76,18 +77,31 @@ module Wiki
         return
       end
      
-      targets = { 'article_' << param(:article_id) => 'Wiki::Article/show/article_id=' << param(:article_id) }
- 
       header(tl(:text))
-      entry(:edit_text, "Wiki::Text_Asset/update/text_asset_id=#{text_asset_id}", targets)
+      load_entry(:edit_text, { "article_part_asset_#{asset_id_child}" => "Wiki::Text_Asset/update_inline/asset_id_child=#{asset_id_child}&content_id_parent=#{content_id_parent}&asset_id=#{asset_id_child}" })
+
+      container()
     end
-    
-    def container
+
+    def media_container()
+
+      asset_id_child    = param(:asset_id_child)
+      content_id_parent = param(:content_id_parent)
+      targets = { "article_#{param(:article_id)}" => "Wiki::Article/show/article_id=#{param(:article_id)}" }
+
       article = Article.load(:article_id => param(:article_id))
       if !Aurita.user.may_edit_content?(article) then 
         render_view(:message_box, :message => tl(:article_is_locked))
         return
       end
+     
+      header(tl(:media_container))
+      load_entry(:edit_media_container, { "article_part_asset_#{asset_id_child}" => "Wiki::Media_Container/update_inline/asset_id_child=#{asset_id_child}&content_id_parent=#{content_id_parent}&asset_id=#{asset_id_child}" })
+
+      container()
+    end
+    
+    def container
      
       asset_id_child    = param(:asset_id_child)
       content_id_parent = param(:content_id_parent)
@@ -103,7 +117,6 @@ module Wiki
 
       targets = { "article_#{param(:article_id)}" => "Wiki::Article/show/article_id=#{param(:article_id)}" }
  
-      load_entry(:edit_text, { "article_part_asset_#{asset_id_child}" => "Wiki::Text_Asset/update_inline/asset_id_child=#{asset_id_child}&content_id_parent=#{content_id_parent}&asset_id=#{asset_id_child}" })
 #      load_entry(:edit_attachments, { ("container_#{container_clicked.asset_id_child}_attachments") => "Wiki::Container/edit_attachments/asset_id_child=#{asset_id_child}&content_id_parent=#{content_id_parent}&text_asset_id=#{text_asset_id}" } )
       entry(:add_container,     "Wiki::Container/add/content_id=#{content_id_parent}", targets)
       entry(:delete_container,  "Wiki::Container/delete/asset_id_child=#{asset_id_child}&content_id_parent=#{content_id_parent}&asset_id=#{asset_id_child}", {})
