@@ -38,16 +38,19 @@ module Wiki
       ]
     end
 
-    def article_hierarchy_part(params={})
-      instance = params[:part]
-
+    def article_partial(params={})
+      article    = params[:article]
+      text_asset = params[:part]
+      text_asset.display_text
     end
 
     def perform_add()
 
-      @params[:display_text] = Text_Asset_Parser.parse(Tagging.link_text_tags(param(:text).to_s.dup))
-      @params[:tags] = 'text'
-      content_id_parent = param(:content_id_parent) if param(:content_id_parent)
+      text                   = param(:text, tl(:text_asset_blank_text))
+      @params[:display_text] = Text_Asset_Parser.parse(Tagging.link_text_tags(text))
+      @params[:tags]         = 'text'
+
+      content_id_parent = param(:content_id_parent) 
       content_id_parent = param(:content_id) unless content_id_parent
       instance = super()
 
@@ -61,11 +64,17 @@ module Wiki
 
       container = Container.create(
                     :content_id_parent => content_id_parent, 
-                    :content_id_child => instance.content_id, 
-                    :sortpos => sortpos
+                    :asset_id_child    => instance.asset_id, 
+                    :sortpos           => sortpos
                   )
 
-      Content.touch(container.content_id_parent, 'ADD:TEXT')
+      article = Article.find(1).with(Article.content_id == content_id_parent).entity
+      article.commit_version('ADD:TEXT')
+
+      redirect_to(article, :edit_inline_content_id => instance.content_id, 
+                           :article_id => article.article_id, 
+                           :edit_inline_type => 'TEXT_ASSET')
+
       return instance
     end
 

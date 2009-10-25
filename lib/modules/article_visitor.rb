@@ -1,11 +1,5 @@
 
 require 'aurita'
-Aurita.import_plugin_module :wiki, :article_visitor
-Aurita.import_plugin_model :wiki, :article
-Aurita.import_plugin_model :wiki, :text_asset
-Aurita.import_plugin_model :wiki, :media_asset
-# Aurita.import_plugin_model :wiki, :form_asset
-
 
 module Aurita
 module Plugins

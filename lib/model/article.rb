@@ -74,7 +74,7 @@ module Wiki
     end
 
     def accept_visitor(v)
-      v.visit_article(self)
+      v.visit(self)
     end
 
     # Returns Text_Asset instances (paragraphs) of 

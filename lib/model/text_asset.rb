@@ -13,7 +13,7 @@ module Aurita
 module Plugins
 module Wiki
 
-  class Text_Asset < Container
+  class Text_Asset < Asset
 
     table :text_asset, :public
     primary_key :text_asset_id, :text_asset_id_seq
@@ -40,7 +40,6 @@ module Wiki
         tags = '{' << tags.gsub("'",'&apos;').gsub(',',' ').squeeze(' ').gsub(' ',',') << '}' 
         tags.gsub!('{{','{')
         tags.gsub!('}}','}')
-        log('TEXT_ASSET tags filter: ' << tags.inspect)
       end
       tags
     }
@@ -101,7 +100,7 @@ module Wiki
     end
 
     def accept_visitor(v)
-      v.visit_text_asset(self)
+      v.visit(self)
     end
 
     def inspect

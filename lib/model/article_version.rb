@@ -33,7 +33,7 @@ module Wiki
 
     def commit_version(action_type='CHANGED')
       last_version = latest_version
-      dump = accept_visitor(Aurita::Plugins::Wiki::Article_Hierarchy_Visitor.new).inspect
+      dump = accept_visitor(Aurita::Plugins::Wiki::Article_Hierarchy_Visitor.new(self)).inspect
       version = 0
       version = (last_version.version.to_i + 1) if last_version
       if !last_version || dump != last_version.dump then

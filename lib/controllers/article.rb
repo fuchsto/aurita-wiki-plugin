@@ -354,7 +354,7 @@ module Wiki
     end
 
     def decorate_article(article, viewparams=nil)
-      hierarchy = Article_Full_Hierarchy_Visitor.new.visit_article(article)
+      hierarchy = Article_Full_Hierarchy_Visitor.new(article).hierarchy
       decorator = Article_Hierarchy_Default_Decorator.new(hierarchy)
       decorator.viewparams = viewparams
       decorator.string
@@ -412,7 +412,7 @@ module Wiki
         viewparams << 'public--false'
       end
 
-      if Article_Cache.exists_for(article, viewparams) then
+      if false && Article_Cache.exists_for(article, viewparams) then
         article_string = Article_Cache.read(article, viewparams)
       else
         article_string = decorate_article(article, viewparams)

@@ -13,18 +13,13 @@ module Wiki
       
       def initialize(article)
         super(article)
-      end
-
-      def visit_article(article)
-        super(article)
         @hierarchy[:instance] = article
-
-        return @hierarchy
       end
-      
+
       def visit(part)
-        result = super(part)
-        result[:part_entity] = part
+        node            = super(part)
+        node[:instance] = part
+        return node
       end
       
     end

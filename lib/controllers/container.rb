@@ -98,7 +98,7 @@ module Wiki
       Content.touch(container.content_id_parent, 'DELETE:TEXT')
 
       # Load text asset in container
-      text_asset = Text_Asset.load(:content_id => container.content_id_child)
+      asset = Asset.find(1).with(:asset_id_child.is(container.asset_id_child)).polymorphic.entity
       # Delete media assets in text asset
       Container.delete { |ma|
         ma.where(Container.content_id_parent == text_asset.content_id)
@@ -107,28 +107,9 @@ module Wiki
       exec_js("Element.hide('container_#{text_asset.content_id}'); ")
 
       # Delete text asset
-      text_asset.delete
+      asset.delete
       # Delete container itself
       container.delete
-
-    end
-
-    def add_text
-      
-      @params[:text] = tl(:text_asset_blank_text)
-      @params[:tags] = 'text_asset'
-      text_asset = Text_Asset_Controller.new(@params).perform_add()
-      text_asset[:display_text] = tl(:text_asset_blank_text)
-      text_asset.commit
-      text_asset_id     = text_asset.text_asset_id
-      content_id_child  = text_asset.content_id
-      content_id_parent = param(:content_id)
-      article = Article.find(1).with(Article.content_id == param(:content_id)).entity
-      article.touch
-
-      redirect_to(article, :action => :show, 
-                           :edit_inline_content_id => text_asset.content_id, 
-                           :edit_inline_type => 'TEXT_ASSET')
 
     end
 
@@ -176,13 +157,16 @@ module Wiki
 
     def add
       container_types = [ 
-        HTML.a(:onclick => link_to(:action     => :add_text, 
+        HTML.a(:class => :icon, 
+               :onclick => link_to(:action     => :perform_add, 
+                                   :controller => 'Wiki::Text_Asset', 
                                    :element    => :context_menu, 
                                    :content_id => param(:content_id))) { 
           HTML.img(:src => '/aurita/images/icons/context_add_container.gif') + HTML.span() { 'Text' }
         }, 
       ]
-      container_types += plugin_get(Hook.wiki.container.types, :article_content_id => param(:content_id))
+      container_types += plugin_get(Hook.wiki.container.types, :content_id_parent => param(:content_id), 
+                                                               :article_id        => param(:article_id))
       render_view(:container_form, :types => container_types)
     end
 

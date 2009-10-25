@@ -14,12 +14,11 @@ module Wiki
   include Aurita::GUI
 
     attr_accessor :hierarchy, :viewparams, :templates
-
     
     def initialize(hierarchy, templates={})
-      @hierarchy = hierarchy
-      @article   = false
-      @string = ''
+      @hierarchy  = hierarchy
+      @article    = false
+      @string     = ''
       @viewparams = {}
       @templates  = { :article           => :article_decorator, 
                       :article_public    => :article_public_decorator, 
@@ -42,10 +41,9 @@ module Wiki
     protected
 
     def decorate_article
-      article_set = @hierarchy.values.first
-      article     = article_set[:instance]
+      article     = @hierarchy[:instance]
       @article    = article
-      text_assets = article_set[:text_assets]
+      parts       = @hierarchy[:parts]
       
       article_comments = Content_Comment_Controller.list_string(article.content_id) 
       article_tags     = view_string(:editable_tag_list, :content => article)
@@ -60,8 +58,8 @@ module Wiki
       end
       
       article_string = ''
-      text_assets.each { |ta|
-        article_string << decorate_container(ta, article)
+      parts.each { |part|
+        article_string << decorate_part(part, article).to_s if part
       }
       
       template = @templates[:article]
@@ -77,52 +75,23 @@ module Wiki
                             :entry_counter    => 0)
     end
 
-    def decorate_container(text_asset, article)
-      ta   = text_asset[:text_asset]
+    def decorate_part(part, article)
+      part_entity      = part[:instance]
       container_params = { :content_id_parent => article.content_id, 
-                           :content_id_child  => ta.content_id, 
-                           :text_asset_id     => ta.text_asset_id, 
+                           :content_id_child  => part_entity.content_id, 
+                           :asset_id          => part_entity.asset_id, 
                            :article_id        => article.article_id}
 
-      tce = Context_Menu_Element.new(HTML.div(:class => :article_text, 
-                                              :id    => "text_asset_#{ta.content_id}") { ta.display_text }, 
+      tce = Context_Menu_Element.new(HTML.div(:class => :article_text) { 
+                                       Plugin_Register.get(Hook.wiki.article.hierarchy.partial, 
+                                                           :article => article, 
+                                                           :part    => part_entity) 
+                                     }, 
                                      :type         => 'Wiki::Container', 
-                                     :highlight_id => "container_#{ta.content_id}", 
+                                     :id           => "article_part_asset_#{part_entity.content_id}", 
                                      :params       => container_params)
 
-      asset = { :instance => ta, :string => tce.string, :container_params => container_params }
-
-      container_images = []
-      container_movies = []
-      container_files  = [] 
-      if text_asset[:media_assets].length > 0 then
-        text_asset[:media_assets].each { |ma|
-          case ma.doctype
-          when :image then
-            container_images << ma
-          when :movie then
-            container_movies << ma
-          else
-            container_files << ma
-          end
-        }
-      end
-
-      images = decorate_images(container_images, container_params) if container_images
-      files  = decorate_files(container_files, container_params) if container_files 
-      movies = decorate_movies(container_movies, container_params) if container_movies 
-      form   = decorate_form(text_asset[:form], ta, article, container_params) if text_asset[:form]
-      todo   = decorate_todo(text_asset[:todo], container_params) if text_asset[:todo]
-
-      view_string(:article_container_decorator, 
-                  :article    => article, 
-                  :text_asset => ta, 
-                  :text       => tce, 
-                  :images     => images, 
-                  :files      => files, 
-                  :form       => form, 
-                  :todo       => todo, 
-                  :movies     => movies)
+      return tce
     end
 
     def decorate_images(images, container_params)

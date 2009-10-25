@@ -18,12 +18,14 @@ module Wiki
 
     table :container, :public
 
-    primary_key :container_id, :container_id_seq
+    primary_key :content_id_parent
+    primary_key :asset_id_child
     
     has_a Content, :content_id_parent
-    has_a Content, :content_id_child
+    has_a Asset, :asset_id_child
 
     ordered_by :sortpos
+
   end 
 
   class Article < Aurita::Main::Content

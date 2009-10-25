@@ -14,12 +14,7 @@ module Wiki
       
       def initialize(article)
         @hierarchy = {}
-        visit_article(article)
-      end
-      
-      private
-      
-      def visit_article(article)
+        @article   = article
         @hierarchy = { :meta => { :article_id   => article.article_id, 
                                   :content_id   => article.content_id, 
                                   :version      => article.latest_version_number, 
@@ -31,7 +26,7 @@ module Wiki
         }
         @hierarchy[:parts] = [] 
         article.parts.each { |part| 
-          @hierarchy[:parts] << part.accept_visitor(self)
+          @hierarchy[:parts] << part.accept_visitor(self) if part
         }
         return @hierarchy
       end
@@ -39,7 +34,7 @@ module Wiki
       public
       
       def visit(part)
-        return Aurita::Plugin_Register.get(Hook.wiki.article.hierarchy.part, :part => part)
+        node = { :id => part.key, :model => part.class.to_s }
       end
 
     end
