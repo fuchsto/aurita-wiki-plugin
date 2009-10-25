@@ -6,8 +6,9 @@ module Aurita
 module Plugins
 module Wiki
 
+  # TODO: This should be a filter chain built by plugin hooks
+  #
   class Text_Asset_Parser
-  
     def self.parse(text)
       text.gsub!(/\[code ([^\]]+)\]\s*<br\/>/m,'[code \1]')
       text.gsub!("\n[/code]",'[/code]')
@@ -27,7 +28,6 @@ module Wiki
         string
       }
     end
-  
   end
 
   class Text_Asset_Controller < Plugin_Controller
@@ -41,13 +41,30 @@ module Wiki
     def article_partial(params={})
       article    = params[:article]
       text_asset = params[:part]
-      text_asset.display_text
+      HTML.div.article_partial(:id => "text_asset_#{text_asset.text_asset_id}") { text_asset.display_text }
+    end
+
+    def update_inline
+      text_asset = Text_Asset.find(1).with(Text_Asset.asset_id == param(:asset_id)).entity
+      article    = text_asset.article
+      editor     = Textarea_Field.new(:name => Text_Asset.text, :value => text_asset.text)
+      editor.style_class = 'fullwidth'
+
+      render_view(:container_inline_form, 
+                  :article           => article, 
+                  :text_asset_id     => text_asset.text_asset_id, 
+                  :content_id_parent => param(:content_id_parent), 
+                  :asset_id_child    => param(:asset_id_child), 
+                  :article_id        => article.article_id, 
+                  :content_id        => text_asset.content_id, 
+                  :text              => text_asset.text)
     end
 
     def perform_add()
 
       text                   = param(:text, tl(:text_asset_blank_text))
-      @params[:display_text] = Text_Asset_Parser.parse(Tagging.link_text_tags(text))
+   #  @params[:display_text] = Text_Asset_Parser.parse(Tagging.link_text_tags(text))
+      @params[:display_text] = Tagging.link_text_tags(Text_Asset_Parser.parse(param(:text).to_s.dup))
       @params[:tags]         = 'text'
 
       content_id_parent = param(:content_id_parent) 
@@ -72,8 +89,8 @@ module Wiki
       article.commit_version('ADD:TEXT')
 
       redirect_to(article, :edit_inline_content_id => instance.content_id, 
-                           :article_id => article.article_id, 
-                           :edit_inline_type => 'TEXT_ASSET')
+                           :article_id             => article.article_id, 
+                           :edit_inline_type       => 'TEXT_ASSET')
 
       return instance
     end
@@ -92,23 +109,11 @@ module Wiki
     def perform_update
       param[:text]         = param(:text).to_s.gsub("'",'&apos;')
       param[:display_text] = Tagging.link_text_tags(Text_Asset_Parser.parse(param(:text).to_s.dup))
-      content_id = Container.value_of(Container.content_id_parent).where(
-                      Container.content_id_child == param(:content_id)
-                   ).to_i
-      result = super()
-      Article.touch(content_id, 'UPDATE:TEXT')
-      redirect_to(:controller => 'Wiki::Article', :action => :show, :article_id => load_instance().article.article_id)
+      result  = super()
+      article = load_instance().article
+      article.touch('UPDATE:TEXT')
+      redirect_to(article)
       return result
-    end
-
-    def after_add(params)
-      puts '<div class="notification">Text added</div>'
-    end
-    def after_update(params)
-      puts '<div class="notification">Text updated</div>'
-    end
-    def after_delete(params)
-      puts '<div class="notification">Text deleted</div>'
     end
 
     def list

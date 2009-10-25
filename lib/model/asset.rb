@@ -15,6 +15,17 @@ module Wiki
 
     is_polymorphic :concrete_model
 
+    def article
+      @parent_article ||= Article.select { |a|
+        a.where(Article.content_id == (Container.select(:content_id_parent) { |pcid|
+          pcid.where(Container.asset_id_child == asset_id)
+        }))
+        a.limit(1)
+      }.first
+      return @parent_article 
+    end
+    alias parent_article article
+
   end 
 
 end # module

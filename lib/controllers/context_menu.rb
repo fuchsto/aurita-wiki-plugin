@@ -89,26 +89,24 @@ module Wiki
         return
       end
      
-      content_id_child  = param(:content_id_child)
+      asset_id_child    = param(:asset_id_child)
       content_id_parent = param(:content_id_parent)
-      text_asset_id     = param(:text_asset_id)
 
-      text_asset_clicked = Container.load(:content_id_parent => content_id_parent, 
-                                          :content_id_child => content_id_child)
+      container_clicked = Container.load(:content_id_parent => content_id_parent, 
+                                         :asset_id_child    => asset_id_child)
 
       header(tl(:container))
-      if !text_asset_clicked then 
+      if !container_clicked then 
         puts "<div style=\"padding: 3px; \">#{tl(:cannot_be_edited)}</div>"
         return
       end
 
       targets = { "article_#{param(:article_id)}" => "Wiki::Article/show/article_id=#{param(:article_id)}" }
  
-      load_entry(:edit_text, { "text_asset_#{text_asset_clicked.content_id_child}" => "Wiki::Container/update_inline/content_id_child=#{content_id_child}&content_id_parent=#{content_id_parent}&text_asset_id=#{text_asset_id}" })
-#     entry(:edit_container, 'Wiki::Container/update/content_id_child='+content_id_child+'&content_id_parent='+content_id_parent+'&text_asset_id='+text_asset_id, targets)
-      load_entry(:edit_attachments, { ("container_#{text_asset_clicked.content_id_child}_attachments") => "Wiki::Container/edit_attachments/content_id_child=#{content_id_child}&content_id_parent=#{content_id_parent}&text_asset_id=#{text_asset_id}" } )
+      load_entry(:edit_text, { "article_part_asset_#{asset_id_child}" => "Wiki::Text_Asset/update_inline/asset_id_child=#{asset_id_child}&content_id_parent=#{content_id_parent}&asset_id=#{asset_id_child}" })
+#      load_entry(:edit_attachments, { ("container_#{container_clicked.asset_id_child}_attachments") => "Wiki::Container/edit_attachments/asset_id_child=#{asset_id_child}&content_id_parent=#{content_id_parent}&text_asset_id=#{text_asset_id}" } )
       entry(:add_container,     "Wiki::Container/add/content_id=#{content_id_parent}", targets)
-      entry(:delete_container,  "Wiki::Container/delete/content_id_child=#{content_id_child}&content_id_parent=#{content_id_parent}&text_asset_id=#{text_asset_id}", {})
+      entry(:delete_container,  "Wiki::Container/delete/asset_id_child=#{asset_id_child}&content_id_parent=#{content_id_parent}&asset_id=#{asset_id_child}", {})
       switch_to_entry(:reorder, "Wiki::Article/show_sortable/article_id=#{param(:article_id)}&reorder=1")
     end
 

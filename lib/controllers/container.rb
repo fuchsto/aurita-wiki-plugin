@@ -95,22 +95,17 @@ module Wiki
       # Load container itself
       container = load_instance()
 
-      Content.touch(container.content_id_parent, 'DELETE:TEXT')
+      Content.touch(container.content_id_parent, 'DELETE:CONTAINER')
 
       # Load text asset in container
-      asset = Asset.find(1).with(:asset_id_child.is(container.asset_id_child)).polymorphic.entity
-      # Delete media assets in text asset
-      Container.delete { |ma|
-        ma.where(Container.content_id_parent == text_asset.content_id)
-      }
+      asset = Asset.find(1).with(Asset.asset_id == container.asset_id_child).polymorphic.entity
       
-      exec_js("Element.hide('container_#{text_asset.content_id}'); ")
+      exec_js("Element.hide('article_part_asset_#{asset.asset_id}'); ")
 
       # Delete text asset
       asset.delete
       # Delete container itself
       container.delete
-
     end
 
     def edit_attachments
@@ -170,74 +165,15 @@ module Wiki
       render_view(:container_form, :types => container_types)
     end
 
-    def update
-
-      text_asset = load_instance(Text_Asset)
-
-      pre_select_media_assets = Media_Asset.select { |ma|
-        ma.where(Media_Asset.content_id.in(
-            Container.select(Container.content_id_child) { |cid|
-              cid.where(cid.content_id_parent == param(:content_id_child))
-            })
-        )
-      }
-      
-      media_list = Media_Asset_Controller.choice_list(:selected => pre_select_media_assets, 
-                                                      :text_asset => text_asset)
-      text_asset_form = update_form(Text_Asset)
-      text_asset_form.add_hidden(:cb__model, 'Wiki::Container')
-      text_asset_form.add_hidden(:cb__controller, 'perform_update')
-      text_asset_form.add_hidden(Text_Asset.text_asset_id, param(:text_asset_id))
-      text_asset_form.add_hidden(Text_Asset.content_id, param(:content_id_child))
-      text_asset_form.add_hidden(Container.content_id_parent, param(:content_id_parent))
-      text_asset_form.set_groups([:empty])
-
-      render_view('container_form.rhtml', 
-                  :text_asset => text_asset, 
-                  :content_id_child => param(:content_id_child), 
-                  :content_id_parent => param(:content_id_parent), 
-                  :text_asset_form => text_asset_form.string, 
-                  :media_asset_list => media_list,
-                  :custom_forms => view_string('custom_model_choose.rhtml', 
-                                               :models => Model_Register.all, 
-                                               :form_asset => form_asset, 
-                                               :form_options => Form_Builder_Controller.show_options_string(:form_asset => form_asset)))
-    end
-
-    def update_inline
-
-      text_asset = Text_Asset.load(:text_asset_id => param(:text_asset_id))
-
-      article = Article.select { |a|
-       a.where(Article.content_id.in( Container.select(:content_id_parent) { |cip|
-         cip.where(Container.content_id_child == text_asset.content_id)
-         cip.limit(1)
-       }))
-       a.limit(1)
-      }.first
-
-      editor = Textarea_Field.new(:name => Text_Asset.text, :value => text_asset.text)
-      editor.style_class = 'fullwidth'
-
-    # exec_js("init_all_editors();")
-      render_view(:container_inline_form, 
-                  :article => article, 
-                  :text_asset_id => text_asset.text_asset_id, 
-                  :content_id_parent => param(:content_id_parent), 
-                  :content_id_child => param(:content_id_child), 
-                  :article_id => article.article_id, 
-                  :content_id => text_asset.content_id, 
-                  :text => text_asset.text)
-      
-    end
-
     def delete
-      form = delete_form(Text_Asset)
-      form.fields = [ Text_Asset.text, Text_Asset.tags, 
-                      Container.content_id_parent, Container.content_id_child ]
+      form        = delete_form(Container)
+      form.fields = [ Container.content_id_parent, Container.asset_id_child ]
       form.add_hidden(Container.content_id_parent => param(:content_id_parent))
-      form.add_hidden(Container.content_id_child => param(:content_id_child))
-      render_form(form)
+      form.add_hidden(Container.asset_id_child    => param(:asset_id_child))
+      HTML.div { 
+        HTML.div(:class => [ :message_box, :confirmation ]) { tl(:delete_this_article_partial) } + 
+        decorate_form(form)
+      } 
     end
     
   end

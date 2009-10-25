@@ -78,8 +78,7 @@ module Wiki
     def decorate_part(part, article)
       part_entity      = part[:instance]
       container_params = { :content_id_parent => article.content_id, 
-                           :content_id_child  => part_entity.content_id, 
-                           :asset_id          => part_entity.asset_id, 
+                           :asset_id_child    => part_entity.asset_id, 
                            :article_id        => article.article_id}
 
       tce = Context_Menu_Element.new(HTML.div(:class => :article_text) { 
@@ -88,7 +87,7 @@ module Wiki
                                                            :part    => part_entity) 
                                      }, 
                                      :type         => 'Wiki::Container', 
-                                     :id           => "article_part_asset_#{part_entity.content_id}", 
+                                     :id           => "article_part_asset_#{part_entity.asset_id}", 
                                      :params       => container_params)
 
       return tce

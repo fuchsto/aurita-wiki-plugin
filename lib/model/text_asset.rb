@@ -44,18 +44,6 @@ module Wiki
       tags
     }
 
-    def parent_article
-      if !@parent_article then
-        @parent_article = Article.select { |c| 
-          c.join(Container).on(Article.content_id == Container.content_id_parent) { |ca|
-            ca.where(Container.content_id_child == content_id)
-          }
-        }.first
-      end
-      return @parent_article
-    end
-    alias article parent_article
-
     def self.before_create(args)
       super(args)
     end

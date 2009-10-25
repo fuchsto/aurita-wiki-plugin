@@ -395,13 +395,12 @@ module Wiki
           }.first
 
           exec_js("Aurita.Editor.save_all(); ")
-          redirect(:element           => "text_asset_#{editable_text_asset.content_id}", 
-                   :controller        => 'Wiki::Container', 
+          redirect(:element           => "article_part_asset_#{editable_text_asset.asset_id}", 
+                   :controller        => 'Wiki::Text_Asset', 
                    :action            => :update_inline, 
-                   :content_id_child  => editable_text_asset.content_id, 
+                   :asset_id          => editable_text_asset.asset_id, 
                    :content_id_parent => article.content_id, 
-                   :text_asset_id     => editable_text_asset.text_asset_id, 
-                   :onload            => js.Aurita.Wiki.init_container_inline_editor)
+                   :text_asset_id     => editable_text_asset.text_asset_id)
         end
       end
       exec_js("Aurita.Wiki.add_recently_viewed('Wiki::Article', '#{article.article_id}', '#{article.title.gsub("'",'&apos;').gsub('"','&quot;')}'); ")
@@ -459,7 +458,7 @@ module Wiki
       article = Article.load(:article_id => param(:article_id))
       return unless Aurita.user.may_view_content?(article.content_id)
 
-      hierarchy = Article_Full_Hierarchy_Visitor.new.visit_article(article)
+      hierarchy = Article_Full_Hierarchy_Visitor.new(article).hierarchy
       decorator = Article_Hierarchy_Sortable_Decorator.new(hierarchy)
       exec_js("Aurita.Wiki.init_article_reorder('#{article.content_id}');")
       puts decorator.string
@@ -546,7 +545,7 @@ module Wiki
       positions         = param(:article_partials_list, []).map { |v| v.to_i }
       content_id_parent = param(:content_id_parent)
       Container.all_with(Container.content_id_parent == content_id_parent).ordered_by(:sortpos, :asc).to_a.each_with_index { |c, pos_count|
-        c.sortpos = (positions.index(c.content_id_child).to_i + 1)
+        c.sortpos = (positions.index(c.asset_id_child).to_i + 1)
         c.commit
       }
       Article.find(1).with(Article.content_id == content_id_parent).entity.touch
