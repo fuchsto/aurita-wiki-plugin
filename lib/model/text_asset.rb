@@ -13,7 +13,7 @@ module Aurita
 module Plugins
 module Wiki
 
-  class Text_Asset < Asset
+  class Text_Asset < Container
 
     table :text_asset, :public
     primary_key :text_asset_id, :text_asset_id_seq
@@ -32,11 +32,16 @@ module Wiki
     use_label :text
 
     add_input_filter(:tags) { |tags| 
-      tags.downcase!
-      tags = '{' << tags.gsub("'",'&apos;').gsub(',',' ').squeeze(' ').gsub(' ',',') << '}' 
-      tags.gsub!('{{','{')
-      tags.gsub!('}}','}')
-      log('TEXT_ASSET tags filter: ' << tags.inspect)
+      if tags.is_a?(Array) then
+        tags.uniq!
+        tags = "{#{tags.join(',')}}"
+      else
+        tags.downcase!
+        tags = '{' << tags.gsub("'",'&apos;').gsub(',',' ').squeeze(' ').gsub(' ',',') << '}' 
+        tags.gsub!('{{','{')
+        tags.gsub!('}}','}')
+        log('TEXT_ASSET tags filter: ' << tags.inspect)
+      end
       tags
     }
 
@@ -53,17 +58,14 @@ module Wiki
     alias article parent_article
 
     def self.before_create(args)
-    # text_tags = Tag_Index.resolve_tags_from_string(args[:text])
-    # log('TAGS: ' << args.hash.inspect)
-      unless args[:tags] then
-        args[:tags] = 'text ' + text_tags 
-      end
       super(args)
     end
 
-    def self.after_update(instance)
-      tags = Tag_Index.resolve_tags_from_string(instance.text)
-      instance.parent_article.add_tags(tags)
+    def self.after_create(instance)
+      super(instance)
+      instance.asset_id_child = instance.asset_id
+      instance.commit
+      instance
     end
 
     def subs
@@ -103,7 +105,7 @@ module Wiki
     end
 
     def inspect
-      puts text
+      puts text.to_s[0..200]
     end
       
   end 

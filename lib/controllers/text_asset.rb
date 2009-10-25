@@ -38,6 +38,11 @@ module Wiki
       ]
     end
 
+    def article_hierarchy_part(params={})
+      instance = params[:part]
+
+    end
+
     def perform_add()
 
       @params[:display_text] = Text_Asset_Parser.parse(Tagging.link_text_tags(param(:text).to_s.dup))

@@ -32,6 +32,8 @@ recommend_article : Artikel empfehlen
 new_recommendation : Artikelempfehlung - &apos;\1&apos; 
 recommendation_text : \1 empfielt Ihnen den Artikel [appurl=\3]\2[/appurl]
 
+version_created_by : Version von
+
 article : Artikel
 edit_article : Bearbeiten
 delete_article : L&ouml;schen
@@ -149,3 +151,5 @@ compare_article_versions : Artikelversionen vergleichen
 from : Von
 to : Bis
 date : Datum
+
+cannot_be_edited : Sie k&ouml;nnen diesen Inhalt nicht bearbeiten

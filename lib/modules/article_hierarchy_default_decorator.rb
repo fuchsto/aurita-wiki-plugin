@@ -78,7 +78,7 @@ module Wiki
     end
 
     def decorate_container(text_asset, article)
-      ta = text_asset[:text_asset]
+      ta   = text_asset[:text_asset]
       container_params = { :content_id_parent => article.content_id, 
                            :content_id_child  => ta.content_id, 
                            :text_asset_id     => ta.text_asset_id, 

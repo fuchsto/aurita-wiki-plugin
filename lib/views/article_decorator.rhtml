@@ -35,14 +35,14 @@
             <td><%= tl(:version) %></td>
             <td>
               <select name="article_version" id="article_version" class="varwidth" 
-                onchange="<%= gui.link_to(article, :action => :show_version, :version => '$(\'article_version\').value') %>">
-                <% for version in 0..article_version.to_i do %>
+                onchange="<%= gui.link_to(article, :action => :show_version, :version => "'+$('article_version').value + '") %>">
+                <% for version in 0..article.latest_version_number.to_i do %>
                   <option value="<%= version %>" <% if version == article_version.to_i then %>selected="selected"<% end %>>
                     <%= version %> 
                   </option>
                 <% end %>
               </select>
-              (<%= link_to(:controller => 'Wiki::Article_Version', :action => :list, :article_id => article.article_id) { tl(:show_version_list) } %>)
+<!--          (<%= link_to(:controller => 'Wiki::Article_Version', :action => :list, :article_id => article.article_id) { tl(:show_version_list) } %>) -->
             </td>
           </tr>
           <tr>

@@ -37,18 +37,28 @@ module Wiki
       article                = Article.find(1).with(Article.content_id == article_content_id).entity
       article_set[:instance] = article
       article_set[:text_assets].map { |ta|
-        ta[:text_asset] = Text_Asset.create_shallow(:text          => ta[:text_asset].dup, 
-                                                    :display_text  => ta[:text_asset].dup, 
+        text   = ta[:text_asset].dup
+        text ||= ta[:text].dup
+        ta[:text_asset] = Text_Asset.create_shallow(:text          => text, 
+                                                    :display_text  => text, 
                                                     :tags          => 'text', 
                                                     :content_id    => 0, 
                                                     :text_asset_id => 0)
         ta[:media_assets].map! { |ma| 
           ma = Media_Asset.load(:media_asset_id => ma)
         }
+        
+      # TODO: Use plugin hooks here: 
+      #  ta[:todo_asset] = Todo_Asset.load(:todo_asset_id => ta[:todo_asset]) if ta[:todo_asset]
+      #  ta[:form_asset] = Form_Asset.load(:form_asset_id => ta[:form_asset]) if ta[:form_asset]
+        
+        parts = Aurita::Plugin_Register.get(Hook.wiki.article.article_part, 
+                                            :article    => article, 
+                                            :text_asset => ta[:text_asset_id])
 
-        # TODO: Use plugin hooks here: 
-        ta[:todo_asset] = Todo_Asset.load(:todo_asset_id => ta[:todo_asset]) if ta[:todo_asset]
-        ta[:form_asset] = Form_Asset.load(:form_asset_id => ta[:form_asset]) if ta[:form_asset]
+        parts.each { |part|
+          ta[part.part_type] = part.part_entity
+        }
       }
       @hierarchy[article_content_id] = article_set
 
@@ -68,6 +78,7 @@ module Wiki
       }
       @string = view_string(@templates[:article], 
                             :article             => article, 
+                            :latest_version      => article.latest_version_number, 
                             :version_dump        => article_set, 
                             :version_entry       => @version_entry, 
                             :article_content     => article_string, 

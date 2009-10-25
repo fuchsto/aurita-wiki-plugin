@@ -441,14 +441,15 @@ module Wiki
       article = Article.load(:article_id => article_id)
       return unless Aurita.user.may_view_content?(article.content_id)
 
-      version_entry = Article_Version.find(1).with((:article_id.is(article_id)) & (:version.is(version))).entity
+      version_entry = Article_Version.find(1).with((:article_id.is(article_id)) & 
+                                                   (:version.is(version))).entity
       if !version_entry then
         puts tl(:no_such_version)
         return
       end
 
-      decorator = Article_Dump_Default_Decorator.new(version_entry)
-      decorator.viewparams = param(:viewparams)
+      decorator                     = Article_Dump_Default_Decorator.new(version_entry)
+      decorator.viewparams          = param(:viewparams)
       decorator.templates[:article] = :article_version_decorator
       article_string = decorator.string
       puts article_string
