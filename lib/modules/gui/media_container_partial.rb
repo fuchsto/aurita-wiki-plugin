@@ -28,7 +28,7 @@ module GUI
         HTML.div.images { 
           @media_container.media_assets(Media_Asset.mime.ilike('image/%')).map { |image|
             entry = HTML.div.image_partial { 
-              link_to(image) { GUI::Media_Asset_Thumbnail.new(image, :size => :thumb).string }
+              link_to(image) { GUI::Media_Asset_Thumbnail.new(image, :size => :medium).string }
             }
             Context_Menu_Element.new(entry, :entity => image) 
           }

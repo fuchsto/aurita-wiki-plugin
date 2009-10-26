@@ -387,8 +387,8 @@ module Wiki
       end
 
       if param(:edit_inline_content_id) || edit_inline_content_id then
-        if param(:edit_inline_type) == 'TEXT_ASSET' || edit_inline_content_id then
-          edit_inline_content_id = param(:edit_inline_content_id) unless edit_inline_content_id
+        edit_inline_content_id = param(:edit_inline_content_id) unless edit_inline_content_id
+        if param(:edit_inline_type) == 'TEXT_ASSET' then
           editable_text_asset = Text_Asset.select { |ta|
             ta.where(Text_Asset.content_id == edit_inline_content_id)
             ta.limit(1)
@@ -401,6 +401,19 @@ module Wiki
                    :asset_id          => editable_text_asset.asset_id, 
                    :content_id_parent => article.content_id, 
                    :text_asset_id     => editable_text_asset.text_asset_id)
+
+        elsif param(:edit_inline_type == 'MEDIA_CONTAINER') then
+          media_container = Media_Container.select { |ta|
+            ta.where(Media_Container.content_id == edit_inline_content_id)
+            ta.limit(1)
+          }.first
+
+          redirect(:element           => "article_part_asset_#{media_container.asset_id}", 
+                   :controller        => 'Wiki::Media_Container', 
+                   :action            => :update_inline, 
+                   :asset_id_child    => media_container.asset_id, 
+                   :content_id_parent => article.content_id, 
+                   :asset_id          => media_container.asset_id)
         end
       end
       exec_js("Aurita.Wiki.add_recently_viewed('Wiki::Article', '#{article.article_id}', '#{article.title.gsub("'",'&apos;').gsub('"','&quot;')}'); ")
