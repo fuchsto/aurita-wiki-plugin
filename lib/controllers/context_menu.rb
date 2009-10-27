@@ -27,6 +27,7 @@ module Wiki
         if Aurita.user.is_admin? or Aurita.user.user_group_id == article.user_group_id then 
           entry(:edit_article, "Wiki::Article/update/article_id=#{article_id}", targets)
           entry(:edit_article_permissions, "Content_Permissions/editor/content_id=#{content_id}", targets)
+          entry(:delete_article_versions, "Wiki::Article_Version/perform_delete_all/article_id=#{article_id}", targets) 
           entry(:delete_article, "Wiki::Article/delete/article_id=#{article_id}", targets) 
         end
       end

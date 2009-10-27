@@ -31,7 +31,9 @@
               <a href="/aurita/Wiki::Article/show_pdf/article_id=<%= article.article_id %>&version=<%= article_version %>">PDF</a>
             </td>
           </tr>
-<% if Aurita.user.may(:view_article_versions) then %>
+
+<% if article.user_group_id == Aurita.user.user_group_id || Aurita.user.may(:view_foreign_article_versions) then %>
+
           <tr>
             <td><%= tl(:version) %></td>
             <td>
@@ -46,7 +48,9 @@
               (<%= link_to(:controller => 'Wiki::Article_Version', :action => :list, :article_id => article.article_id) { tl(:show_version_list) } %>)
             </td>
           </tr>
+
 <% end %>
+
           <tr>
             <td>
               <%= tl(:tags) %>

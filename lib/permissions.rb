@@ -21,10 +21,10 @@ module Wiki
     register_permission(:create_public_folders, 
                         :type    => :bool, 
                         :default => true)
-    register_permission(:view_article_versions, 
+    register_permission(:view_foreign_article_versions, 
                         :type    => :bool, 
                         :default => true)
-    register_permission(:view_media_versions, 
+    register_permission(:view_foreign_media_versions, 
                         :type    => :bool, 
                         :default => true)
     register_permission(:reactivate_foreign_article_versions, 

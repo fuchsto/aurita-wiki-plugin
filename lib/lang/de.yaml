@@ -37,6 +37,7 @@ version_created_by : Version von
 article : Artikel
 edit_article : Bearbeiten
 delete_article : L&ouml;schen
+delete_article_versions : Alte Versionen l&ouml;schen
 write_new_article : Neuer Artikel
 used_in_articles : Eingebunden in
 
@@ -118,8 +119,8 @@ create_articles : Artikel erstellen
 create_article : Neuer Artikel
 create_public_folders : Ordner au&szlig;erhalb des Benutzerordners erstellen
 edit_foreign_articles : Fremde Artikel bearbeiten
-view_article_versions : Alte Artikelversionen ansehen
-view_media_versions : Alte Dateiversionen ansehen
+view_foreign_article_versions : Alte Versionen fremder Artikel ansehen
+view_foreign_media_versions : Alte Versionen fremder Dateien ansehen
 reactivate_foreign_article_versions : Versionen fremder Artikel wiederherstellen
 
 file_is_being_uploaded : Datei wird im Hintergrund auf den Server geladen. 
