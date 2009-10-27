@@ -32,7 +32,7 @@
             </td>
           </tr>
 
-<% if article.user_group_id == Aurita.user.user_group_id || Aurita.user.may(:view_foreign_article_versions) then %>
+<% if article.is_versioned? && (article.user_group_id == Aurita.user.user_group_id || Aurita.user.may(:view_foreign_article_versions)) then %>
 
           <tr>
             <td><%= tl(:version) %></td>

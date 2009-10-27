@@ -33,6 +33,18 @@ module Wiki
 
     html_escape_values_of :title
 
+    # Returns true if this article is assigned to a 
+    # versioned category. 
+    def versioned
+      result = false
+      categories.each { |c|
+        result = result || c.versioned
+      }
+      return result
+    end
+    alias is_versioned versioned
+    alias is_versioned? versioned
+
     def readable_id
       title.downcase.gsub(' ','_')
     end
