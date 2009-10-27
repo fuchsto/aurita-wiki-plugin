@@ -44,7 +44,7 @@ module Wiki
        Content.tags, 
        Category.category_id, 
        Media_Asset.media_folder_id, 
-       :text_asset_id
+       :media_container_id
       ]
     end
 
@@ -139,10 +139,11 @@ module Wiki
                                                                                :label => tl(:folder), 
                                                                                :value => folder_id) 
       category = Category_Selection_List_Field.new()
-      if param(:text_asset_id) then
-        article = Text_Asset.load(:text_asset_id => param(:text_asset_id)).article
+      if param(:media_container_id) then
+        article        = Media_Container.get(param(:media_container_id)).article
         category.value = [ article.category_id ] if article
-        form.add(Hidden_Field.new(:name => :text_asset_id, :value => param(:text_asset_id))) 
+        form.add(Hidden_Field.new(:name  => :media_container_id, 
+                                  :value => param(:media_container_id))) 
       end
       if param(:set_as_profile_image) then
         form.add(Hidden_Field.new(:name => :set_as_profile_image, :value => 1))
@@ -230,19 +231,9 @@ module Wiki
           Media_Asset_Importer.new(instance).import(file_info)
           # Now, after having imported the file via Media_Asset_Importer, 
           # we have a valid instance. 
-          #
-          log('Uploaded image: ' << instance.inspect)
-          if instance && param(:text_asset_id) then
-            text_asset = Text_Asset.load(:text_asset_id => param(:text_asset_id))
-            log('Creating attachment')
-            Container.create(:content_id_parent => text_asset.content_id, 
-                             :content_id_child  => instance.content_id, 
-                             :sortpos           => 0, 
-                             :content_type      => 'IMAGE')
-            text_asset.article.touch
-            log('Created attachment')
-          else
-            log('No attachment')
+          if instance && param(:media_container_id) then
+            Media_Container_Entry.create(:media_container_id => param(:media_container_id),
+                                         :media_asset_id     => instance.media_asset_id)
           end
           
           Content_Category.create_for(instance, param(:category_ids)) 
