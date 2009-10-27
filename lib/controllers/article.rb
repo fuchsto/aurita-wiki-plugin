@@ -276,9 +276,11 @@ module Wiki
 
       @params.set('public.text_asset.text', tl(:text_asset_blank_text))
       @params.set('public.article.content_id', article.content_id)
-      Text_Asset_Controller.new(@params).perform_add()
+      text_asset = Text_Asset_Controller.new(@params).perform_add()
 
-      redirect_to(:show_own_latest)
+      redirect_to(article, :edit_inline_content_id => text_asset.content_id, 
+                           :article_id             => article.article_id, 
+                           :edit_inline_type       => 'TEXT_ASSET')
       
       article.commit_version
     end
