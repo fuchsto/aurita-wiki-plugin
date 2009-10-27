@@ -63,7 +63,6 @@ module Wiki
     def perform_add()
 
       text                   = param(:text, tl(:text_asset_blank_text))
-   #  @params[:display_text] = Text_Asset_Parser.parse(Tagging.link_text_tags(text))
       @params[:display_text] = Tagging.link_text_tags(Text_Asset_Parser.parse(param(:text).to_s.dup))
       @params[:tags]         = 'text'
 

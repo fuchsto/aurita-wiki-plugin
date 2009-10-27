@@ -276,7 +276,7 @@ module Wiki
 
       @params.set('public.text_asset.text', tl(:text_asset_blank_text))
       @params.set('public.article.content_id', article.content_id)
-      Container_Controller.new(@params).perform_add()
+      Text_Asset_Controller.new(@params).perform_add()
 
       redirect_to(:show_own_latest)
       
@@ -325,11 +325,17 @@ module Wiki
     def show_own_latest
       latest_article_id = Article.value_of.max(:article_id).with(Article.user_group_id == Aurita.user.user_group_id).to_i
       article = Article.load(:article_id => latest_article_id)
+
       @params[:article_id] = latest_article_id
 
-      edit_inline_content_id = Container.select { |c| 
-        c.where(Container.content_id_parent == article.content_id)
-      }.first.content_id_child
+      STDERR.puts "show own latest: Article is #{article.inspect}"
+
+      begin
+        edit_inline_content_id = Container.select { |c| 
+          c.where(Container.content_id_parent == article.content_id)
+        }.first.asset.content_id
+      rescue ::Exception => e
+      end
 
       show(latest_article_id, edit_inline_content_id)
     end
@@ -386,7 +392,7 @@ module Wiki
         return
       end
 
-      if param(:edit_inline_content_id) || edit_inline_content_id then
+      if param(:edit_inline_content_id) then
         edit_inline_content_id = param(:edit_inline_content_id) unless edit_inline_content_id
         if param(:edit_inline_type) == 'TEXT_ASSET' then
           editable_text_asset = Text_Asset.select { |ta|

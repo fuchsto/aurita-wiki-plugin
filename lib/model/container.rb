@@ -26,6 +26,10 @@ module Wiki
 
     ordered_by :sortpos
 
+    def asset
+      Asset.load(:asset_id => asset_id_child)
+    end
+
   end 
 
   class Article < Aurita::Main::Content

@@ -118,6 +118,8 @@ create_articles : Artikel erstellen
 create_article : Neuer Artikel
 create_public_folders : Ordner au&szlig;erhalb des Benutzerordners erstellen
 edit_foreign_articles : Fremde Artikel bearbeiten
+view_article_versions : Alte Artikelversionen ansehen
+view_media_versions : Alte Dateiversionen ansehen
 reactivate_foreign_article_versions : Versionen fremder Artikel wiederherstellen
 
 file_is_being_uploaded : Datei wird im Hintergrund auf den Server geladen. 
