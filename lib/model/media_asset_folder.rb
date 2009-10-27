@@ -35,6 +35,7 @@ module Wiki
 
     def folder_path
       asset_folder_id = media_folder_id__parent
+      return [] if asset_folder_id.to_s == ''
       path = []
       folder = Media_Asset_Folder.find(1).with(Media_Asset_Folder.media_asset_folder_id == asset_folder_id).entity 
       if folder then
@@ -100,6 +101,8 @@ module Wiki
     end
 
     def self.media_asset_folders_of(folder_id, params={})
+      return [] unless folder_id
+
       sort       = params[:sort]
       sort_dir   = params[:sort_dir]
       sort     ||= :physical_path

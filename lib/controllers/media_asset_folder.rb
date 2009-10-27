@@ -200,7 +200,7 @@ module Wiki
       form = model_form(:model => Media_Asset_Folder, :action => :perform_add)
       form.add(Category_Selection_List_Field.new())
       form[Media_Asset_Folder.media_folder_id__parent].hidden = true
-      form[Media_Asset_Folder.media_folder_id__parent].value = param(:media_folder_id__parent)
+      form[Media_Asset_Folder.media_folder_id__parent].value  = param(:media_folder_id__parent)
       render_form(form)
     end
     
@@ -221,17 +221,22 @@ module Wiki
     end # }}}
 
     def update
-      instance = Media_Asset_Folder.load(:media_asset_folder_id => param(:media_asset_folder_id))
-      form     = update_form()
-      category = Category_Selection_List_Field.new()
-      category.value = instance.category_ids
+      instance         = Media_Asset_Folder.load(:media_asset_folder_id => param(:media_asset_folder_id))
+      form             = update_form()
+      category         = Category_Selection_List_Field.new()
+      category.value   = instance.category_ids
       form.add(category)
+      
+      parent_folder_id = instance.media_folder_id__parent
+      
       form[Media_Asset_Folder.media_folder_id__parent] = GUI::Hierarchy_Node_Select_Field.new(:name => Media_Asset_Folder.media_folder_id__parent.to_s, 
                                                                                               :label => tl(:parent_folder), 
+                                                                                              :model => Media_Asset_Folder, 
                                                                                            #  :exclude_folder_ids => instance.media_asset_folder_id, 
-                                                                                              :value => instance.media_folder_id__parent)
+                                                                                              :value => parent_folder_id)
       render_form(form)
     end
+
     def perform_update
       instance = load_instance()
       # Folder must noy be parent folder of itself
