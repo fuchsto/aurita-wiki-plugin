@@ -73,9 +73,8 @@ module Wiki
       images.order_by(order, order_dir) if order
       images    = images.entities
       return unless images.first
-      view_string(:media_asset_thumb_list, 
-                  :media_assets => images, 
-                  :user => Aurita.user)
+
+      GUI::Media_Asset_Grid.new(images)
     end # }}}
 
     def list_category(params)
@@ -105,9 +104,9 @@ module Wiki
                                                  ).sort_by(Media_Asset.media_asset_id, :desc).entities
       return unless media.first
 
-      box = Box.new(:type => :none, :class => :topic_inline)
+      box        = Box.new(:type => :none, :class => :topic_inline)
       box.header = tl(:media)
-      box.body = view_string(:media_asset_thumb_list, :media_assets => media)
+      box.body   = GUI::Media_Asset_Grid.new(media)
       return box
     end # }}}
 

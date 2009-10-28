@@ -46,7 +46,9 @@
         <div class="lore_text_button" style="float: left" onclick="Aurita.call('Media_Asset/perform_bookmark/media_asset_id=<%= media_asset.media_asset_id %>'); Element.toggle(this); "><%= tl(:bookmark_file) %></div>
         <div class="lore_text_button" style="float: left" onclick="resizeable_popup(500,500,'<%= media_asset.url %>');">+</div>
       </div>
-      <%= gui.media_asset_thumb(:asset => media_asset, :size => :medium) %></a>
+      <div style="width: 320px; padding: 3px; background-color: white; text-align: center; ">
+        <img src="<%= media_asset.icon_path(:size => :medium) %>" />
+      </div>
     </a>
   <% end %>
 

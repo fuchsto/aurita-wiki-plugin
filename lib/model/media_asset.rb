@@ -86,8 +86,12 @@ module Wiki
       return []
     end
 
+    def extension
+      return mime_extension if attribute_value[:extension].empty? 
+      return attribute_value[:extension]
+    end
     def mime_extension
-      @mime_extension ||= mime.split('/')[-1].downcase.gsub('x-','') unless @mime_extension
+      @mime_extension ||= mime.split('/')[-1].downcase.gsub('x-','')
       return @mime_extension
     end
 
@@ -129,7 +133,7 @@ module Wiki
       end
       if variant && !has_preview? then
       # Path to MIME type thumbnail
-        a_id = mime_extension
+        a_id = extension()
       end
       return "#{folder}asset_#{a_id}.#{filename_ext}"
     end
@@ -153,49 +157,49 @@ module Wiki
     end
 
     def filename(version=0)
-      return "asset_#{media_asset_id}.#{mime_extension}" if version == 0
-      return "asset_#{media_asset_id}.#{version}.#{mime_extension}"
+      return "asset_#{media_asset_id}.#{extension}" if version == 0
+      return "asset_#{media_asset_id}.#{version}.#{extension}"
     end
     def url(version=0)
       "/aurita/assets/#{filename(version)}"
     end
 
     def is_archive?
-      return ['rar','zip','tgz','bz','7z'].include?(mime_extension)
+      return ['rar','zip','tgz','bz','7z'].include?(extension)
     end
     def is_image?
-      return (mime.to_s[0..5] == 'image/' || ['jpg', 'jpeg', 'png', 'gif', 'svg', 'psd', 'postscript', 'eps', 'tif', 'tiff', 'tga', 'ai'].include?(mime_extension))
+      return (mime.to_s[0..5] == 'image/' || ['jpg', 'jpeg', 'png', 'gif', 'svg', 'psd', 'postscript', 'eps', 'tif', 'tiff', 'tga', 'ai'].include?(extension))
     end
     def is_vector?
-      return ['ai', 'svg', 'eps'].include?(mime_extension)
+      return ['ai', 'svg', 'eps'].include?(extension)
     end
     def is_video?
-      return ['mpeg', 'mpg', 'wmv', 'avi', 'flv', 'mp4', 'swf'].include?(mime_extension)
+      return ['mpeg', 'mpg', 'wmv', 'avi', 'flv', 'mp4', 'swf'].include?(extension)
     end
     def is_flash?
-      return mime_extension == 'swf'
+      return extension == 'swf'
     end
     def is_audio?
-      return ['ogg', 'mp3', 'wav', 'wma'].include?(mime_extension)
+      return ['ogg', 'mp3', 'wav', 'wma'].include?(extension)
     end
     def is_slide?
-      return ['ppt'].include?(mime_extension)
+      return ['ppt'].include?(extension)
     end
     def is_readonly_document?
-      return ['pdf'].include?(mime_extension)
+      return ['pdf'].include?(extension)
     end
     def is_document?
-      return ['odt', 'doc', 'dot'].include?(mime_extension)
+      return ['odt', 'doc', 'dot'].include?(extension)
     end
     def is_plaintext?
-      return ['dat', 'log', 'txt'].include?(mime_extension)
+      return ['dat', 'log', 'txt'].include?(extension)
     end
     def is_archive?
-      return ['zip', 'rar', 'tar.gz', '7z', 'dmg'].include?(mime_extension)
+      return ['zip', 'rar', 'tar.gz', '7z', 'dmg'].include?(extension)
     end
 
     def has_preview? 
-      is_image? || mime_extension == 'pdf'
+      is_image? || extension == 'pdf'
     end
 
     def doctype
@@ -223,7 +227,8 @@ module Wiki
 
     # Absolute URL path to file. 
     def icon_path(params)
-      "/aurita/assets/#{rel_name(params)}?#{checksum}"
+      c = "?#{checksum}" if has_preview? 
+      "/aurita/assets/#{rel_name(params)}#{c}"
     end
     
     def accept_visitor(v)

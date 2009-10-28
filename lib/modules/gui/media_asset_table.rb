@@ -66,7 +66,7 @@ module GUI
         HTML.p.name { link_to(@entity) { @entity.title } } +
         HTML.p.tags { @entity.tags }
       }
-      type    = @entity.mime_extension.upcase
+      type    = @entity.extension.upcase
       size    = @entity.filesize
       created = datetime(@entity.created)
       changed = datetime(@entity.changed)

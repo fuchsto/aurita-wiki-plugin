@@ -63,7 +63,7 @@ module GUI
         HTML.p.name { @entity.title } +
         HTML.p.tags { @entity.tags  }
       }
-      type    = @entity.mime_extension.upcase
+      type    = @entity.extension.upcase
       size    = @entity.filesize
       changed = datetime(@entity.changed)
       [ icon, info, type, size, changed ]
@@ -113,7 +113,7 @@ module GUI
         HTML.p.name { @entity.title } +
         HTML.p.tags { @entity.tags  }
       }
-      type    = @entity.mime_extension.upcase
+      type    = @entity.extension.upcase
       size    = @entity.filesize
       changed = datetime(@entity.changed)
       [ icon, info, type, size, changed ]
