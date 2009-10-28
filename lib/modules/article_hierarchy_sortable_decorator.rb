@@ -23,7 +23,7 @@ module Wiki
       part_entity      = part[:instance]
 
       HTML.li(:id => "partials_#{part_entity.asset_id}", :class => [ :no_bullets, :sortable ] ) { 
-        HTML.div(:class => :article_text) { 
+        HTML.div(:class => :article_text, :onclick => 'return false;') { 
           Plugin_Register.get(Hook.wiki.article.hierarchy.partial, 
                               :article => article, 
                               :part    => part_entity) 

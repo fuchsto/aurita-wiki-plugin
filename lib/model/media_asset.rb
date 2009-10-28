@@ -36,33 +36,6 @@ module Wiki
       u ||= User_Group.load(:user_group_id => 5)
     end
 
-=begin
-    # CMS Worldwide Hype, Ajax => {cms,worldwide,hype,ajax}
-    add_input_filter(:tags) { |tags| 
-      tags = tags.to_s
-      tags.gsub!("'","\'")
-      tags.gsub!('{','')
-      tags.gsub!('}','')
-      tags.gsub!(',',' ')
-      tags = tags.squeeze(' ')
-      tags.strip!
-      tags.gsub!(' ',',')
-      tags.downcase!
-      tags = '{' << tags + '}'
-      tags
-    }
-    # {cms,worldwide,hype,ajax} => cms worldwide hype ajax
-    add_output_filter(:tags) { |tags| 
-      tags.gsub!("'",'&apos;')
-      tags.gsub!("\"",'')
-      tags.gsub!('{','')
-      tags.gsub!('}','')
-      tags.gsub!(',',' ')
-      tags = tags.squeeze(' ')
-      tags
-    }
-=end
-
     def filesize
       self.get_attribute_values()[:filesize].to_i.filesize
     end
@@ -114,11 +87,8 @@ module Wiki
     end
 
     def mime_extension
-      if extension.to_s == '' then
-        @mime_extension = mime.split('/')[-1].downcase.gsub('x-','') unless @mime_extension
-        return @mime_extension
-      end
-      extension
+      @mime_extension ||= mime.split('/')[-1].downcase.gsub('x-','') unless @mime_extension
+      return @mime_extension
     end
 
     add_output_filter(:mime_extension) { |m|
@@ -194,16 +164,19 @@ module Wiki
       return ['rar','zip','tgz','bz','7z'].include?(mime_extension)
     end
     def is_image?
-      return mime.to_s[0..5] == 'image/' || ['jpg', 'jpeg', 'png', 'gif', 'postscript', 'eps', 'tif', 'tiff', 'tga', 'ai'].include?(mime_extension.downcase)
+      return (mime.to_s[0..5] == 'image/' || ['jpg', 'jpeg', 'png', 'gif', 'svg', 'psd', 'postscript', 'eps', 'tif', 'tiff', 'tga', 'ai'].include?(mime_extension))
     end
     def is_vector?
-      return ['ai', 'svg'].include?(mime_extension)
+      return ['ai', 'svg', 'eps'].include?(mime_extension)
     end
     def is_video?
-      return ['mpeg', 'mpg', 'wmv', 'avi', 'flv', 'mp4', 'swf'].include?(mime_extension.downcase)
+      return ['mpeg', 'mpg', 'wmv', 'avi', 'flv', 'mp4', 'swf'].include?(mime_extension)
+    end
+    def is_flash?
+      return mime_extension == 'swf'
     end
     def is_audio?
-      return ['ogg', 'wma', 'wav', 'mp3'].include?(mime_extension)
+      return ['ogg', 'mp3', 'wav', 'wma'].include?(mime_extension)
     end
     def is_slide?
       return ['ppt'].include?(mime_extension)
@@ -212,17 +185,17 @@ module Wiki
       return ['pdf'].include?(mime_extension)
     end
     def is_document?
-      return ['doc', 'dot', 'odt'].include?(mime_extension)
+      return ['odt', 'doc', 'dot'].include?(mime_extension)
     end
     def is_plaintext?
-      return ['rtf', 'txt'].include?(mime_extension)
+      return ['dat', 'log', 'txt'].include?(mime_extension)
     end
     def is_archive?
       return ['zip', 'rar', 'tar.gz', '7z', 'dmg'].include?(mime_extension)
     end
 
     def has_preview? 
-      is_image? || mime_extension.downcase == 'pdf'
+      is_image? || mime_extension == 'pdf'
     end
 
     def doctype

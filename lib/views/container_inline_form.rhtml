@@ -3,11 +3,14 @@
 
 <%= gui.begin_form_for('Wiki::Text_Asset.perform_update', 
                        :name => "container_form_#{text_asset_id}", 
-                       :id => "container_form_#{text_asset_id}" ) %>
-  <%= gui.hidden_field(:text_asset_id => text_asset_id,
+                       :id   => "container_form_#{text_asset_id}") 
+%>
+
+  <%= gui.hidden_field(:text_asset_id     => text_asset_id,
                        :content_id_parent => content_id_parent,
-                       :content_id_child => content_id_child,
-                       :content_id => content_id) %>
+                       :content_id_child  => content_id_child,
+                       :content_id        => content_id) 
+  %>
 
   <div id="text_asset_form" class="text_asset_editor">
 
