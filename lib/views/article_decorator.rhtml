@@ -3,7 +3,10 @@
 
   <div class="article_view" id="article_entry_<%= article.article_id %>">
     <div <%= gui.context_menu(article, :class => 'article_head', :id => "article_title_#{entry_counter}") %> >
-      <h1 class="modifyable"><%= article.title %></h1>
+      <h1><%= article.title %></h1>
+      <div class="edit_button edit_button_right" onclick="Aurita.open_context_menu(); ">
+        <img src="/aurita/images/icons/edit_button.gif" />
+      </div>
       <br />
       <div class="article_info darker_bg">
         <table class="listing_2_columns">

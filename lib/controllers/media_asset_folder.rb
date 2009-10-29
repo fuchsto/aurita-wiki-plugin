@@ -201,7 +201,11 @@ module Wiki
       form.add(Category_Selection_List_Field.new())
       form[Media_Asset_Folder.media_folder_id__parent].hidden = true
       form[Media_Asset_Folder.media_folder_id__parent].value  = param(:media_folder_id__parent)
-      render_form(form)
+      if(['upload_file_section', 'context_menu'].include?(param(:element))) then
+        return decorate_form(form)
+      else
+        return Page.new(:header => tl(:add_folder)) { decorate_form(form) }
+      end
     end
     
     def perform_add

@@ -45,6 +45,7 @@
           <%= gui.button(:icon    => 'button_add.gif', 
                          :onclick => gui.link_to(:controller => 'Wiki::Media_Asset_Folder', 
                                                  :action     => :add, 
+                                                 :element    => :upload_file_section, 
                                                  :media_folder_id__parent => folder.media_asset_folder_id)) { 
                 tl(:create_folder) 
               }

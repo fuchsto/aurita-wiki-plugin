@@ -86,6 +86,7 @@ module Wiki
                                                            :article => article, 
                                                            :part    => part_entity) 
                                      }, 
+                                     :show_button  => true, 
                                      :type         => part[:model].gsub('Aurita::Plugins::',''), 
                                      :id           => "article_part_asset_#{part_entity.asset_id}", 
                                      :params       => container_params)

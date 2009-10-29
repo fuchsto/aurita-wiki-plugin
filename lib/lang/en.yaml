@@ -1,3 +1,4 @@
+plugin_name : Wiki
 
 public--article--title : Title
 public--article--template_id : Style
@@ -7,11 +8,16 @@ public--text_asset--text : Text
 public--media_folder--folder_id_parent : Parent folder
 public--media_folder--phyical_path : Name
 
-public--media_asset_folder--physical_path : Folder name
+public--media_asset_folder--physical_path : Directory name
 public--media_asset_folder--access : Visible to
 
 public--media_asset--title : Title
 public--media_asset--description : Description
+description : Description
+by : by
+versions : Versions
+
+files : Files
 
 articles : Articles
 recently_changed_articles : Recently changed
@@ -26,54 +32,61 @@ recommend_article : Recommend article
 new_recommendation : Article recommendation &apos;\1&apos; 
 recommendation_text : \1 wants you to read [appurl=\3]\2[/appurl]
 
+version_created_by : Version created by
+
 article : Article
 edit_article : Edit article
 delete_article : Delete article
+delete_article_versions : Delete article versions
 write_new_article : New article
 used_in_articles : Used in articles
 
 text : Text
 add_text : Add text
 add_content : Add content
-add_container : Add paragraph
+container : Paragraph
+delete_container : Delete block
+add_container : Add block
+edit_container : Edit this block
 edit_text : Edit text
 delete_text : Delete text
 
-media_folder : Media folder
-add_folder : Add folder
-add_subfolder : Add subfolder
-edit_folder : Edit folder
-delete_folder : Delete folder
+new_folder : New directory
+media_folder : Directory
+add_folder : New directory
+add_subfolder : New subdirectory
+create_folder : New directory
+edit_folder : Edit directory
+delete_folder : Delete directory
+toplevel : Top
+folder : Direcory
+parent_folder : Parent directory
+folder_has_been_deleted : Directory has been deleted
+folder_is_empty : empty
 
-container : Paragraph
-add_container : Add paragraph
-edit_container : Edit paragraph
-delete_container : Delete
 add_container_before : Prepend new container
 add_container_after : Append new container
 reorder : Sort
-upload : Media
+upload : Upload
+upload_file : Upload file
 upload_file_to_folder : Upload file
+add_another_file : Add another file
 filetype : File format
 filesize : File size
 created : Created
+changed : Last change
 last_changed : Last change
+last_changed_at : Last changed at
 uploaded_at : Uploaded
 
 edit_asset : Edit file
 delete_asset : Delete file
 edit_image : Edit image
-source_folder : Folder
-
-random_image : Random image
-unpublished_articles : My articles
+source_folder : Directory
 
 article_is_locked : You are not allowed to edit this article
 
 edit_article_permissions : Edit permissions
-
-new_recommendation : Article recommendation &apos;\1&apos; 
-recommendation_text : \1 wants you to read [appurl=\3]\2[/appurl]
 
 text_asset_blank_text : Enter text here
 
@@ -81,7 +94,7 @@ switch_table_view_rows : Table view
 switch_table_view_cols : Column view
 
 edit_attachments : Edit attachments
-select_folder : Select folder
+select_folder : Select directory
 
 asset : File
 version : Version
@@ -93,6 +106,61 @@ download_asset : Download
 bookmark_asset : Bookmark file
 recommend_asset : Send file
 
-recommend_article : Recommend article
-
 article_does_not_exist : Article does not exist or has been deleted
+
+no_permission_to_access_article : You may not edit this article
+article_owned_by_user : Article has been created by {1}&nbsp;
+article_is_in_category : in category {1}
+
+create_articles : Create new articles
+create_article : Create new article
+create_public_folders : Create new folders at top level
+edit_foreign_articles : Edit other users&apos; articles
+view_foreign_article_versions : View versions of other users&apos; articles
+view_foreign_media_versions : View versions of other users&apos; files
+reactivate_foreign_article_versions : Rollback old versions of other users&apos; articles
+reactivate_foreign_media_versions : Rollback old versions of other users&apos; files
+
+file_is_being_uploaded : File is being uploaded
+
+download_as_pdf : Download as PDF
+pdf_created_at : Document created at 
+
+grid_view : View as grid
+table_view : View as table
+
+todo_container : Todo list
+form_container : Form
+
+query_too_short : The query is too short
+
+no_permission_to_edit_folder : You have no permission to edit this directory
+
+media_asset_download_stats : Downloads
+
+file_has_been_uploaded_to : File has been uploaded to
+
+media_statistics : Media statistics
+show_media_statistics : Files
+show_user_statistics : Users
+
+private_folder : Home directory
+home_directory : Home directory
+
+show_version_list : Compare versions
+compare_article_versions : Compare article versions
+from : From
+to : To
+date : Date
+
+cannot_be_edited : You may not edit this content
+
+delete_this_article_partial : Delete this block? 
+
+files_partial : Files
+text_partial : Text
+media_container : Files
+edit_media_container : Edit files
+
+
+

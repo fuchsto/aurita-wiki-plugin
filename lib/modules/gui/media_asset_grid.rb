@@ -17,7 +17,7 @@ module GUI
     # [:thumbnail_size] : Image size to use for thumbnails, like :tiny, :thumb, :small etc. 
     # [:decorator] : Proc to use for decorating thumbnails. Yields Media_Asset instance and its
     #                Element to be decorated. 
-    # Example: 
+    #i0 Example: 
     #
     #   dec = Proc.new { |media_asset, element| 
     #     Context_Menu_Element.new(element, :entity => media_asset) 
@@ -32,7 +32,7 @@ module GUI
       @decorator ||= Proc.new { |e, element|
         element[0].onclick = link_to(e) 
         element[0].add_css_class(:link)
-        Context_Menu_Element.new(element, :entity => e) 
+        Context_Menu_Element.new(e, :show_button => false) { element } 
       }
       params.delete(:decorator)
       params.delete(:thumbnail_size)

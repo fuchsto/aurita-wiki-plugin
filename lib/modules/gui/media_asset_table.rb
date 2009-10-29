@@ -61,10 +61,17 @@ module GUI
     end
 
     def cells
-      icon = link_to(@entity) { @entity.icon() }
+      icon = Context_Menu_Button.new(@entity.dom_id).to_s + link_to(@entity) { @entity.icon() }
       info = HTML.div { 
         HTML.p.name { link_to(@entity) { @entity.title } } +
-        HTML.p.tags { @entity.tags }
+        HTML.p.informal { 
+           tl(:tags) + ': ' << @entity.tags.split(' ').map { |t| link_to(:controller => 'App_Main', 
+                                                                         :action     => :find, 
+                                                                         :key        => t) { t } }.join(' ') 
+        } +
+        HTML.p.informal { 
+           tl(:categories) + ': ' << @entity.categories.map { |c| link_to(c) { c.category_name } }.join(', ') 
+        }
       }
       type    = @entity.extension.upcase
       size    = @entity.filesize
@@ -85,16 +92,16 @@ module GUI
     end
 
     def cells
-      icon = link_to(@entity) { @entity.icon() }
+      icon = Context_Menu_Button.new(@entity.dom_id).to_s + link_to(@entity) { @entity.icon() }
       info = HTML.div { 
         HTML.p.name { link_to(@entity) { @entity.physical_path } } +
         HTML.p.tags { @entity.tags }
       }
-      type    = tl(:folder)
+      type = tl(:folder)
       if @entity.num_files > 0 then
-        size    = "#{@entity.num_files}&nbsp;#{tl(:files)}<br />#{@entity.total_size.filesize}" 
+        size = "#{@entity.num_files}&nbsp;#{tl(:files)}<br />#{@entity.total_size.filesize}" 
       else
-        size    = tl(:folder_is_empty)
+        size = tl(:folder_is_empty)
       end
       created = datetime(@entity.created)
       changed = datetime(@entity.changed)
