@@ -22,7 +22,7 @@ module GUI
           folder = Media_Asset_Folder_Thumbnail.new(e, :size => @thumbnail_size)
           folder[0].onclick = link_to(e, :action => :show_grid) 
           folder[0].add_css_class(:link)
-          Context_Menu_Element.new(e, :show_button => false) { folder }
+          Context_Menu_Element.new(e, :show_button => :prepend) { folder }
         }
       }
     end

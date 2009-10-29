@@ -98,9 +98,9 @@ module Wiki
       @media_asset.checksum    = file_info[:md5_checksum]
       @@logger.log('FILE IMPORT | FS path: ' << @media_asset.fs_path)
       @@logger.log('FILE IMPORT | MIME: ' << @media_asset.mime)
-      @@logger.log('FILE IMPORT | MIME extension: ' << @media_asset.mime_extension)
+      @@logger.log('FILE IMPORT | MIME extension: ' << @media_asset.extension)
       @media_asset.commit
-      extension = @media_asset.mime_extension
+      extension = @media_asset.extension
       FileUtils.move(file_info[:server_filepath], @media_asset.fs_path)
       File.chmod(0777, @media_asset.fs_path)
 
@@ -118,7 +118,7 @@ module Wiki
       end
       @@logger.log('IMAGE: Exiting')
     end # }}}
-    
+
     # Move current version (filename has no version suffix) to last version 
     # (filename has suffix with highest version), e.g.
     #
@@ -166,7 +166,7 @@ module Wiki
         @@logger.log('IMAGE UP | Importing image')
         id  = @media_asset.media_asset_id
 
-        ext = @media_asset.mime_extension.dup.downcase
+        ext = @media_asset.extension.dup.downcase
         ext << '[0]' if ext == 'pdf' # Only render first page of PDF
 
         path = Aurita.project_path(:public, :assets, "asset_#{id}.#{ext}")

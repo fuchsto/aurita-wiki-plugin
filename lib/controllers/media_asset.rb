@@ -10,6 +10,7 @@ Aurita.import_plugin_model :wiki, :media_asset_folder
 Aurita.import_plugin_model :bookmarking, :media_asset_bookmark
 Aurita.import_plugin_module :wiki, :media_asset_renderer
 Aurita.import_plugin_module :wiki, :media_asset_importer
+Aurita.import_plugin_module :wiki, :media_meta_data
 Aurita.import_plugin_module :wiki, 'gui/media_asset_version_list'
 Aurita.import_plugin_module :wiki, 'gui/media_asset_list'
 
@@ -472,6 +473,17 @@ module Wiki
                   :media_asset_folders => [], 
                   :media_assets => latest_pics)
     end # }}}
+
+    def show_metadata
+      media_asset = load_instance()
+      exif = Media_Meta_Data.new(media_asset).exif
+      table = GUI::Table.new(:class   => [ :listing_2_columns ], 
+                             :headers => [ tl(:exif_entry), tl(:exif_value) ])
+      exif.each_pair { |k,v|
+        table.add_row(HTML.b { k },v) unless k == 'NativeDigest'
+      }
+      table
+    end
 
     def edit_info
     # {{{

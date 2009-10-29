@@ -279,7 +279,8 @@ module Wiki
         parent_id = param(:media_folder_id__parent)
         redirect(:element => "folder_children_#{parent_id}", :to => :tree_box_level, :media_folder_id => parent_id)
       end
-      exec_js(js.Aurita.flash(tl(:folder_has_been_deleted)))
+
+      exec_js("Aurita.Wiki.after_media_asset_folder_delete(#{folder_id}); ")
     end
     
     def delete_recursive(media_asset_folder_id, trashbin_folder_id)

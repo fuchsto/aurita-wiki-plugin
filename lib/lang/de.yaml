@@ -162,5 +162,8 @@ text_partial : Text
 media_container : Dateien
 edit_media_container : Dateien bearbeiten
 
+exif_entry : Exif-Eintrag
+exif_value : Wert
 
-
+show : anzeigen
+exif_data_for : Exif-Daten

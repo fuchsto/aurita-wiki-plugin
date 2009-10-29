@@ -46,16 +46,16 @@
         <div class="lore_text_button" style="float: left" onclick="Aurita.call('Media_Asset/perform_bookmark/media_asset_id=<%= media_asset.media_asset_id %>'); Element.toggle(this); "><%= tl(:bookmark_file) %></div>
         <div class="lore_text_button" style="float: left" onclick="resizeable_popup(500,500,'<%= media_asset.url %>');">+</div>
       </div>
-      <div style="width: 320px; padding: 3px; background-color: white; text-align: center; ">
+      <div style="width: 320px; padding: 0px; background-color: white; text-align: center; ">
         <img src="<%= media_asset.icon_path(:size => :medium) %>" />
       </div>
     </a>
   <% end %>
 
-  <div style="float: left; ">
+  <div style="float: left; " id="media_data_table">
   <table class="listing_2_columns">
     <tr>
-      <td width="170">
+      <td width="180">
         <b><%= tl(:category) %></b> 
       </td>
       <td>
@@ -157,7 +157,23 @@
         </div>
       </td>
     </tr>
+
+<% if media_asset.extension == 'jpg' then %>
+    <tr>
+      <td>
+        <b>EXIF</b>
+      </td>
+      <td>
+        <div id="content_tag_list" style="width: 320px; ">
+          <%= link_to(media_asset, :action => :show_metadata, :element => :media_meta_data) { tl(:show) } %>
+        </div>
+      </td>
+    </tr>
+<% end %>
+
   </table>
+
+  <div id="media_meta_data"></div>
   </div>
 
   <div style="clear: both;"></div>
