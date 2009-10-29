@@ -14,9 +14,9 @@
 
   <div id="text_asset_form" class="text_asset_editor">
 
-    <div style="z-index: 900">
-      <img class="link" onclick="Aurita.submit_form('container_form_<%= text_asset_id %>');" src="/aurita/images/icons/save.gif" />
-      <img class="link" onclick="Aurita.Editor.save_all(); <%= gui.link_to(article) %>" src="/aurita/images/icons/close.gif" />
+    <div style="z-index: 900; padding: 3px; padding-bottom: 5px; ">
+      <%= gui.button(:icon => 'save.gif',  :onclick => "Aurita.submit_form('container_form_#{text_asset_id}');") %>
+      <%= gui.button(:icon => 'close.gif', :onclick => "Aurita.Editor.save_all();" + gui.link_to(article) ) %>
     </div>
    
     <textarea name="public.text_asset.text" class="fullwidth full editor" style="width: 100%; clear: both; " id="lore_textarea_<%= text_asset_id %>"><%= text %></textarea>
