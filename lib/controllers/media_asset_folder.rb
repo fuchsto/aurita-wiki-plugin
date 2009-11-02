@@ -66,9 +66,7 @@ module Wiki
     end
     
     def tree_box_body
-      return unless Aurita.user.is_registered? 
       public_folders  = Media_Asset_Folder.hierarchy_level()
-
       user_folder     = Media_Asset_Folder.hierarchy_level(:filter    => (Media_Asset_Folder.user_group_id == Aurita.user.user_group_id), 
                                                            :parent_id => 100)
       HTML.div.media_asset_folder_tree_box { 

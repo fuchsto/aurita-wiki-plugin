@@ -20,11 +20,6 @@ module Wiki
 
     use_category_map(Media_Asset_Folder_Category, :media_asset_folder_id => :category_id)
 
-    def self.accessible
-      return super() unless Aurita.user.is_admin? 
-      return true
-    end
-
     def label
       physical_path
     end
@@ -167,7 +162,8 @@ module Wiki
       indent    ||= 0
       parent_id ||= 0
       hierarchy = []
-      constraints = (Media_Asset_Folder.accessible) & (Media_Asset_Folder.trashbin == 'f') 
+      constraints = (Media_Asset_Folder.accessible) 
+      constraints = (constraints & (Media_Asset_Folder.trashbin == 'f'))
       constraints = (constraints & (Media_Asset_Folder.media_folder_id__parent == parent_id)) 
       constraints = (constraints & filter) if filter
       if params[:exclude_folder_ids] && params[:exclude_folder_ids].length > 0 then
