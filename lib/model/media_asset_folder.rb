@@ -132,7 +132,7 @@ module Wiki
     alias folders child_nodes
 
     def has_subfolders? 
-      !Media_Asset_Folder.find(1).with(Media_Asset_Folder.media_folder_id__parent == media_asset_folder_id).entity.nil?
+      !Media_Asset_Folder.find(1).with(Media_Asset_Folder.accessible & (Media_Asset_Folder.media_folder_id__parent == media_asset_folder_id)).entity.nil?
     end
 
     def is_child_of?(folder)
