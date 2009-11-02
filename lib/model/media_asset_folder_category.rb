@@ -55,10 +55,10 @@ module Main
       end
       raise ::Exception.new('Folder does not exist') unless media_asset_folder
   
-      return false unless Aurita.user.category_ids.first
+      return false unless Aurita.user.readable_category_ids.first
       return false unless media_asset_folder.category_ids.first
 
-      common_cats = (Aurita.user.category_ids) & (media_asset_folder.category_ids)
+      common_cats = (Aurita.user.readable_category_ids) & (media_asset_folder.category_ids)
       return common_cats && common_cats.first
     end
     alias may_view_folder may_view_folder? 

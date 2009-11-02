@@ -408,16 +408,13 @@ module Wiki
       return unless media_asset 
 
       if media_asset.deleted then
-        puts 'Datei wurde gel&ouml;scht'
+        puts tl(:file_has_been_deleted)
         return
       end
 
-      author   = User_Profile.load(:user_group_id => media_asset.user_group_id)
-      if(!Aurita.user.may_view_content?(media_asset.content_id)) then
-        puts 'Keine Berechtigung <br /><span class="tag">[ angelegt von Benutzer ' << author.user_group_name 
-        puts ' in Kategorie ' << media_asset.category.category_name  if media_asset.category
-        puts ' ]</span>'
-        return
+      author = User_Profile.load(:user_group_id => media_asset.user_group_id)
+      if(!Aurita.user.may_view_content?(media_asset)) then
+        return HTML.span { tl(:no_permission_to_access_content) } 
       end
       
       # media_asset.increment_hits
@@ -426,9 +423,9 @@ module Wiki
 
       Tag_Relevance.add_hits_for(media_asset)
 
-      Content_Access.create(:content_id => media_asset.content_id, 
+      Content_Access.create(:content_id    => media_asset.content_id, 
                             :user_group_id => Aurita.user.user_group_id, 
-                            :res_type => 'MEDIA_ASSET')
+                            :res_type      => 'MEDIA_ASSET')
 
       articles = Article.select { |a|
         a.where(Article.content_id.in( 
@@ -480,7 +477,7 @@ module Wiki
       table = GUI::Table.new(:class   => [ :listing_2_columns ], 
                              :headers => [ tl(:exif_entry), tl(:exif_value) ])
       exif.each_pair { |k,v|
-        table.add_row(HTML.b { k },v) unless k == 'NativeDigest'
+        table.add_row(HTML.b { k },v) unless [ 'NativeDigest', 'UserComment' ].include?(k)
       }
       table
     end

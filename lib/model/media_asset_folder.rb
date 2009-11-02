@@ -45,8 +45,6 @@ module Wiki
       path 
     end
 
-    public
-
     # Returns sizes of all Media_Assets contained in this directory, 
     # ordered by file size, as pair of [ media_asset_id, filesize ]
     # Example
@@ -91,7 +89,9 @@ module Wiki
     def self.media_assets_of(folder_id, params={})
       sort     = params[:sort]
       sort_dir = params[:sort_dir].to_sym 
-      assets   = Media_Asset.all_with((Media_Asset.media_folder_id == folder_id) & (Media_Asset.deleted == 'f') & (Media_Asset.accessible))
+      assets   = Media_Asset.all_with((Media_Asset.media_folder_id == folder_id) & 
+                                      (Media_Asset.deleted == 'f') & 
+                                      (Media_Asset.accessible))
       assets.sort_by(sort, sort_dir)
       assets.entities
     end
@@ -108,7 +108,7 @@ module Wiki
       sort     ||= :physical_path
       sort_dir ||= :asc
       folders = Media_Asset_Folder.all_with((Media_Asset_Folder.trashbin == 'f') & 
-                                            ((Media_Asset_Folder.access == 'PUBLIC') | (Media_Asset_Folder.accessible)) & 
+                                            (Media_Asset_Folder.accessible) & 
                                             (Media_Asset_Folder.media_folder_id__parent == folder_id))
       folders.sort_by(sort, sort_dir.to_sym)
       entries = folders.entities
@@ -167,7 +167,7 @@ module Wiki
       indent    ||= 0
       parent_id ||= 0
       hierarchy = []
-      constraints = (Media_Asset_Folder.trashbin == 'f') 
+      constraints = (Media_Asset_Folder.accessible) & (Media_Asset_Folder.trashbin == 'f') 
       constraints = (constraints & (Media_Asset_Folder.media_folder_id__parent == parent_id)) 
       constraints = (constraints & filter) if filter
       if params[:exclude_folder_ids] && params[:exclude_folder_ids].length > 0 then

@@ -68,14 +68,13 @@ module Wiki
     def tree_box_body
       return unless Aurita.user.is_registered? 
       public_folders  = Media_Asset_Folder.hierarchy_level()
-      public_folders.delete_if { |f| !(Aurita.user.may_view_folder?(f[:folder])) } 
 
-      user_folder     = Media_Asset_Folder.hierarchy_level(:filter => (Media_Asset_Folder.user_group_id == Aurita.user.user_group_id), 
+      user_folder     = Media_Asset_Folder.hierarchy_level(:filter    => (Media_Asset_Folder.user_group_id == Aurita.user.user_group_id), 
                                                            :parent_id => 100)
       HTML.div.media_asset_folder_tree_box { 
         view_string(:media_asset_folder_box, 
-                    :user_folder => user_folder, 
-                    :public_folders => public_folders)
+                    :user_folder    => user_folder, 
+                    :public_folders => public_folders) 
       }
     end
 
@@ -93,7 +92,7 @@ module Wiki
       end
 
       folders   = Media_Asset_Folder.hierarchy_level(:parent_id => parent_id, :indent => indent)
-      folders.delete_if { |f| !(Aurita.user.may_view_folder?(f[:folder])) || Aurita.user.home_dir == f[:folder] } 
+      folders.delete_if { |f| Aurita.user.home_dir == f[:folder] } 
       if folders.length < 1 then 
         puts '<!-- -->'
         return
@@ -113,7 +112,6 @@ module Wiki
       folders = Media_Asset_Folder.all_with((Media_Asset_Folder.trashbin == 'f') & 
                                             (Media_Asset_Folder.media_folder_id__parent == param(:media_folder_id__parent)))
       folders = folders.sort_by(:physical_path).entities
-      folders.delete_if { |f| !(Aurita.user.may_view_folder?(f)) } 
 
       puts Hierarchy_Node_Select_Entry.new(:level => param(:level), 
                                            :name => Media_Asset.media_folder_id.to_s, 
@@ -311,15 +309,13 @@ module Wiki
       sort_dir      = param(:sort_dir, :asc)
       assets  = []
       folders = []
-      if Aurita.user.may_view_folder?(folder) then
-        folder_sort_params = {}
-        if sort == :title then
-          folder_sort_params[:sort]     = :physical_path  
-          folder_sort_params[:sort_dir] = sort_dir
-        end
-        folders = folder.media_asset_folders(folder_sort_params)
-        assets  = folder.media_assets(:sort => sort, :sort_dir => sort_dir)
+      folder_sort_params = {}
+      if sort == :title then
+        folder_sort_params[:sort]     = :physical_path  
+        folder_sort_params[:sort_dir] = sort_dir
       end
+      folders = folder.media_asset_folders(folder_sort_params)
+      assets  = folder.media_assets(:sort => sort, :sort_dir => sort_dir)
 
       table         = GUI::Media_Asset_Table.new(folders + assets)
       headers       = [ '&nbsp;' ] 
@@ -358,15 +354,14 @@ module Wiki
       sort_dir        = param(:sort_dir, :asc)
       folders = []
       assets  = []
-      if Aurita.user.may_view_folder?(folder) then
-        folder_sort_params = {}
-        if sort == :title then
-          folder_sort_params[:sort]     = :physical_path  
-          folder_sort_params[:sort_dir] = sort_dir
-        end
-        folders = folder.media_asset_folders(folder_sort_params)
-        assets = folder.media_assets(:sort => sort, :sort_dir => sort_dir)
+
+      folder_sort_params = {}
+      if sort == :title then
+        folder_sort_params[:sort]     = :physical_path  
+        folder_sort_params[:sort_dir] = sort_dir
       end
+      folders = folder.media_asset_folders(folder_sort_params)
+      assets = folder.media_assets(:sort => sort, :sort_dir => sort_dir)
     
       folder_grid = Media_Asset_Folder_Grid.new(folders)
       asset_grid  = Media_Asset_Grid.new(assets)

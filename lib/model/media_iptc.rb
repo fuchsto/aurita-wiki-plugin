@@ -1,6 +1,6 @@
 
 require('aurita/model')
-
+=begin
 module Aurita
 module Plugins
 module Wiki
@@ -14,4 +14,4 @@ module Wiki
 end
 end
 end
-
+=end
