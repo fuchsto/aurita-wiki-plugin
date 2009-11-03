@@ -158,7 +158,10 @@ module Wiki
 
       exec_js('Aurita.Main.init_autocomplete_tags();')
 
-      GUI::Async_Upload_Form_Decorator.new(form)
+      element = GUI::Async_Upload_Form_Decorator.new(form)
+      element = Page.new(:header => tl(:upload_file)) { element } if param(:element) == 'app_main_content'
+
+      return element
     end # }}}
 
     def add_profile_image
