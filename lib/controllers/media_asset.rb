@@ -216,6 +216,9 @@ module Wiki
       begin
         param(:upload_file).each { |file_uploaded|
           instance = super()
+
+          raise ::Exception("Could not create Media_Asset instance") unless instance
+
           # Instance is created in DB but following attributes are 
           # not valid until set in Media_Asset_Importer: 
           #  - mime
@@ -231,7 +234,7 @@ module Wiki
           Media_Asset_Importer.new(instance).import(file_info)
           # Now, after having imported the file via Media_Asset_Importer, 
           # we have a valid instance. 
-          if instance && param(:media_container_id) then
+          if param(:media_container_id) then
             Media_Container_Entry.create(:media_container_id => param(:media_container_id),
                                          :media_asset_id     => instance.media_asset_id)
           end
@@ -442,7 +445,7 @@ module Wiki
       versions = Media_Asset_Version.select { |v| 
         v.join(Media_Asset).using(:media_asset_id) { |ma| 
           ma.where(Media_Asset_Version.media_asset_id == media_asset_id)
-          ma.order_by(Media_Asset_Version.version, :asc)
+          ma.order_by(Media_Asset_Version.version, :desc)
         }
       }.to_a
 
