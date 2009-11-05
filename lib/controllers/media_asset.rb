@@ -220,7 +220,7 @@ module Wiki
         param(:upload_file).each { |file_uploaded|
           instance = super()
 
-          raise ::Exception("Could not create Media_Asset instance") unless instance
+          raise ::Exception.new("Could not create Media_Asset instance") unless instance
 
           # Instance is created in DB but following attributes are 
           # not valid until set in Media_Asset_Importer: 
