@@ -49,10 +49,10 @@ module Wiki
       article_tags     = view_string(:editable_tag_list, :content => article)
       article_version  = Article_Version.value_of.max(:version).with(Article_Version.article_id == article.article_id).to_i
       
-      author_user      = User_Group.load(:user_group_id => article.user_group_id) 
+      author_user      = User_Profile.load(:user_group_id => article.user_group_id) 
       latest_version   = article.latest_version
       if latest_version then
-        last_change_user = User_Group.load(:user_group_id => article.latest_version.user_group_id) 
+        last_change_user = User_Profile.load(:user_group_id => article.latest_version.user_group_id) 
       else
         last_change_user = author_user
       end

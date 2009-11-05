@@ -16,13 +16,13 @@
           <tr>
             <td><%= tl(:created) %></td>
             <td>
-              <%= gui.datetime(article.created) %> | <%= gui.link_to(author_user) { author_user.user_group_name } %> 
+              <%= gui.datetime(article.created) %> | <%= gui.link_to(author_user) { author_user.label } %> 
             </td>
           </tr>
           <tr>
             <td><%= tl(:last_changed) %></td>
             <td>
-              <%= gui.datetime(article.changed) %> | <%= gui.link_to(last_change_user) { last_change_user.user_group_name } %>
+              <%= gui.datetime(article.changed) %> | <%= gui.link_to(last_change_user) { last_change_user.label } %>
             </td>
           </tr>
           <tr>

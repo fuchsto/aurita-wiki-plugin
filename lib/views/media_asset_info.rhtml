@@ -121,7 +121,8 @@
         <b><%= tl(:uploaded_at) %></b> 
       </td>
       <td>
-        <%= Aurita::Datetime.new(media_asset.created).string("%d.%m.%Y - %H:%M:%S") + ' ' << tl(:by) + ' ' << gui.link_to(owner_user_group) { owner_user_group.user_group_name } %>
+      <%= Aurita::Datetime.new(media_asset.created).string("%d.%m.%Y - %H:%M:%S") + ' ' %>
+      <%= tl(:by) + ' ' << gui.link_to(owner_user_group) { owner_user_group.label } if owner_user_group%>
       </td>
     </tr>
 
