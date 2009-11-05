@@ -222,7 +222,7 @@ module Wiki
     def icon(size=:tiny, version=nil)
       return "<img src=\"/aurita/assets/#{size}/asset_#{media_asset_id}.jpg?#{checksum}\" />" if has_preview? && version.nil?
       return "<img src=\"/aurita/assets/#{size}/asset_#{media_asset_id}.#{version}.jpg?#{checksum}\" />" if has_preview? 
-      return "<img src=\"/aurita/assets/#{size}/asset_#{mime_extension}.jpg\" />"
+      return "<img src=\"/aurita/assets/#{size}/asset_#{extension}.jpg\" />"
     end
 
     # Absolute URL path to file. 

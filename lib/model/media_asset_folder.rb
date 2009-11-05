@@ -40,6 +40,20 @@ module Wiki
       path 
     end
 
+    def is_user_folder(user=nil)
+      if user then
+        (access == 'PRIVATE' && 
+         user_group_id == Aurita.user.user_group_id &&
+         media_folder_id__parent == 100)
+      else
+        access == 'PRIVATE'
+      end
+    end
+    alias is_user_folder_of is_user_folder
+    alias is_user_folder? is_user_folder
+    alias is_home_dir? is_user_folder
+    alias is_home_dir_of? is_user_folder
+
     # Returns sizes of all Media_Assets contained in this directory, 
     # ordered by file size, as pair of [ media_asset_id, filesize ]
     # Example

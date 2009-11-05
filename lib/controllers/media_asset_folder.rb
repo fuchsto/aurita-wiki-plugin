@@ -53,8 +53,8 @@ module Wiki
 
       body = [ ]
       if Aurita.user.may(:create_public_folders) then
-        add_folder = HTML.a(:class => :icon, 
-                           :onclick => "Aurita.load({ action: 'Wiki::Media_Asset_Folder/add/'});") { 
+        add_folder = HTML.a(:class   => :icon, 
+                            :onclick => "Aurita.load({ action: 'Wiki::Media_Asset_Folder/add/'});") { 
           HTML.img(:src => '/aurita/images/icons/add_folder.gif', :class => :icon) + 
           tl(:add_folder) 
         } 
@@ -67,7 +67,8 @@ module Wiki
     
     def tree_box_body
       public_folders  = Media_Asset_Folder.hierarchy_level()
-      user_folder     = Media_Asset_Folder.hierarchy_level(:filter    => (Media_Asset_Folder.user_group_id == Aurita.user.user_group_id), 
+      user_folder     = Media_Asset_Folder.hierarchy_level(:filter    => ((Media_Asset_Folder.access == 'PRIVATE') & 
+                                                                          (Media_Asset_Folder.user_group_id == Aurita.user.user_group_id)), 
                                                            :parent_id => 100)
       HTML.div.media_asset_folder_tree_box { 
         view_string(:media_asset_folder_box, 
