@@ -158,7 +158,10 @@ module Wiki
 
       exec_js('Aurita.Main.init_autocomplete_tags();')
 
-      GUI::Async_Upload_Form_Decorator.new(form)
+      element = GUI::Async_Upload_Form_Decorator.new(form)
+      element = Page.new(:header => tl(:upload_file)) { element } if param(:element) == 'app_main_content'
+
+      return element
     end # }}}
 
     def add_profile_image
@@ -421,7 +424,7 @@ module Wiki
       end
       
       # media_asset.increment_hits
-      owner_user_group = User_Group.find(1).with(User_Group.user_group_id == media_asset.user_group_id).entity
+      owner_user_group = User_Profile.find(1).with(User_Group.user_group_id == media_asset.user_group_id).entity
       media_asset_comments = render_controller(Content_Comment_Controller, :box, :content_id => media_asset.content_id)
 
       Tag_Relevance.add_hits_for(media_asset)

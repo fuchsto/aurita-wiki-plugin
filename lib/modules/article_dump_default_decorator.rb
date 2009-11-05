@@ -62,11 +62,11 @@ module Wiki
       }
       @hierarchy[article_content_id] = article_set
 
-      author_user             = User_Group.load(:user_group_id => article.user_group_id)
-      version_author_user     = User_Group.load(:user_group_id => @version_entry.user_group_id)
+      author_user             = User_Profile.load(:user_group_id => article.user_group_id)
+      version_author_user     = User_Profile.load(:user_group_id => @version_entry.user_group_id)
       latest_version          = article.latest_version
       if latest_version then
-        last_change_user = User_Group.load(:user_group_id => article.latest_version.user_group_id) 
+        last_change_user = User_Profile.load(:user_group_id => article.latest_version.user_group_id) 
       else
         last_change_user = author_user
       end
