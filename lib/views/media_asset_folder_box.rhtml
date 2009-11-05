@@ -1,10 +1,10 @@
 
 <% 
-    is_user_folder = true
     (user_folder + public_folders).each do |hierarchy_entry| 
       folder = hierarchy_entry[:folder]
       indent = hierarchy_entry[:indent]
-      indent_width = indent.to_i * 7
+      indent_width   = indent.to_i * 7
+      is_user_folder = folder.is_home_dir_of?(Aurita.user)
 %>
       <div <%= gui.context_menu(:entity => folder, :id => "folder_entry_#{folder.media_asset_folder_id}") %>
            class="box_hierarchy_entry box_hierarchy_entry_level_0" 
@@ -27,6 +27,5 @@
      <div id="folder_children_<%= folder.media_asset_folder_id %>"></div>
 
 <% 
-    is_user_folder = false
   end 
 %>
