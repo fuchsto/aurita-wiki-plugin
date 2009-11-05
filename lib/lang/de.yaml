@@ -157,10 +157,12 @@ cannot_be_edited : Sie k&ouml;nnen diesen Inhalt nicht bearbeiten
 
 delete_this_article_partial : Diesen Absatz l&ouml;schen? 
 
+add_files_partial : Neuer Dateianhang
+add_text_partial : Neuer Absatz
 files_partial : Dateien
 text_partial : Text
 media_container : Dateien
-edit_media_container : Dateien bearbeiten
+edit_media_container : Dateianhang bearbeiten
 
 exif_entry : Exif-Eintrag
 exif_value : Wert

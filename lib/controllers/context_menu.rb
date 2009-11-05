@@ -23,7 +23,8 @@ module Wiki
       entry(:bookmark_article, "Bookmarking::Bookmark/perform_add/type=ARTICLE&url=article--#{article_id}&title=#{article.title}&user_id=#{Aurita.user.user_group_id}", targets)
       entry(:recommend_article, "Content_Recommendation/editor/type=ARTICLE&content_id=#{content_id}")
       if Aurita.user.may_edit_content?(article) then 
-        entry(:add_container, "Wiki::Container/add/content_id=#{content_id}", targets) unless param(:no_inline)
+        switch_to_entry(:add_text_partial, "Wiki::Text_Asset/perform_add/content_id=#{content_id}") unless param(:no_inline)
+        switch_to_entry(:add_files_partial, "Wiki::Media_Container/perform_add/content_id=#{content_id}") unless param(:no_inline)
         if Aurita.user.is_admin? or Aurita.user.user_group_id == article.user_group_id then 
           entry(:edit_article, "Wiki::Article/update/article_id=#{article_id}", targets)
           entry(:edit_article_permissions, "Content_Permissions/editor/content_id=#{content_id}", targets)
@@ -118,8 +119,8 @@ module Wiki
 
       targets = { "article_#{param(:article_id)}" => "Wiki::Article/show/article_id=#{param(:article_id)}" }
  
-#      load_entry(:edit_attachments, { ("container_#{container_clicked.asset_id_child}_attachments") => "Wiki::Container/edit_attachments/asset_id_child=#{asset_id_child}&content_id_parent=#{content_id_parent}&text_asset_id=#{text_asset_id}" } )
-      entry(:add_container,     "Wiki::Container/add/content_id=#{content_id_parent}", targets)
+      switch_to_entry(:add_text_partial, "Wiki::Text_Asset/perform_add/content_id=#{content_id_parent}")
+      switch_to_entry(:add_files_partial, "Wiki::Media_Container/perform_add/content_id=#{content_id_parent}")
       entry(:delete_container,  "Wiki::Container/delete/asset_id_child=#{asset_id_child}&content_id_parent=#{content_id_parent}&asset_id=#{asset_id_child}", {})
       switch_to_entry(:reorder, "Wiki::Article/show_sortable/article_id=#{param(:article_id)}&reorder=1")
     end
