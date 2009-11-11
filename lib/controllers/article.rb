@@ -506,11 +506,15 @@ module Wiki
                (Article.content_id.in(Content_Category.select(:content_id) { |cid| 
                    cid.where(Content_Category.category_id == params[:category_id]) 
                } ))
-      list = Article_Controller.list(clause)
-      return Element.new(:content => list) if list
+      article_list = list(clause, :order => [ Article.changed, :desc ])
+      return Element.new(:content => article_list) if article_list
     end
 
-    def list(clause=:true)
+    def list(clause=:true, params={})
+      order       = params[:order][0]
+      order_dir   = params[:order][1]
+      order     ||= :title
+      order_dir ||= :asc
       articles = Article.all_with(clause).ordered_by(:title, :asc).entities
       articles.delete_if { |a| 
         !(Aurita.user.may_view_content?(a)) 

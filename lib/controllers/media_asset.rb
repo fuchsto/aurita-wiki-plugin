@@ -155,6 +155,7 @@ module Wiki
       form[Content.tags] = Tag_Autocomplete_Field.new(:name => Content.tags.to_s, :label => tl(:tags))
       form[Content.tags].required!
       form['upload_file[]'].required!
+      form[Media_Asset.title].required = false
 
       exec_js('Aurita.Main.init_autocomplete_tags();')
 
@@ -218,6 +219,7 @@ module Wiki
 
       begin
         param(:upload_file).each { |file_uploaded|
+          param[:title] = file_uploaded[:filename] unless param(:title)
           instance = super()
 
           raise ::Exception.new("Could not create Media_Asset instance") unless instance

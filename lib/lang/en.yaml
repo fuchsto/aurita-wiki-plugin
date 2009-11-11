@@ -71,7 +71,7 @@ upload : Upload
 upload_file : Upload file
 upload_file_to_folder : Upload file
 add_another_file : Add another file
-filetype : File format
+filetype : Type
 filesize : File size
 created : Created
 changed : Last change
