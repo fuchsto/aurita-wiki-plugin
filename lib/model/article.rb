@@ -94,7 +94,7 @@ module Wiki
     def text_assets
       text_assets = []
       Container.all_with(Container.content_id_parent == content_id).sort_by(:sortpos, :asc).entities.each { |c|
-        text_assets += Text_Asset.all_with(Asset.content_id == c.content_id_child).entities
+        text_assets += Text_Asset.all_with(Asset.asset_id == c.asset_id_child).entities
       }
       text_assets
     end

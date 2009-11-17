@@ -168,7 +168,7 @@ module Wiki
       return ['rar','zip','tgz','bz','7z'].include?(extension)
     end
     def is_image?
-      return (mime.to_s[0..5] == 'image/' || ['jpg', 'jpeg', 'png', 'gif', 'svg', 'psd', 'postscript', 'eps', 'tif', 'tiff', 'tga', 'ai'].include?(extension))
+      return (mime.to_s[0..5] == 'image/' || [ 'bmp', 'jpg', 'jpeg', 'png', 'gif', 'svg', 'psd', 'postscript', 'eps', 'tif', 'tiff', 'tga', 'ai' ].include?(extension))
     end
     def is_vector?
       return ['ai', 'svg', 'eps'].include?(extension)
