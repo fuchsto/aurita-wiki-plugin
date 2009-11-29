@@ -175,26 +175,31 @@ module Wiki
     end
 
     def find_full(params)
-      key = params[:key].to_s.strip
-      if key.length < 2 then
-        return HTML.p { tl(:query_too_short) }
-      else
-      # coder = HTMLEntities.new()
-      # key   = coder.encode(key, :named)
-        tags  = key.split(' ')
-        tag   = "%#{tags[-1]}%"
+      key   = params[:key].to_s.strip
+      tags  = key.split(' ')
+      tag   = "%#{tags.last}%"
 
-        constraints = Article.title.ilike(tag)
-        articles    = Article.all_with((Article.has_tag(tags) | 
-                                        Article.title.ilike("%#{tags.join(' ')}%")
-                                       ) & 
-                                       Article.is_accessible).sort_by(Wiki::Article.article_id, :desc).entities
-        return unless articles.first
-        box        = Box.new(:type => :none, :class => :topic_inline)
-        box.body   = view_string(:article_list, :articles => articles)
-        box.header = tl(:articles)
-        return box
-      end
+      constraints = Article.title.ilike(tag)
+      articles    = Article.all_with((Article.has_tag(tags) | 
+                                      Article.title.ilike("%#{key}%")
+                                     ) & 
+                                     Article.is_accessible).sort_by(Wiki::Article.article_id, :desc).entities
+
+      key.to_named_html_entities!
+      articles   += Article.all_with(Article.is_accessible & Article.content_id.in(
+                                       Container.select(Container.content_id_parent) { |cid|
+                                         cid.join(Text_Asset).on(Container.asset_id_child == Text_Asset.asset_id) { |ta|
+                                           ta.where(Text_Asset.text.ilike("%#{key}%"))
+                                         }}
+                                     )).sort_by(Article.article_id, :desc).entities
+
+
+      return unless articles.first
+
+      box        = Box.new(:type => :none, :class => :topic_inline)
+      box.body   = view_string(:article_list, :articles => articles)
+      box.header = tl(:articles) 
+      return box
     end
 
     def own_articles_box
