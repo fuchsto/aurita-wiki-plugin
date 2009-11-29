@@ -97,6 +97,8 @@ module Wiki
       case part
       when Text_Asset: 
         decorate_text(part.text, pdf)
+      when Media_Container: 
+        decorate_images(part.media_assets, pdf)
       end
     end
 
@@ -124,15 +126,13 @@ module Wiki
               )
     end
 
-    def decorate_images(article, images, pdf)
+    def decorate_images(images, pdf)
       media_assets = []
       return unless images.first
-      left = true
       images.each { |media_asset| 
-        # render image
-        ma_id = media_asset.media_asset_id
-        pdf.move_down(5)
-        pdf.bounding_box([0,0]) do 
+        if media_asset.has_preview? then
+          ma_id = media_asset.media_asset_id
+          pdf.move_down(5)
           begin 
             pdf.image(Aurita.project.base_path + "public/assets/large/asset_#{ma_id}.jpg", :width => 200)
           rescue ::Exception => ignore
@@ -140,53 +140,15 @@ module Wiki
           end
           if media_asset.title then
             pdf.move_down(5)
-#           pdf.text(media_asset.title, :size => @style[:font_size], :style => :bold)
+            pdf.text(media_asset.title, :size => @style[:font_size], :style => :bold)
           end
           if media_asset.description then
             pdf.move_down(5)
-#           pdf.text(media_asset.description, :size => @style[:font_size], :style => :italic)
+            pdf.text(media_asset.description, :size => @style[:font_size], :style => :italic)
           end
+          pdf.move_down(14)
         end
-        pdf.move_down(14)
       }
-    end
-
-    def decorate_todo(todo, container_params, pdf)
-      return unless todo
-      # render todo lists
-    end
-
-    def decorate_form(fa, text_asset, article, container_params)
-      return unless fa
-      Aurita::Main.import_model fa.custom_model_name.downcase
-      model_register = Form_Generator::Model_Register.find(1).with(Form_Generator::Model_Register.name == fa.custom_model_name).entity
-
-      model_klass = Aurita::Main.const_get(fa.custom_model_name)
-      Aurita::Main.import_controller(fa.custom_model_name.downcase)
-      model_controller = Aurita::Main.const_get(fa.custom_model_name+'_Controller')
-
-      table_view = @viewparams[fa.custom_model_name]
-      if(table_view) then 
-        form_template = @templates[('form_view_' << table_view).intern]
-        form_element_template = @templates[('form_element_' << table_view).intern]
-      else 
-        form_template = @templates[:form_view_rows]
-        form_element_template = @templates[:form_element_rows]
-      end
-      
-      form_asset_entries = []
-      model_klass.all.ordered_by(fa.order_by, :asc).each { |entity|
-        form = model_controller.instance_form(entity)
-        form.element_template = Lore::GUI::ERB_Template.new(form_element_template)
-        form.form_template = Lore::GUI::ERB_Template.new('form_table_blank.rhtml')
-        form_asset_entries << { :string => form.string , :entity => entity }
-      }
-
-      # TODO: render form
-    end
-
-    def recode(txt)
-      txt.to_s
     end
     
   end
