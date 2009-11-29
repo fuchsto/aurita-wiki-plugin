@@ -1,7 +1,9 @@
 
-require('aurita/plugin_controller')
+require('aurita')
+Aurita.import_plugin_module :wiki, :article_hierarchy_default_decorator
+
 begin
-require('hpricot')
+# require('hpricot')
 require('prawn')
 require('prawn/format')
 require 'htmlentities'
@@ -30,7 +32,7 @@ module Aurita
 module Plugins
 module Wiki
 
-  class Article_Hierarchy_PDF_Decorator < Plugin_Controller
+  class Article_Hierarchy_PDF_Decorator < Article_Hierarchy_Default_Decorator
   include Aurita::GUI::Helpers
   include Aurita::GUI::I18N_Helpers
   include Aurita::GUI::Datetime_Helpers
@@ -64,19 +66,9 @@ module Wiki
   protected
 
     def decorate_article
-      article_set = @hierarchy.values.first
-      article = article_set[:instance]
-      text_assets = article_set[:text_assets]
-      
-      article_version = Article_Version.value_of.max(:version).with(Article_Version.article_id == article.article_id).to_i
-      
-      author_user = User_Group.load(:user_group_id => article.user_group_id) 
-      latest_version = article.latest_version
-      if latest_version then
-        last_change_user = User_Group.load(:user_group_id => article.latest_version.user_group_id) 
-      else
-        last_change_user = author_user
-      end
+      article     = @hierarchy[:instance]
+      parts       = @hierarchy[:parts]
+      @article    = article
       
       Prawn::Document.generate("/tmp/article_#{article.article_id}.pdf", 
                                :page_size    => 'A4', 
@@ -94,37 +86,18 @@ module Wiki
         pdf.move_down(3)
         pdf.text(recode(tl(:pdf_created_at) + ' ' << datetime(DateTime.now)), :size => 8)
         pdf.move_down(10)
-        text_assets.each { |ta|
-          decorate_container(ta, article, pdf)
+        parts.each { |p|
+          decorate_part(p[:instance], article, pdf)
         }
       end
       
     end
 
-    def decorate_container(text_asset, article, pdf)
-      ta = text_asset[:text_asset]
-
-      container_images = []
-      container_movies = []
-      container_files  = [] 
-      if text_asset[:media_assets].length > 0 then
-        text_asset[:media_assets].each { |ma|
-          case ma.doctype
-          when :image then
-            container_images << ma
-          when :movie then
-            container_movies << ma
-          else
-            container_files << ma
-          end
-        }
+    def decorate_part(part, article, pdf)
+      case part
+      when Text_Asset: 
+        decorate_text(part.text, pdf)
       end
-  
-      decorate_text(ta.text, pdf)
-      decorate_images(article, container_images, pdf) if container_images
-    # decorate_files(container_files, container_params, pdf) if container_files 
-    # decorate_form(text_asset[:form], ta, article, container_params, pdf) if text_asset[:form]
-    # decorate_todo(text_asset[:todo], container_params, pdf) if text_asset[:todo]
     end
 
     def decorate_text(text, pdf)

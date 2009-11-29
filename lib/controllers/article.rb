@@ -335,8 +335,6 @@ module Wiki
 
       @params[:article_id] = latest_article_id
 
-      STDERR.puts "show own latest: Article is #{article.inspect}"
-
       begin
         edit_inline_content_id = Container.select { |c| 
           c.where(Container.content_id_parent == article.content_id)
@@ -354,7 +352,7 @@ module Wiki
       return unless Aurita.user.may_view_content?(article.content_id)
 
       article_id = article.article_id
-      hierarchy  = Article_Full_Hierarchy_Visitor.new.visit_article(article)
+      hierarchy  = Article_Full_Hierarchy_Visitor.new(article).hierarchy
       decorator  = Article_Hierarchy_PDF_Decorator.new(hierarchy)
       decorator.run
 
