@@ -18,7 +18,7 @@
   <div class="box_body" >
   <% if media_asset.is_video? then %>
     <embed 
-      src="/aurita/mediaplayer.swf" 
+      src="/aurita/shared/mediaplayer.swf" 
       width="420" 
       height="350"
       allowscriptaccess="always" 
@@ -30,7 +30,7 @@
   <% elsif media_asset.extension == 'mp3' then %>
 
     <div style="padding-top: 10px; padding-bottom: 10px; ">
-      <object type="application/x-shockwave-flash" data="/aurita/mp3player.swf" width="200" height="20">
+      <object type="application/x-shockwave-flash" data="/aurita/shared/mp3player.swf" width="200" height="20">
         <param name="movie" value="/aurita/mp3player.mp3" />
         <param name="bgcolor" value="#ffffff" />
         <param name="FlashVars" value="mp3=<%= media_asset.url %>" />
