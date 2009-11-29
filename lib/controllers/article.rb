@@ -515,7 +515,7 @@ module Wiki
       order_dir   = params[:order][1]
       order     ||= :title
       order_dir ||= :asc
-      articles = Article.all_with(clause).ordered_by(:title, :asc).entities
+      articles = Article.all_with(clause).ordered_by(order, order_dir).entities
       articles.delete_if { |a| 
         !(Aurita.user.may_view_content?(a)) 
       }
