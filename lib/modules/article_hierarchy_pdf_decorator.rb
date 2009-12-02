@@ -80,11 +80,11 @@ module Wiki
 
         pdf.move_down(20)
         pdf.fill_color(@style[:header_color].sub('#',''))
-        pdf.text(recode(article.title), :size => 25)
+        pdf.text((article.title), :size => 25)
         pdf.fill_color(@style[:text_color].sub('#',''))
 
         pdf.move_down(3)
-        pdf.text(recode(tl(:pdf_created_at) + ' ' << datetime(DateTime.now)), :size => 8)
+        pdf.text((tl(:pdf_created_at) + ' ' << datetime(DateTime.now)), :size => 8)
         pdf.move_down(10)
         parts.each { |p|
           decorate_part(p[:instance], article, pdf)
@@ -103,14 +103,14 @@ module Wiki
     end
 
     def decorate_text(text, pdf)
-      text.gsub!('<p>','<br />')
+      text.gsub!(/<p([^>].+)?>/,'<br />')
       text.gsub!('</p>','<br />')
       text.gsub!(/<h(\d)>/,'<br /><h\1>')
       text.gsub!(/<\/\s?h(\d)>/,'</h\1><br />')
       text.gsub!('</ul>',"</ul><br /><br />")
       text.gsub!('</ol>',"</ol><br /><br />")
       coder = HTMLEntities.new
-      text = coder.decode(text)
+      text  = coder.decode(text)
       text.gsub!('<li>',"<br /><li>")
       pdf.text(text, :size => @style[:font_size], 
                      :tags => { :ol => { :width => '2em' }, 

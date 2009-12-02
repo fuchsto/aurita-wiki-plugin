@@ -23,8 +23,10 @@ module Wiki
 
       form = add_form()
       form.fields = form_groups()
-      form.add(Hidden_Field.new(:name => Media_Asset.media_asset_id.to_s, :value  => param(:media_asset_id)))
-      file = File_Field.new(:name => :upload_file, :label => tl(:file))
+      form.add(Hidden_Field.new(:name  => Media_Asset.media_asset_id.to_s, 
+                                :value => param(:media_asset_id)))
+      file = File_Field.new(:name  => :upload_file, 
+                            :label => tl(:file))
       form.add(file)
 
       GUI::Async_Upload_Form_Decorator.new(form)
@@ -46,7 +48,7 @@ module Wiki
         file_info = receive_file(param(:upload_file))
         log('VERSION: file uploaded')
         Media_Asset_Importer.new(base_media_asset).import_new_version(file_info)
-        redirect_ro(:controller     => 'Wiki::Media_Asset', 
+        redirect_to(:controller     => 'Wiki::Media_Asset', 
                     :action         => :show, 
                     :media_asset_id => base_media_asset.media_asset_id)
         return instance

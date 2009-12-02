@@ -80,7 +80,7 @@ module Wiki
       articles = Article.select { |a|
         a.join(Content_Category).on(Article.content_id == Content_Category.content_id) { |ac|
           ac.where((Content_Category.category_id == params[:category_id]))
-          ac.order_by(Article.title, :asc)
+          ac.order_by(Article.changed, :desc)
         }
       }
       article_box        = Box.new(:class => :topic_inline, 
