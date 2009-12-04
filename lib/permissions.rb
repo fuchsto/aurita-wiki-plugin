@@ -30,6 +30,21 @@ module Wiki
     register_permission(:reactivate_foreign_article_versions, 
                         :type    => :bool, 
                         :default => true)
+
+    register_permission(:delete_foreign_articles, 
+                        :type    => :bool, 
+                        :default => true)
+    register_permission(:change_meta_data_of_foreign_articles, 
+                        :type    => :bool, 
+                        :default => true)
+
+    register_permission(:delete_foreign_files, 
+                        :type    => :bool, 
+                        :default => true)
+    register_permission(:change_meta_data_of_foreign_files, 
+                        :type    => :bool, 
+                        :default => true)
+
   end
 
 end

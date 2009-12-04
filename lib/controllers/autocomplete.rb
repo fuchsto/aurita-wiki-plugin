@@ -10,14 +10,40 @@ module Wiki
 
   class Autocomplete_Controller < Plugin_Controller
 
+    def all_articles
+      return unless param(:article)
+			return unless Aurita.user.category_ids.length > 0
+			tags = param(:article).split(' ')
+
+			tag  = "%#{tags.join(' ')}%"
+      
+      articles       = Article.find(10).with((Article.has_tag(tags) | 
+                                              Article.title.ilike(tag)))
+      articles.sort_by(Wiki::Article.article_id, :desc)
+
+      article_result = HTML.ul.autocomplete { } 
+      
+      key = tags.join(' ')
+      pkey_attrib   = param(:pkey)
+      pkey_attrib ||= :article_id
+      articles.each { |a|
+        pkey = a.__send__(pkey_attrib)
+        article_result << HTML.li.autocomplete(:id => pkey) { a.title } 
+      }
+      return article_result
+    end
+
     def find_articles(params={})
       return unless params[:keys]
 			return unless Aurita.user.category_ids.length > 0
 			tags = params[:keys]
 			tag  = "%#{tags.join(' ')}%"
       
-      constraints    = Article.title.ilike(tag)
-      articles       = Article.find(10).with((Article.has_tag(tags) | Article.title.ilike(tag)) & Article.is_accessible).sort_by(Wiki::Article.article_id, :desc).entities
+      articles       = Article.find(10).with((Article.has_tag(tags) | 
+                                              Article.title.ilike(tag)) & 
+                                             Article.is_accessible)
+      articles.sort_by(Wiki::Article.article_id, :desc)
+
       article_result = Aurita::GUI::Autocomplete_Result.new()
       
       key = tags.join(' ')

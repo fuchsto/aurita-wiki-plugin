@@ -29,22 +29,6 @@ module Wiki
       }
     end
 
-    def perform_add_new_article(params)
-      tags    = params[:tags].to_s + ' ' + hierarchy.header
-      article = Wiki::Article.create(:title => params[:label], 
-                                     :tags  => tags)
-      content_category = Content_Category.create(:content_id  => article.content_id, 
-                                                 :category_id => Aurita.user.own_category.category_id)
-      params[:interface]  = "Wiki::Article/show/article_id=#{article.article_id}"
-      params[:content_id] = article.content_id
-    end
-
-    def perform_add_find_article(params)
-      article = Article.get(params(:article_id))
-      params[:content_id] = article.content_id
-      params[:interface]  = "Wiki::Article/show/article_id=#{article.article_id}"
-    end
-
   end
 
 end

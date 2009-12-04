@@ -25,9 +25,14 @@ module Wiki
       if Aurita.user.may_edit_content?(article) then 
         switch_to_entry(:add_text_partial, "Wiki::Text_Asset/perform_add/content_id=#{content_id}") unless param(:no_inline)
         switch_to_entry(:add_files_partial, "Wiki::Media_Container/perform_add/content_id=#{content_id}") unless param(:no_inline)
-        if Aurita.user.is_admin? or Aurita.user.user_group_id == article.user_group_id then 
+
+        if Aurita.user.may(:change_meta_data_of_foreign_articles) || Aurita.user.user_group_id == article.user_group_id then 
           entry(:edit_article, "Wiki::Article/update/article_id=#{article_id}", targets)
+        end
+        if Aurita.user.is_admin? || Aurita.user.user_group_id == article.user_group_id then 
           entry(:edit_article_permissions, "Content_Permissions/editor/content_id=#{content_id}", targets)
+        end
+        if Aurita.user.may(:delete_foreign_articles) or Aurita.user.user_group_id == article.user_group_id then 
           entry(:delete_article_versions, "Wiki::Article_Version/perform_delete_all/article_id=#{article_id}", targets) 
           entry(:delete_article, "Wiki::Article/delete/article_id=#{article_id}", targets) 
         end
@@ -41,13 +46,15 @@ module Wiki
       content_id = media_asset.content_id
 
       if Aurita.user.may_edit_content?(media_asset) then
-        entry(:edit_asset, "Wiki::Media_Asset/update/media_asset_id=#{media_asset_id}")
+        if Aurita.user.may(:change_meta_data_of_foreign_files) || media_asset.user_group_id == Aurita.user.user_group_id then
+          entry(:edit_asset, "Wiki::Media_Asset/update/media_asset_id=#{media_asset_id}")
+        end
         entry(:new_asset_version, "Wiki::Media_Asset_Version/add/media_asset_id=#{media_asset_id}")
-        if Aurita.user.is_admin? || media_asset.user_group_id == Aurita.user.user_group_id then
+        if Aurita.user.may(:delete_foreign_files) || media_asset.user_group_id == Aurita.user.user_group_id then
           entry(:delete_asset, "Wiki::Media_Asset/delete/media_asset_id=#{media_asset_id}")
         end
         if media_asset.is_image? then
-          load_entry(:edit_image, 'app_main_content' => "Wiki::Image_Editor/main/media_asset_id=#{media_asset_id}")
+        #  load_entry(:edit_image, 'app_main_content' => "Wiki::Image_Editor/main/media_asset_id=#{media_asset_id}")
         end
       end
       entry(:bookmark_asset, "Bookmarking::Media_Asset_Bookmark/perform_add/media_asset_id=#{media_asset_id.to_s}")

@@ -5,9 +5,16 @@ Aurita::Main.import_model :tag_index
 Aurita.import_plugin_model :wiki, :asset
 Aurita.import_plugin_model :wiki, :container
 
-Aurita.import_plugin_model :form_generator, :form_asset
-Aurita.import_plugin_model :todo, :todo_asset
-Aurita.import_plugin_model :todo, :todo_container_asset
+begin
+    Aurita.import_plugin_model :form_generator, :form_asset
+rescue ::Exception => ignore
+end
+
+begin
+  Aurita.import_plugin_model :todo, :todo_asset
+  Aurita.import_plugin_model :todo, :todo_container_asset
+rescue ::Exception => ignore
+end
 
 module Aurita
 module Plugins
@@ -55,6 +62,7 @@ module Wiki
       instance
     end
 
+=begin
     def subs
       # TODO: Change into
       #   subs = {}
@@ -77,6 +85,7 @@ module Wiki
                        )).entity
       }
     end
+=end
 
     def media_assets
       Media_Asset.all_with(Content.content_id.in(

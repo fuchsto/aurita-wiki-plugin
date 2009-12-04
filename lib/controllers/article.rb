@@ -42,6 +42,26 @@ module Wiki
       ]
     end
 
+    def hierarchy_entry_type
+      { 
+        :name       => 'ARTICLE', 
+        :label      => tl(:article), 
+        :request    => 'Wiki::Article_Selection_Field', 
+        :form_field => GUI::Input_Field.new(:type  => :text, 
+                                            :name  => :article_id, 
+                                            :label => tl(:article), 
+                                            :value => 'article field')
+      }
+    end
+    def hierarchy_entry(params)
+      entry = params[:entry]
+      if entry.attr[:type] == 'ARTICLE' then
+        article_id = entry.interface.split('=')[-1]
+        article = Article.load(:article_id => article_id)
+      end
+      return ''
+    end
+    
     def add_tag
       Aurita::Main::Content_Controller.add_tag()
       article = Article.find(1).with(Article.content_id == param(:content_id)).entitiy
@@ -49,12 +69,16 @@ module Wiki
     end
 
     def invalidate_and_show(params={})
+    # {{{
+
       article   = Article.load(:article_id => params[:article_id])
       article ||= Article.find(1).with(:content_id => params[:content_id]).entity
       return unless article
       article.touch if article
-      redirect_to(:controller => 'Wiki::Article', :action => 'show', :article_id => article.article_id)
-    end
+      redirect_to(:controller => 'Wiki::Article', :action => 'show', 
+                  :article_id => article.article_id)
+
+    end # }}}
 
     def commit_version
       article = load_instance()
@@ -62,6 +86,8 @@ module Wiki
     end
 
     def list_category(params)
+    # {{{
+
       return unless Aurita.user.is_in_category?(params[:category_id])
 =begin
 # TODO: Use as test case! 
@@ -89,9 +115,12 @@ module Wiki
       article_box.body   = body
       article_box.header = tl(:articles)
       return article_box
-    end
+
+    end # }}}
 
     def toolbar_buttons
+    # {{{
+
       result = []
       if Aurita.user.may(:create_articles) then
         add_article = HTML.a(:class => :icon, 
@@ -102,19 +131,12 @@ module Wiki
       end
 
       return result
-    end
 
-    def decorate_hierarchy_entry(params)
-      entry = params[:entry]
-      if entry.attr[:type] == 'ARTICLE' then
-        article_id = entry.interface.split('=')[-1]
-        article = Article.load(:article_id => article_id)
-      end
-      return ''
-    end
+    end # }}}
 
     def recent_changes
-
+    # {{{
+      
       result = HTML.h2 { :recent_changes_in_categories }.to_s
       user_cats = User_Category.all_with(User_Category.user_group_id == Aurita.user.user_group_id).sort_by(Category.category_name, :asc)
       cats = []
@@ -154,13 +176,16 @@ module Wiki
         end
       }
       Element.new { result }
-    end
+
+    end # }}}
     
     def find_in_category(category, key)
       Article.all_with((Article.has_tag(key.to_s.split(' ')) | Article.title.ilike("%#{key}%")) & Article.in_category(category.category_id)).entities
     end
 
     def find_all(params)
+    # {{{
+
       return unless params[:key]
       key = params[:key].to_s
       tags = key.split(' ')
@@ -172,9 +197,12 @@ module Wiki
       box.body = view_string(:article_list, :articles => articles)
       box.header = tl(:articles)
       return box
-    end
+
+    end # }}}
 
     def find_full(params)
+    # {{{
+
       key   = params[:key].to_s.strip
       tags  = key.split(' ')
       tag   = "%#{tags.last}%"
@@ -200,10 +228,12 @@ module Wiki
       box.body   = view_string(:article_list, :articles => articles)
       box.header = tl(:articles) 
       return box
-    end
+
+    end # }}}
 
     def own_articles_box
-      
+    # {{{
+
       result = ''
       User_Category.all_with(User_Category.user_group_id == Aurita.user.user_group_id).each { |cat|
         entries = Article.select { |a|
@@ -230,22 +260,27 @@ module Wiki
       box.body = result
       return box
 
-    end
+    end # }}}
     
     def index
       puts list
     end
 
     def add
+    # {{{
+
       form = add_form()
       form.add(Category_Selection_List_Field.new())
       form[Content.tags] = Tag_Autocomplete_Field.new(:name => Content.tags, :label => tl(:tags))
       form[Content.tags].required!
       exec_js('Aurita.Main.init_autocomplete_tags();')
       Page.new(:header => tl(:create_article)) { decorate_form(form) }
-    end
+
+    end # }}}
 
     def update
+    # {{{
+      
       article  = load_instance()
       form     = model_form(:model => Article, :instance => article, :action => :perform_update)
       category = Category_Selection_List_Field.new()
@@ -265,7 +300,8 @@ module Wiki
       end
 
       render_form(form)
-    end
+
+    end # }}}
 
     def delete
       article  = load_instance()
@@ -275,7 +311,7 @@ module Wiki
     end
 
     def perform_add
-
+    # {{{
       article = super()
       Content_Category.create_for(article, param(:category_ids))
 
@@ -288,10 +324,10 @@ module Wiki
                            :edit_inline_type       => 'TEXT_ASSET')
       
       article.commit_version
-    end
+    end # }}}
 
     def perform_update
-
+    # {{{
       if param(:locked).to_s == '' then 
         @params[Content.locked] = 'f' 
         @params[:locked] = 'f' 
@@ -310,7 +346,8 @@ module Wiki
       instance.commit_version
 
       redirect_to(:action => :show, :article_id => instance.article_id)
-    end
+
+    end # }}}
 
     def perform_delete
       super()
@@ -318,18 +355,23 @@ module Wiki
     end
 
     def perform_publish
+    # {{{
+
       article = Article.load(:article_id => param(:article_id))
       content_category = Content_Category.all_with(Content_Category.content_id == article.content_id).each { |c|
         c['category_id'] = param(:category_id)
         c.commit
       }
-    end
+
+    end # }}}
 
     def self.touch_article(article_id)
       Article.load(:article_id => article_id).touch
     end
 
     def show_own_latest
+    # {{{
+
       latest_article_id = Article.value_of.max(:article_id).with(Article.user_group_id == Aurita.user.user_group_id).to_i
       article = Article.load(:article_id => latest_article_id)
 
@@ -343,9 +385,11 @@ module Wiki
       end
 
       show(latest_article_id, edit_inline_content_id)
-    end
+
+    end # }}}
 
     def show_pdf
+    # {{{
       use_decorator :none
 
       article    = load_instance()
@@ -362,17 +406,18 @@ module Wiki
       File.open("/tmp/article_#{article_id}.pdf").each { |l|
         puts l
       }
-    end
+    end # }}}
 
     def decorate_article(article, viewparams=nil)
+    # {{{
       hierarchy = Article_Full_Hierarchy_Visitor.new(article).hierarchy
       decorator = Article_Hierarchy_Default_Decorator.new(hierarchy)
       decorator.viewparams = viewparams
       decorator.string
-    end
+    end # }}}
 
     def show(article_id=nil, edit_inline_content_id=false)
-      
+    # {{{
       begin
         article    = load_instance()
         article_id = article.article_id
@@ -455,9 +500,12 @@ module Wiki
                               :article_id => article_id)
       end
       Tag_Relevance.add_hits_for(article)
-    end
+
+    end # }}}
 
     def show_version(article_id=nil, version=nil)
+    # {{{
+      
       article_id = param(:article_id) unless article_id
       version    = param(:version)    unless version
 
@@ -476,9 +524,11 @@ module Wiki
       decorator.templates[:article] = :article_version_decorator
       article_string = decorator.string
       puts article_string
-    end
+    end # }}}
 
     def show_sortable
+    # {{{
+
       article = Article.load(:article_id => param(:article_id))
       return unless Aurita.user.may_view_content?(article.content_id)
 
@@ -486,10 +536,11 @@ module Wiki
       decorator = Article_Hierarchy_Sortable_Decorator.new(hierarchy)
       exec_js("Aurita.Wiki.init_article_reorder('#{article.content_id}');")
       puts decorator.string
-    end
+
+    end # }}}
 
     def infobox_for(article_inst)
-
+    # {{{
       view_history = Content_History.select { |ch|
         ch.join(User_Group).using(:user_group_id) { |chu|
           chu.where(Content_History.content_id == article_inst.content_id)
@@ -502,18 +553,23 @@ module Wiki
                   :created_by_user => author,
                   :view_history    => view_history, 
                   :article         => article_inst)
-    end
+    end # }}}
 
     def recent_changes_in_category(params={})
+    # {{{
+
       clause = (Article.changed >= (Datetime.new - 7.days)) & 
                (Article.content_id.in(Content_Category.select(:content_id) { |cid| 
                    cid.where(Content_Category.category_id == params[:category_id]) 
                } ))
       article_list = list(clause, :order => [ Article.changed, :desc ])
       return Element.new(:content => article_list) if article_list
-    end
+
+    end # }}}
 
     def list(clause=:true, params={})
+    # {{{
+
       order       = params[:order][0]
       order_dir   = params[:order][1]
       order     ||= :title
@@ -527,10 +583,19 @@ module Wiki
       view_string(:article_list, 
                   :articles => articles, 
                   :assets => assets)
-      
-    end
+     
+    end # }}}
 
+    def list_all
+    # {{{
+      tag = param(:tag).downcase
+      articles = Article.all_with(Article.tags.has_element(tag)).sort_by(:article_id, :asc).entities
+      render_view(:article_list, :articles => articles)
+    end # }}}
+    
     def frontpage_article
+    # {{{
+      
       article = Article.find(1).with(Article.tags.has_element_like('frontpage')).entity
       return unless article
       hierarchy = Article_Full_Hierarchy_Visitor.new.visit_article(article)
@@ -538,14 +603,9 @@ module Wiki
       decorator.viewparams = 'public--false'
       article_string = decorator.string
       return HTML.div { article_string } 
-    end
 
-    def list_all
-      tag = param(:tag).downcase
-      articles = Article.all_with(Article.tags.has_element(tag)).sort_by(:article_id, :asc).entities
-      render_view(:article_list, :articles => articles)
-    end
-    
+    end # }}}
+
     def recently_changed_string
       articles = Article.find(5).sort_by(:changed, :desc).entities
       return view_string(:article_title_list, :articles => articles)
@@ -570,6 +630,8 @@ module Wiki
     end
 
     def perform_reorder
+    # {{{
+      
       positions         = param(:article_partials_list, []).map { |v| v.to_i }
       content_id_parent = param(:content_id_parent)
       Container.all_with(Container.content_id_parent == content_id_parent).ordered_by(:sortpos, :asc).to_a.each_with_index { |c, pos_count|
@@ -577,10 +639,11 @@ module Wiki
         c.commit
       }
       Article.find(1).with(Article.content_id == content_id_parent).entity.touch
-    end
+
+    end # }}}
 
     def list_recently_commented
-      
+    # {{{
       articles = Article.select { |ma|
         ma.join(Content_Comment).on(Article.content_id == Content_Comment.content_id) { |uma|
         uma.join(User_Group).on(Content_Comment.user_group_id == User_Group.user_group_id) { |cma|
@@ -593,21 +656,27 @@ module Wiki
 
       render_view(:article_list_recently_commented, 
                   :commented_articles => articles)
-    end
+    end # }}}
 
     def recently_changed_box
+    # {{{
+      
       changed_articles = Box.new(:type => :none, :class => :topic, :id => 'changed_articles', :params => {})
       changed_articles.header = tl(:recently_changed_articles)
       changed_articles.body = recently_changed()
       return changed_articles
-    end
+
+    end # }}}
 
     def recently_viewed_box
+    # {{{
+
       viewed_articles = Box.new(:type => :none, :class => :topic, :id => 'viewed_articles', :params => {})
       viewed_articles.header = tl(:recently_viewed_articles)
       viewed_articles.body = recently_viewed()
       return viewed_articles
-    end
+
+    end # }}}
 
   end # class
   
