@@ -385,14 +385,11 @@ module Wiki
         filename   = 'download' if filename.to_s == ''
         filename  << " v#{version}" if version
         filename  << ".#{asset.mime_extension}"
-        set_http_header('Content-Disposition' => "attachment; filename=\"#{filename}\"")
-        set_http_header('type' => asset.mime)
-        set_http_header('Content-Type' => asset.mime)
-        set_http_header('Content-Length' => asset.filesize)
-        asset_id << '.' << version if version
-        @response[:file] = (Aurita.project.base_path + 'public/assets/asset_' + asset_id + '.' << asset.mime_extension)
+        asset_id  << '.' << version if version
+
+        send_file("/assets/asset_#{asset_id}.#{asset.extension}", :filename => filename)
       else 
-        set_http_header('Status' => 401)
+      # set_http_status(401)
       end
     end # }}}
 

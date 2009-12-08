@@ -38,7 +38,7 @@
     </div>
 
   <% else %>
-    <a href="<%= media_asset.url %>" target="_blank" 
+    <a href="/aurita/Wiki::Media_Asset/proxy/id=<%= media_asset.media_asset_id %>" target="_blank" 
        style="float: left; margin-right: 4px; margin-bottom: 10px; background-color: #ffffff; text-align: center;  "
        <%= gui.context_menu(:entity => media_asset) %>     
     >
@@ -68,7 +68,7 @@
         <b><%= tl(:download) %></b> 
       </td>
       <td>
-        <a href="<%= media_asset.url %>" target="_blank"><%= "#{media_asset.title}.#{media_asset.extension.to_s}" %></a>
+        <a href="/aurita/Wiki::Media_Asset/proxy/id=<%= media_asset.media_asset_id %>" target="_blank"><%= "#{media_asset.title}.#{media_asset.extension.to_s}" %></a>
       </td>
     </tr>
 
