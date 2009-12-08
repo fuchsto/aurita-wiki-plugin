@@ -2,7 +2,7 @@
 <div id="article_<%= article.article_id %>">
 
   <div class="article_view" id="article_entry_<%= article.article_id %>">
-    <div id="article_title_<%= entry_counter %>" onmouseout="context_menu_out(this); " onmouseover="context_menu('Wiki::Article', 'article_id=<%= article.article_id %>', 'article_title_<%= entry_counter %>'); ">
+    <div id="article_title_<%= entry_counter %>">
       <h1 class="modifyable"><%= article.title %></h1>
       <div class="article_content">
         <%= article_content %>

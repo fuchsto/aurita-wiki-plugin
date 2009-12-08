@@ -408,7 +408,7 @@ module Wiki
       }
     end # }}}
 
-    def decorate_article(article, viewparams=nil)
+    def decorate_article(article, viewparams={})
     # {{{
       hierarchy = Article_Full_Hierarchy_Visitor.new(article).hierarchy
       decorator = Article_Hierarchy_Default_Decorator.new(hierarchy)
@@ -442,7 +442,7 @@ module Wiki
         return
       end
 
-      if param(:edit_inline_content_id) then
+      if Aurita.user.may_edit_content?(article) && param(:edit_inline_content_id) then
         edit_inline_content_id = param(:edit_inline_content_id) unless edit_inline_content_id
         if param(:edit_inline_type) == 'TEXT_ASSET' then
           editable_text_asset = Text_Asset.select { |ta|

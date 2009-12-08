@@ -41,6 +41,7 @@ module Wiki
     def article_partial(params={})
       article    = params[:article]
       text_asset = params[:part]
+      viewparams = params[:viewparams]
       HTML.div.article_partial(:id => "text_asset_#{text_asset.text_asset_id}") { text_asset.display_text }
     end
 
