@@ -22,9 +22,18 @@ module Wiki
 
       entry(:bookmark_article, "Bookmarking::Bookmark/perform_add/type=ARTICLE&url=article--#{article_id}&title=#{article.title}&user_id=#{Aurita.user.user_group_id}", targets)
       entry(:recommend_article, "Content_Recommendation/editor/type=ARTICLE&content_id=#{content_id}")
-      if Aurita.user.may_edit_content?(article) then 
-        switch_to_entry(:add_text_partial, "Wiki::Text_Asset/perform_add/content_id=#{content_id}") unless param(:no_inline)
-        switch_to_entry(:add_files_partial, "Wiki::Media_Container/perform_add/content_id=#{content_id}") unless param(:no_inline)
+
+      if !param(:no_inline) && Aurita.user.may_edit_content?(article) then 
+        switch_to_entry(:add_text_partial, "Wiki::Text_Asset/perform_add/content_id=#{content_id}") 
+        switch_to_entry(:add_files_partial, "Wiki::Media_Container/perform_add/content_id=#{content_id}") 
+
+        plugin_get(Hook.wiki.article.hierarchy.partial_type).each { |type|
+          model    = type[:model]
+          label    = type[:label]
+          action   = type[:action]
+          action ||= :add
+          entry(label, "#{model.model_name}/#{action}/content_id=#{content_id}") 
+        }
 
         if Aurita.user.may(:change_meta_data_of_foreign_articles) || Aurita.user.user_group_id == article.user_group_id then 
           entry(:edit_article, "Wiki::Article/update/article_id=#{article_id}", targets)

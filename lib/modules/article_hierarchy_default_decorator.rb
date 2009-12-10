@@ -1,8 +1,6 @@
 
-require('aurita/controller')
+require('aurita/plugin_controller')
 require('enumerator')
-
-Aurita.import_plugin_controller :todo, :todo_container_asset
 
 module Aurita
 module Plugins
@@ -15,9 +13,14 @@ module Wiki
 
     attr_accessor :hierarchy, :viewparams, :templates
     
-    def initialize(hierarchy, templates={})
-      @hierarchy  = hierarchy
-      @article    = false
+    def initialize(article_or_hierarchy, templates={})
+      if article_or_hierarchy.kind_of?(Article) then
+        @hierarchy  = false
+        @article    = article_or_hierarchy
+      else
+        @hierarchy  = article_or_hierarchy
+        @article    = false
+      end
       @string     = ''
       @viewparams = {}
       @templates  = { :article           => :article_decorator, 
@@ -75,7 +78,8 @@ module Wiki
                             :entry_counter    => 0)
     end
 
-    def decorate_part(part, article)
+    def decorate_part(part, article=nil)
+      article        ||= @article
       part_entity      = part[:instance]
       container_params = { :content_id_parent => article.content_id, 
                            :asset_id_child    => part_entity.asset_id, 
@@ -89,9 +93,7 @@ module Wiki
             }
 
       if Aurita.user.may_edit_content?(article) then
-        tce = Context_Menu_Element.new(HTML.div(:class => :article_text) { 
-                                         tce 
-                                       }, 
+        tce = Context_Menu_Element.new(tce, 
                                        :show_button  => true, 
                                        :type         => part[:model].gsub('Aurita::Plugins::',''), 
                                        :id           => "article_part_asset_#{part_entity.asset_id}", 

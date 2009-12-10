@@ -11,9 +11,12 @@ module Wiki
   class Autocomplete_Controller < Plugin_Controller
 
     def all_articles
-      return unless param(:article)
+      key_attrib = param(:field)
+      key   = param(key_attrib.to_sym) if key_attrib
+      key ||= param(:article)
+      return unless key
 			return unless Aurita.user.category_ids.length > 0
-			tags = param(:article).split(' ')
+			tags = key.split(' ')
 
 			tag  = "%#{tags.join(' ')}%"
       
