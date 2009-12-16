@@ -46,11 +46,7 @@ module Wiki
       { 
         :name       => 'ARTICLE', 
         :label      => tl(:article), 
-        :request    => 'Wiki::Article_Selection_Field', 
-        :form_field => GUI::Input_Field.new(:type  => :text, 
-                                            :name  => :article_id, 
-                                            :label => tl(:article), 
-                                            :value => 'article field')
+        :request    => 'Wiki::Article_Selection_Field' 
       }
     end
     def hierarchy_entry(params)
@@ -413,7 +409,7 @@ module Wiki
       hierarchy = Article_Full_Hierarchy_Visitor.new(article).hierarchy
       decorator = Article_Hierarchy_Default_Decorator.new(hierarchy)
       decorator.viewparams = viewparams
-      decorator.string
+      HTML.div { decorator.string }
     end # }}}
 
     def show(article_id=nil, edit_inline_content_id=false)
@@ -429,17 +425,15 @@ module Wiki
           end
         end
       rescue ::Exception => e
-        puts tl(:article_does_not_exist)
-        return
+        return HTML.div { tl(:article_does_not_exist) }
       end
       
       author = User_Profile.load(:user_group_id => article.user_group_id)
       article_id = article.article_id
       if(!Aurita.user.may_view_content?(article.content_id)) then
-        puts HTML.div { tl(:no_permission_to_access_article) }
-        puts HTML.div { tl(:article_owned_by_user).gsub('{1}', author.label) +
-                        tl(:article_is_in_category).gsub('{1}', article.category.category_name) }
-        return
+        return HTML.div { tl(:no_permission_to_access_article) } +
+               HTML.div { tl(:article_owned_by_user).gsub('{1}', author.label) +
+                          tl(:article_is_in_category).gsub('{1}', article.category.category_name) }
       end
 
       if Aurita.user.may_edit_content?(article) && param(:edit_inline_content_id) then
@@ -480,27 +474,21 @@ module Wiki
         viewparams << 'public--false'
       end
 
+      result = HTML.div 
       if false && Article_Cache.exists_for(article, viewparams) then
-        article_string = Article_Cache.read(article, viewparams)
+        result = Article_Cache.read(article, viewparams)
       else
-        article_string = decorate_article(article, viewparams)
-        Article_Cache.create_for(article, viewparams) { article_string }
+        result = decorate_article(article, viewparams)
+        Article_Cache.create_for(article, viewparams) { result.string }
       end
 
-      result = article_string
-
-      if Aurita.user.is_registered? then
-      #  result << render_controller(Content_Comment_Controller, :box, :content_id => article.content_id).string
-      end
-
-      puts result
-      
       if Aurita.user.is_registered? then
         Article_Access.create(:user_group_id => Aurita.user.user_group_id, 
                               :article_id => article_id)
       end
       Tag_Relevance.add_hits_for(article)
 
+      return result
     end # }}}
 
     def show_version(article_id=nil, version=nil)

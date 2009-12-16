@@ -1,20 +1,21 @@
 
-require('aurita-gui/widget')
+require('aurita-gui/form/form_field')
 
 module Aurita
 module Plugins
 module Wiki
 module GUI
 
-  class Article_Selection_Field < Aurita::GUI::Widget
+  class Article_Selection_Field < Aurita::GUI::Form_Field
+  include Aurita::GUI
 
-    def initialize(params={})
+    def initialize(params={}, &block)
       @attrib = params
       @attrib[:id]   = 'article' unless @attrib[:id]
       @attrib[:name] = 'article' unless @attrib[:name]
       @key           = params[:key]
       @key         ||= :content_id
-      super()
+      super(params, &block)
     end
 
     def element
@@ -39,10 +40,11 @@ code = <<JS
                                minChars: 2, 
                                updateElement: function(li) { 
                                  $('#{selection_id}').innerHTML = '<li>'+li.innerHTML+'<input type="hidden" name="content_id" value="'+li.id+'" /></li>';
+                                 $('#{input_id}').value = ''; 
                                } , 
                                frequency: 0.1, 
                                tokens: [], 
-                               parameters: 'controller=Wiki::Autocomplete&action=all_articles&pkey=#{@key}&mode=none'
+                               parameters: 'controller=Wiki::Autocomplete&field=#{@attrib[:name]}&action=all_articles&pkey=#{@key}&mode=none'
                              }
       );
 JS

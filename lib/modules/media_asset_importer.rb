@@ -43,9 +43,6 @@ module Wiki
     end
 
     @@logger = Aurita::Log::Class_Logger.new(self)
-    add_variant(:large) { |img, asset|
-      img.resize_to_fit(1000,1000).write(Aurita.project_path + "public/assets/large/asset_#{asset.media_asset_id}.jpg") { self.quality = 92 }
-    }
     add_variant(:medium) { |img, asset|
       img.resize_to_fit(320,320).write(Aurita.project_path + "public/assets/medium/asset_#{asset.media_asset_id}.jpg") { self.quality = 82 }
     }
