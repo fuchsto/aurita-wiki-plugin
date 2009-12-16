@@ -384,7 +384,7 @@ module Wiki
         filename   = asset.title.to_s.gsub(' ','_')
         filename   = 'download' if filename.to_s == ''
         filename  << " v#{version}" if version
-        filename  << ".#{asset.mime_extension}"
+        filename  << ".#{asset.extension}"
         asset_id  << '.' << version if version
 
         send_file("/assets/asset_#{asset_id}.#{asset.extension}", :filename => filename)
