@@ -19,7 +19,10 @@ Aurita.import_plugin_module :wiki, :article_hierarchy_pdf_decorator
 Aurita.import_plugin_module :wiki, :article_dump_default_decorator
 Aurita.import_plugin_module :wiki, :article_hierarchy_sortable_decorator
 
-Aurita.import_plugin_model :memo, :memo_article
+begin
+  Aurita.import_plugin_model :memo, :memo_article
+rescue ::Exception => ignore
+end
 
 module Aurita
 module Plugins
@@ -417,12 +420,15 @@ module Wiki
       begin
         article    = load_instance()
         article_id = article.article_id
-        if !article.is_a? Memo::Memo_Article then
-          if Memo::Memo_Article.find(1).with(Memo::Memo_Article.article_id == article_id).entity then
-            Aurita.import_plugin_controller :memo, :memo_article
-            render_controller(Memo::Memo_Article_Controller, :show, :article_id => article_id)
-            return
+        begin
+          if !article.is_a? Memo::Memo_Article then
+            if Memo::Memo_Article.find(1).with(Memo::Memo_Article.article_id == article_id).entity then
+              Aurita.import_plugin_controller :memo, :memo_article
+              render_controller(Memo::Memo_Article_Controller, :show, :article_id => article_id)
+              return
+            end
           end
+        rescue ::Exception => ignore
         end
       rescue ::Exception => e
         return HTML.div { tl(:article_does_not_exist) }
@@ -550,7 +556,7 @@ module Wiki
                (Article.content_id.in(Content_Category.select(:content_id) { |cid| 
                    cid.where(Content_Category.category_id == params[:category_id]) 
                } ))
-      article_list = list(clause, :order => [ Article.changed, :desc ])
+      article_list = list(clause, :limit => 30, :order => [ Article.changed, :desc ])
       return Element.new(:content => article_list) if article_list
 
     end # }}}
@@ -562,10 +568,12 @@ module Wiki
       order_dir   = params[:order][1]
       order     ||= :title
       order_dir ||= :asc
-      articles = Article.all_with(clause).ordered_by(order, order_dir).entities
-      articles.delete_if { |a| 
-        !(Aurita.user.may_view_content?(a)) 
-      }
+      articles = Article.all_with(clause & Article.accessible).ordered_by(order, order_dir)
+      articles = articles.limit(params[:limit]) if params[:limit]
+      articles = articles.entities
+#     articles.delete_if { |a| 
+#       !(Aurita.user.may_view_content?(a)) 
+#     }
       assets = Hash.new
       return unless articles.first
       view_string(:article_list, 

@@ -3,6 +3,8 @@ require('aurita')
 require('aurita-gui')
 Aurita.import_module :gui, :entity_table
 Aurita.import_plugin_model :wiki, :media_asset
+Aurita.import_plugin_module :wiki, 'gui/media_asset_table'
+Aurita.import_plugin_module :wiki, 'gui/media_asset_thumbnail'
 
 module Aurita
 module Plugins

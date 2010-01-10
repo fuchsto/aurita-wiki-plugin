@@ -98,6 +98,7 @@ module Wiki
       @@logger.log('FILE IMPORT | MIME extension: ' << @media_asset.extension)
       @media_asset.commit
       extension = @media_asset.extension
+
       FileUtils.move(file_info[:server_filepath], @media_asset.fs_path)
       File.chmod(0777, @media_asset.fs_path)
 
@@ -189,29 +190,32 @@ module Wiki
     def import_local_file(file_or_filename)
     # {{{
     
-      file    = false
-      path_to = false
+      file      = false
+      file_path = false
       if file_or_filename.is_a? String then
-        size ||= File.size(file_or_filename) 
-        path_to = file_or_filename
-      else
+        size    ||= File.size(file_or_filename) 
+        file_path = file_or_filename
+      elsif file_or_filename.respond_to?(:read)
         size = file_or_filename.length 
         file = file_or_filename
+        file_path = File.path
       end
 
       size ||= 0
       file_info = {
         :filesize => size, 
         :type => @media_asset.mime, 
-        :server_filename => @media_asset.original_filename, 
+        :server_filename   => @media_asset.original_filename, 
+        :server_filepath   => file_path, 
         :original_filename => @media_asset.original_filename
       }
+
       server_filename = file_info[:server_filename]
-      @@logger.log 'Import file from ' << file_or_filename.inspect
+      @@logger.log 'Import file from ' << file_path.inspect
       @@logger.log 'Import file to ' << Aurita.project_path + 'public/assets/tmp/' << server_filename
-      if path_to then
-        FileUtils.copy(path_to, Aurita.project_path + 'public/assets/tmp/' << server_filename)
-      elsif file then
+      if file_or_filename.is_a? String then
+        FileUtils.copy(file_path, Aurita.project_path + 'public/assets/tmp/' << server_filename)
+      elsif file_or_filename.respond_to?(:read)
         File.open(Aurita.project_path + 'public/assets/tmp/' << server_filename, "w") { |f|
           f.write(file.read)
         }

@@ -7,7 +7,6 @@ Aurita::Main.import_model :content_access
 Aurita.import_plugin_model :wiki, :media_asset
 Aurita.import_plugin_model :wiki, :media_asset_version
 Aurita.import_plugin_model :wiki, :media_asset_folder
-Aurita.import_plugin_model :bookmarking, :media_asset_bookmark
 Aurita.import_plugin_module :wiki, :media_asset_renderer
 Aurita.import_plugin_module :wiki, :media_asset_importer
 Aurita.import_plugin_module :wiki, :media_meta_data
@@ -18,6 +17,11 @@ Aurita::Main.import_controller :content_comment
 Aurita::Main.import_controller :category
 Aurita.import_module :gui, :hierarchy_node_select_field
 Aurita.import_module :gui, :multi_file_field
+
+begin
+  Aurita.import_plugin_model :bookmarking, :media_asset_bookmark
+rescue ::Exception => ignore
+end
 
 module Aurita
 module Plugins
@@ -218,7 +222,7 @@ module Wiki
       use_decorator :none
 
       begin
-        param(:upload_file).each { |file_uploaded|
+        param(:upload_file).each_with_index { |file_uploaded, idx|
           param[:title] = file_uploaded[:filename] unless param(:title)
           instance = super()
 
@@ -256,7 +260,10 @@ module Wiki
       rescue ::Exception => excep
         log { 'Error in image upload: ' << excep.message } 
         excep.backtrace.each { |l| log { l } } 
-        instance.delete if instance
+        begin
+          instance.delete 
+        rescue ::Exception => ignore
+        end
         raise excep
       end
     end # }}}
@@ -407,10 +414,9 @@ module Wiki
     # {{{
       content_expires = Time.now + (10 * 24 * 60 * 60)
 
-      media_asset_id = id() unless media_asset_id
-
       media_asset = load_instance()
       return unless media_asset 
+      media_asset_id = media_asset.media_asset_id
 
       if media_asset.deleted then
         puts tl(:file_has_been_deleted)
@@ -432,18 +438,6 @@ module Wiki
                             :user_group_id => Aurita.user.user_group_id, 
                             :res_type      => 'MEDIA_ASSET')
 
-      articles = Article.select { |a|
-        a.where(Article.content_id.in( 
-                 Container.select(:content_id_parent) { |c| 
-                   c.where(Container.content_id_child.in( 
-                     Container.select(:content_id_parent) { |cp|
-                       cp.where((Container.content_type == 'IMAGE') & (Container.content_id_child == media_asset.content_id))
-                     }
-                   ))
-                 }
-                )
-        )
-      }
       versions = Media_Asset_Version.select { |v| 
         v.join(Media_Asset).using(:media_asset_id) { |ma| 
           ma.where(Media_Asset_Version.media_asset_id == media_asset_id)
@@ -456,7 +450,6 @@ module Wiki
       render_view(:media_asset_info, 
                   :owner_user_group     => owner_user_group, 
                   :media_asset          => media_asset, 
-                  :articles             => articles, 
                   :content_tags         => media_asset_tags, 
                   :media_asset_versions => GUI::Media_Asset_Version_List.new(versions), 
                   :asset_folder_path    => media_asset.folder_path, 
@@ -599,6 +592,22 @@ module Wiki
         a.delete
       }
     end # }}}
+
+
+    def editor_insert_dialog()
+      use_decorator(:async)
+
+      form = GUI::Form.new(:id => :editor_insert_file_form) 
+      form.onsubmit = "Aurita.Wiki.insert_media_asset($('media_asset_insert_id').value); return false;"
+
+      form.add(GUI::Media_Asset_Selection_Field.new(:name  => :media_asset, 
+                                                    :key   => :media_asset_id, 
+                                                    :label => tl(:select_file), 
+                                                    :id    => :media_asset))
+      decorate_form(form, 
+                    :onclick_ok     => "$('editor_insert_file_form').onsubmit(); $('message_box').hide();", 
+                    :onclick_cancel => "$('message_box').hide();")
+    end
 
   end
 

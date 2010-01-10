@@ -1,6 +1,7 @@
 
 require('aurita/plugin_controller')
 Aurita.import_plugin_module :syntax, :string_decorator
+Aurita.import_plugin_module :wiki, 'gui/article_selection_field'
 
 module Aurita
 module Plugins
@@ -120,7 +121,21 @@ module Wiki
     end
 
     def editor_link_dialog()
-      render_view(:editor_link_dialog)
+      use_decorator(:async)
+
+      form = GUI::Form.new(:id => :editor_link_form) 
+      form.onsubmit = "Aurita.Wiki.insert_link_to_article($('article_link_id').value); return false;"
+
+      form.add(GUI::Article_Selection_Field.new(:name  => :article, 
+                                                :key   => :article_id, 
+                                                :label => tl(:link_to_article), 
+                                                :id    => :article_link))
+      form.add(GUI::Text_Field.new(:name  => :url, 
+                                   :label => tl(:link_to_website), 
+                                   :id    => :website_link))
+      decorate_form(form, 
+                    :onclick_ok     => "$('editor_link_form').onsubmit(); $('message_box').hide();", 
+                    :onclick_cancel => "$('message_box').hide();")
     end
 
   end # class

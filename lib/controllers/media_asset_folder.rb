@@ -268,7 +268,7 @@ module Wiki
       super()
       trashbin = Media_Asset_Folder.find(1).with((Media_Asset_Folder.user_group_id == Aurita.user.user_group_id) & 
                                                  (Media_Asset_Folder.trashbin == 't')).entity
-      delete_recursive(folder_id, trashbin.media_asset_folder_id)
+      delete_recursive(folder_id, trashbin.media_asset_folder_id) if trashbin
       @params[:media_asset_folder_id] = folder_id
       if param(:media_folder_id__parent) == '0' then
         redirect(:element => 'media_folder_box_body', :to => :tree_box_body)

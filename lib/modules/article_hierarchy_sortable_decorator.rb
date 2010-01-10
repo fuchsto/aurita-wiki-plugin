@@ -1,7 +1,6 @@
 
 require('aurita/controller')
 Aurita.import_plugin_module :wiki, :article_hierarchy_default_decorator
-Aurita.import_plugin_model :form_generator, :model_register
 
 module Aurita
 module Plugins

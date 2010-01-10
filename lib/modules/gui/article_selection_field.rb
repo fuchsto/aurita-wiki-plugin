@@ -32,6 +32,7 @@ module GUI
       choices_id   = "#{input_id}_choices"
       selection_id = "#{input_id}_selection"
 
+#      $('#{selection_id}').innerHTML = '<li>'+li.innerHTML+'<input type="hidden" name="content_id" value="'+li.id+'" /></li>';
 code = <<JS
       new Ajax.Autocompleter("#{input_id}", 
                              "#{choices_id}", 
@@ -39,7 +40,7 @@ code = <<JS
                              { 
                                minChars: 2, 
                                updateElement: function(li) { 
-                                 $('#{selection_id}').innerHTML = '<li>'+li.innerHTML+'<input type="hidden" name="content_id" value="'+li.id+'" /></li>';
+                                 $('#{selection_id}').innerHTML = '<li>'+li.innerHTML+'<input type="hidden" id="#{@attrib[:id]}_id" name="#{@key}" value="'+li.id+'" /></li>';
                                  $('#{input_id}').value = ''; 
                                } , 
                                frequency: 0.1, 

@@ -177,3 +177,6 @@ delete_foreign_articles : Fremde Artikel l&ouml;schen
 change_meta_data_of_foreign_files : Meta-Daten fremder Dateien &auml;ndern
 delete_foreign_files : Fremde Dateien l&ouml;schen
 
+link_to_article : Link auf Artikel
+link_to_website : Link auf Website
+
