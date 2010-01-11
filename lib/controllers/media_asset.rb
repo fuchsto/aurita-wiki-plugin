@@ -12,6 +12,7 @@ Aurita.import_plugin_module :wiki, :media_asset_importer
 Aurita.import_plugin_module :wiki, :media_meta_data
 Aurita.import_plugin_module :wiki, 'gui/media_asset_version_list'
 Aurita.import_plugin_module :wiki, 'gui/media_asset_list'
+Aurita.import_plugin_module :wiki, 'gui/media_asset_selection_field'
 
 Aurita::Main.import_controller :content_comment
 Aurita::Main.import_controller :category
@@ -598,15 +599,21 @@ module Wiki
       use_decorator(:async)
 
       form = GUI::Form.new(:id => :editor_insert_file_form) 
-      form.onsubmit = "Aurita.Wiki.insert_media_asset($('media_asset_insert_id').value); return false;"
+      form.add_css_class(:wide)
+      form.onsubmit = "Aurita.Wiki.insert_file($('media_asset_insert_id').value); return false;"
 
       form.add(GUI::Media_Asset_Selection_Field.new(:name  => :media_asset, 
                                                     :key   => :media_asset_id, 
                                                     :label => tl(:select_file), 
                                                     :id    => :media_asset))
-      decorate_form(form, 
-                    :onclick_ok     => "$('editor_insert_file_form').onsubmit(); $('message_box').hide();", 
-                    :onclick_cancel => "$('message_box').hide();")
+      return form
+    end
+
+    def editor_list_choice
+      select_list = render_controller(Media_Asset_Folder_Controller, :list_choice, @params)
+      select_list.row_onclick = Proc.new { |m| "Aurita.Wiki.insert_file('#{m.media_asset_id}'); $('message_box').hide(); " } 
+      select_list.rebuild
+      select_list
     end
 
   end

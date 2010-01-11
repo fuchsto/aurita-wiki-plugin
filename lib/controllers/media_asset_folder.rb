@@ -183,14 +183,10 @@ module Wiki
                    category_clause & 
                    (Content.deleted == 'f')
         }
-        assets = Media_Asset.all_with(clause).entities
+        assets = Media_Asset.find(15).with(clause).entities
       end
 
       return GUI::Media_Asset_Select_List.new(assets)
-
-      render_view(:media_asset_list_choice, 
-                  :media_assets => assets, 
-                  :text_asset_content_id => param(:text_asset_content_id))
     end
 
     def add

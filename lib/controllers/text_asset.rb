@@ -124,7 +124,7 @@ module Wiki
       use_decorator(:async)
 
       form = GUI::Form.new(:id => :editor_link_form) 
-      form.onsubmit = "Aurita.Wiki.insert_link_to_article($('article_link_id').value); return false;"
+      form.onsubmit = "Aurita.Wiki.insert_link('article_link_id', 'website_link'); return false;"
 
       form.add(GUI::Article_Selection_Field.new(:name  => :article, 
                                                 :key   => :article_id, 

@@ -30,15 +30,22 @@ module GUI
   class Media_Asset_Select_List < Media_Asset_List
   include Aurita::GUI
 
+    attr_accessor :row_onclick
+
     def initialize(media_assets, params={})
       params[:class] = :media_asset_table unless params[:class]
       super(media_assets, params)
       @row_class   = params[:row_class] 
       @row_class ||= Media_Asset_Select_List_Row
+      @row_onclick = params[:row_onclick]
     end
     
     def rows
-      @rows = @entities.map { |e| @row_class.new(e, :parent => self) }
+      @rows = @entities.map { |e| 
+        onclick = nil
+        onclick = @row_onclick.call(e) if @row_onclick
+        @row_class.new(e, :parent => self, :onclick => onclick) 
+      }
       @rows
     end
 
@@ -56,7 +63,7 @@ module GUI
         entity = Wiki::Media_Asset.load(:media_asset_id => params[:media_asset_id])
       end
       super(entity, params)
-      @attrib[:onclick] = "Aurita.Wiki.add_container_attachment(#{media_asset.media_asset_id});"
+      @attrib[:onclick] = "Aurita.Wiki.add_container_attachment(#{media_asset.media_asset_id});" unless @attrib[:onclick]
     end
 
     def cells
