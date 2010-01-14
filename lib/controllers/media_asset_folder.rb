@@ -167,15 +167,13 @@ module Wiki
 
       if param(:media_asset_folder_id) then
         if !(Aurita.user.may_view_folder?(param(:media_asset_folder_id))) then
-          puts tl(:no_permission_for_folder)
-          return
+          return HTML.span { tl(:no_permission_for_folder) }
         end
         assets = Media_Asset.all_with((:media_folder_id.is(param(:media_asset_folder_id))) & 
                                       (Content.deleted == 'f') & category_clause).entities
       elsif param(:key) then
-        if param(:key).to_s.length < 3 then
-          puts '&nbsp;'
-          return
+        if param(:key).to_s.length < 2 then
+          return HTML.span { '&nbsp;' }
         end
         clause = (Media_Asset.deleted == 'f')
         param(:key).to_s.split(' ').each { |key|

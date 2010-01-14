@@ -2,6 +2,7 @@
 require('aurita/plugin_controller')
 Aurita.import_plugin_module :syntax, :string_decorator
 Aurita.import_plugin_module :wiki, 'gui/article_selection_field'
+Aurita.import_plugin_module :wiki, 'gui/media_asset_selection_field'
 
 module Aurita
 module Plugins
@@ -65,7 +66,11 @@ module Wiki
     def perform_add()
 
       text                   = param(:text, tl(:text_asset_blank_text))
-      @params[:display_text] = Tagging.link_text_tags(Text_Asset_Parser.parse(param(:text).to_s.dup))
+      if Wiki::Plugin.surpress_article_tag_links then
+        @params[:display_text] = text
+      else
+        @params[:display_text] = Tagging.link_text_tags(Text_Asset_Parser.parse(param(:text).to_s.dup))
+      end
       @params[:tags]         = 'text'
 
       content_id_parent = param(:content_id_parent) 
@@ -109,7 +114,11 @@ module Wiki
 
     def perform_update
       param[:text]         = param(:text).to_s.gsub("'",'&apos;')
-      param[:display_text] = Tagging.link_text_tags(Text_Asset_Parser.parse(param(:text).to_s.dup))
+      if Wiki::Plugin.surpress_article_tag_links then
+        @params[:display_text] = param(:text)
+      else
+        @params[:display_text] = Tagging.link_text_tags(Text_Asset_Parser.parse(param(:text).to_s.dup))
+      end
       result  = super()
       article = load_instance().article
       article.touch('UPDATE:TEXT')
@@ -130,6 +139,11 @@ module Wiki
                                                 :key   => :article_id, 
                                                 :label => tl(:link_to_article), 
                                                 :id    => :article_link))
+      form.add(GUI::Media_Asset_Selection_Field.new(:name       => :media_asset, 
+                                                    :key        => :media_asset_id, 
+                                                    :label      => tl(:link_to_media_asset), 
+                                                    :row_action => 'Wiki::Media_Asset/editor_list_link_choice', 
+                                                    :id         => :media_asset_link))
       form.add(GUI::Text_Field.new(:name  => :url, 
                                    :label => tl(:link_to_website), 
                                    :id    => :website_link))

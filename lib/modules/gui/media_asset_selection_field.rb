@@ -15,11 +15,13 @@ module GUI
       @attrib[:name] = 'media_asset' unless @attrib[:name]
       @key           = params[:key]
       @key         ||= :content_id
+      @row_action    = params[:row_action]
+      @row_action  ||= 'Wiki::Media_Asset/editor_list_choice'
       super(params, &block)
     end
 
     def element
-      onkeyup = "Aurita.load({ action: 'Wiki::Media_Asset/editor_list_choice/key='+$('#{@attrib[:id]}').value, 
+      onkeyup = "Aurita.load({ action: '#{@row_action}/key='+$('#{@attrib[:id]}').value, 
                                element: '#{@attrib[:id]}_choices', 
                                silently: true });"
       field_params = { :name    => @attrib[:name], 

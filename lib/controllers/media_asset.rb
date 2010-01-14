@@ -606,12 +606,25 @@ module Wiki
                                                     :key   => :media_asset_id, 
                                                     :label => tl(:select_file), 
                                                     :id    => :media_asset))
-      return form
+      decorate_form(form, 
+                    :buttons => Proc.new { |btn_params|
+                      Text_Button.new(:class   => :submit, 
+                                      :onclick => "$('message_box').hide();", 
+                                      :icon    => 'button_ok.gif', 
+                                      :label   => tl(:close))
+                    })
     end
 
     def editor_list_choice
       select_list = render_controller(Media_Asset_Folder_Controller, :list_choice, @params)
-      select_list.row_onclick = Proc.new { |m| "Aurita.Wiki.insert_file('#{m.media_asset_id}'); $('message_box').hide(); " } 
+      select_list.row_onclick = Proc.new { |m| "Aurita.Wiki.insert_file('#{m.media_asset_id}'); " } 
+      select_list.rebuild
+      select_list
+    end
+
+    def editor_list_link_choice
+      select_list = render_controller(Media_Asset_Folder_Controller, :list_choice, @params)
+      select_list.row_onclick = Proc.new { |m| "Aurita.Wiki.link_to_file('#{m.media_asset_id}'); $('message_box').hide(); " } 
       select_list.rebuild
       select_list
     end

@@ -13,8 +13,10 @@ module GUI
       @attrib = params
       @attrib[:id]   = 'article' unless @attrib[:id]
       @attrib[:name] = 'article' unless @attrib[:name]
+      @num_results   = @attrib[:num_results]
       @key           = params[:key]
       @key         ||= :content_id
+      @num_results ||= 10
       super(params, &block)
     end
 
@@ -45,7 +47,7 @@ code = <<JS
                                } , 
                                frequency: 0.1, 
                                tokens: [], 
-                               parameters: 'controller=Wiki::Autocomplete&field=#{@attrib[:name]}&action=all_articles&pkey=#{@key}&mode=none'
+                               parameters: 'controller=Wiki::Autocomplete&field=#{@attrib[:name]}&action=all_articles&pkey=#{@key}&num_results=#{@num_results}&mode=none'
                              }
       );
 JS

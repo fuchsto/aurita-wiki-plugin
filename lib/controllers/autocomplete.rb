@@ -17,10 +17,12 @@ module Wiki
       return unless key
 			return unless Aurita.user.category_ids.length > 0
 			tags = key.split(' ')
+      num_results   = param(:num_results)
+      num_results ||= 10
 
 			tag  = "%#{tags.join(' ')}%"
       
-      articles       = Article.find(10).with((Article.has_tag(tags) | 
+      articles       = Article.find(num_results).with((Article.has_tag(tags) | 
                                               Article.title.ilike(tag)))
       articles.sort_by(Wiki::Article.article_id, :desc)
 
