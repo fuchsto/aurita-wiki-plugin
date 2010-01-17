@@ -16,9 +16,10 @@ module Wiki
     def article_partial(params={})
       article         = params[:article]
       media_container = params[:part]
-      HTML.div.article_partial(:id => "media_container_#{media_container.media_container_id}") { 
+#     HTML.div(:class => :media_container_partial, 
+#              :id    => "media_container_#{media_container.media_container_id}") { 
         GUI::Media_Container_Partial.new(media_container)
-      }
+#     }
     end
 
     def perform_add
@@ -80,6 +81,12 @@ module Wiki
         end
       }
       redirect_to(:controller => 'Wiki::Article', :article_id => instance.article.article_id)
+    end
+
+    def set_position
+      mc = load_instance()
+      mc.vertical = param(:vertical)
+      mc.commit
     end
 
   end

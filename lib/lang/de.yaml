@@ -1,6 +1,7 @@
 plugin_name : Artikel und Dateien
 
-public--article--title : Titel
+public--article--title : Interner Name
+public--article--header : '&Uuml;berschrift'
 public--article--template_id : Stil
 
 public--text_asset--text : Text

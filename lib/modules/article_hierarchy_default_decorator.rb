@@ -85,19 +85,24 @@ module Wiki
                            :asset_id_child    => part_entity.asset_id, 
                            :article_id        => article.article_id}
 
+      partial = Plugin_Register.get(Hook.wiki.article.hierarchy.partial, 
+                                    :article    => article, 
+                                    :viewparams => @viewparams, 
+                                    :part       => part_entity).first
       tce = HTML.div(:class => :article_text) { 
-               Plugin_Register.get(Hook.wiki.article.hierarchy.partial, 
-                                   :article    => article, 
-                                   :viewparams => @viewparams, 
-                                   :part       => part_entity) 
-            }
+        partial
+      }
+
+      context_buttons = nil
+      context_buttons = partial.context_buttons if partial.respond_to?(:context_buttons)
 
       if Aurita.user.may_edit_content?(article) then
         tce = Context_Menu_Element.new(tce, 
-                                       :show_button  => true, 
-                                       :type         => part[:model].gsub('Aurita::Plugins::',''), 
-                                       :id           => "article_part_asset_#{part_entity.asset_id}", 
-                                       :params       => container_params)
+                                       :show_button         => true, 
+                                       :add_context_buttons => context_buttons, 
+                                       :type                => part[:model].gsub('Aurita::Plugins::',''), 
+                                       :id                  => "article_part_asset_#{part_entity.asset_id}", 
+                                       :params              => container_params)
       end
       
       return tce
