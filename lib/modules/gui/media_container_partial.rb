@@ -17,6 +17,8 @@ module GUI
   include Aurita::GUI
   include Aurita::GUI::Link_Helpers
 
+    attr_accessor :media_container
+
     def initialize(media_container, params={})
       @media_container = media_container
       super()

@@ -1,11 +1,10 @@
 
 require('aurita/plugin_controller')
 
-Aurita.import_plugin_module :wiki, 'gui/media_container_partial'
-
 Aurita.import_plugin_model :wiki, :media_container
 Aurita.import_plugin_model :wiki, :media_container_entry
 Aurita.import_plugin_model :wiki, :media_asset
+Aurita.import_plugin_module :wiki, 'gui/media_container_partial'
 
 module Aurita
 module Plugins
@@ -16,10 +15,8 @@ module Wiki
     def article_partial(params={})
       article         = params[:article]
       media_container = params[:part]
-#     HTML.div(:class => :media_container_partial, 
-#              :id    => "media_container_#{media_container.media_container_id}") { 
-        GUI::Media_Container_Partial.new(media_container)
-#     }
+      viewparams      = params[:viewparams]
+      GUI::Media_Container_Partial.new(media_container)
     end
 
     def perform_add

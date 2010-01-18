@@ -3,6 +3,7 @@ require('aurita/plugin_controller')
 Aurita.import_plugin_module :syntax, :string_decorator
 Aurita.import_plugin_module :wiki, 'gui/article_selection_field'
 Aurita.import_plugin_module :wiki, 'gui/media_asset_selection_field'
+Aurita.import_plugin_module :wiki, 'gui/text_asset_partial'
 
 module Aurita
 module Plugins
@@ -44,10 +45,7 @@ module Wiki
       article    = params[:article]
       text_asset = params[:part]
       viewparams = params[:viewparams]
-      HTML.div(:class => :text_asset_partial, 
-               :id    => "text_asset_#{text_asset.text_asset_id}") { 
-        text_asset.display_text 
-      }
+      GUI::Text_Asset_Partial.new(text_asset)
     end
 
     def update_inline

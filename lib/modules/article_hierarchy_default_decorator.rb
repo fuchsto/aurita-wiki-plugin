@@ -21,6 +21,7 @@ module Wiki
         @hierarchy  = article_or_hierarchy
         @article    = false
       end
+      @article  ||= @hierarchy[:instance]
       @string     = ''
       @viewparams = {}
       @templates  = { :article           => :article_decorator, 
@@ -30,6 +31,20 @@ module Wiki
                       :form_element_rows => :form_element_listed, 
                       :form_element_cols => :form_element_horizontal }
       @templates.update(templates)
+    end
+
+    def parts()
+      return @parts if @parts
+      @parts = @hierarchy[:parts]
+      @parts
+    end
+
+    def parts_decorated()
+      return @parts_decorated if @parts_decorated
+      @parts_decorated = parts().map { |p|
+        decorate_part(p, @article) if p
+      }
+      @parts_decorated
     end
 
     def string
@@ -43,11 +58,8 @@ module Wiki
 
     protected
 
-    def decorate_article
-      article     = @hierarchy[:instance]
-      @article    = article
-      parts       = @hierarchy[:parts]
-      
+    def decorate_article(article=nil)
+      article        ||= @article
       article_comments = Content_Comment_Controller.list_string(article.content_id) 
       article_tags     = view_string(:editable_tag_list, :content => article)
       article_version  = Article_Version.value_of.max(:version).with(Article_Version.article_id == article.article_id).to_i
@@ -61,8 +73,8 @@ module Wiki
       end
       
       article_string = ''
-      parts.each { |part|
-        article_string << decorate_part(part, article).to_s if part
+      parts_decorated().each { |part|
+        article_string << part.to_s if part
       }
       
       template = @templates[:article]
