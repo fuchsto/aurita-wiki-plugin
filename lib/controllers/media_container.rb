@@ -54,11 +54,11 @@ module Wiki
     end
 
     def update_inline
-
+      
       instance  = Media_Container.find(1).with(Media_Container.asset_id == param(:asset_id_child)).entity
       container = Container.find(1).with((Container.content_id_parent == param(:content_id_parent)) & 
                                          (Container.asset_id_child == param(:asset_id_child))).entity
-
+      
       render_view(:container_attachments, 
                   :article          => instance.article, 
                   :container        => container, 
@@ -81,12 +81,6 @@ module Wiki
         end
       }
       redirect_to(:controller => 'Wiki::Article', :article_id => instance.article.article_id)
-    end
-
-    def set_position
-      mc = load_instance()
-      mc.vertical = param(:vertical)
-      mc.commit
     end
 
   end
