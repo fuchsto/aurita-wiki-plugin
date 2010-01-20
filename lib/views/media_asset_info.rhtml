@@ -53,7 +53,9 @@
   <% end %>
 
   <div style="float: left; " id="media_data_table">
-  <table class="listing_2_columns">
+    <table class="listing_2_columns"
+      <%= gui.context_menu(:entity => media_asset, :id => :media_asset_info) %>     
+    >
     <tr>
       <td width="180">
         <b><%= tl(:category) %></b> 
