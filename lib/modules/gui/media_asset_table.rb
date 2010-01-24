@@ -61,7 +61,7 @@ module GUI
     end
 
     def cells
-      icon = Context_Menu_Button.new(@entity.dom_id).to_s + link_to(@entity) { @entity.icon() }
+      icon = Context_Menu_Button_Bar.new(@entity.dom_id).to_s + link_to(@entity) { @entity.icon() }
       info = HTML.div { 
         HTML.p.name { link_to(@entity) { @entity.title } } +
         HTML.p.informal { 
@@ -92,7 +92,7 @@ module GUI
     end
 
     def cells
-      icon = Context_Menu_Button.new(@entity.dom_id).to_s + link_to(@entity) { @entity.icon() }
+      icon = Context_Menu_Button_Bar.new(@entity.dom_id).to_s + link_to(@entity) { @entity.icon() }
       info = HTML.div { 
         HTML.p.name { link_to(@entity) { @entity.physical_path } } +
         HTML.p.tags { @entity.tags }
