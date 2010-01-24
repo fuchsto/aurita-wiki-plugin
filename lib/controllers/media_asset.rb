@@ -126,7 +126,7 @@ module Wiki
     def perform_delete(args={})
     # {{{
       asset = load_instance()
-      media_asset_id = asset_media_asset_id
+      media_asset_id = asset.media_asset_id
       if args[:physically] then
         super()
       else

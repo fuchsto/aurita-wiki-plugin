@@ -68,14 +68,14 @@ module Wiki
       end
       entry(:bookmark_asset, "Bookmarking::Media_Asset_Bookmark/perform_add/media_asset_id=#{media_asset_id.to_s}")
       entry(:recommend_asset, "Content_Recommendation/editor/type=ASSET&content_id=#{content_id}")
-      entry(:download_asset, "#{Aurita::Project_Configuration.remote_path}assets/#{media_asset.filename}")
+      link_entry(:download_asset, "#{Aurita::Project_Configuration.remote_path}/aurita/Wiki::Media_Asset/proxy/media_asset_id=#{media_asset.media_asset_id}")
     end
 
     def media_asset_version
-      version = Media_Asset_Version.load(:media_asset_version_id => param(:media_asset_version_id))
+      version     = Media_Asset_Version.load(:media_asset_version_id => param(:media_asset_version_id))
       media_asset = Media_Asset.load(:media_asset_id => version.media_asset_id)
       header(tl(:version) + " #{version.version}")
-      entry(:download_version, "#{Aurita::Project_Configuration.remote_path}assets/#{media_asset.filename(version.version)}")
+      link_entry(:download_version, "#{Aurita::Project_Configuration.remote_path}/aurita/Wiki::Media_Asset/proxy/media_asset_id=#{media_asset.media_asset_id}&version=#{version.version}")
     end
 
     def media_asset_container

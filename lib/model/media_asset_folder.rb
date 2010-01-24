@@ -104,7 +104,7 @@ module Wiki
 
     def self.media_assets_of(folder_id, params={})
       sort     = params[:sort]
-      sort_dir = params[:sort_dir].to_sym 
+      sort_dir = params[:sort_dir].to_sym if params[:sort_dir]
       assets   = Media_Asset.all_with((Media_Asset.media_folder_id == folder_id) & 
                                       (Media_Asset.deleted == 'f') & 
                                       (Media_Asset.accessible))
