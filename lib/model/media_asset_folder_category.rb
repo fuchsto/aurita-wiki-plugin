@@ -33,7 +33,7 @@ module Wiki
       if !@category_ids then
         @category_ids = Media_Asset_Folder_Category.select_values(:category_id) { |cid|
           cid.where(:media_asset_folder_id.eq(media_asset_folder_id))
-        }
+        }.flatten.map { |cid| cid.to_i }
       end
       return @category_ids
     end
@@ -86,8 +86,8 @@ module Main
       if !(media_asset_folder.kind_of?(Aurita::Model)) then
         media_asset_folder = Aurita::Plugins::Wiki::Media_Asset_Folder.load(:media_asset_folder_id => media_asset_folder)
       end
-      return true if media_asset_folder.user_group_id == Aurita.user.user_group_id
       raise ::Exception.new('Folder does not exist') unless media_asset_folder
+      return true if media_asset_folder.user_group_id == Aurita.user.user_group_id
       return ((media_asset_folder.category_ids - Aurita.user.writeable_category_ids).length < media_asset_folder.category_ids.length)
     end
 

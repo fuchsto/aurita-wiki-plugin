@@ -15,6 +15,11 @@
   folder_link = gui.link_to(full_path[-1], :action => action) { full_path[-1].physical_path } if full_path[-1]
 
 %>
+
+<%= Aurita.user.writeable_category_ids.inspect %>
+<br />
+<%= folder.category_ids.inspect %>
+
 <div class="section_header">
   <div class="section_header_right">
     <%= switch_view %>
