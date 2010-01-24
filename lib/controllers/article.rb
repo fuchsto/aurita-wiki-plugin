@@ -40,7 +40,6 @@ module Wiki
     def form_groups
       [
        Article.title,
-       Article.header,
        Content.tags, 
        Category.category_id
       ]

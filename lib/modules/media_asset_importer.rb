@@ -99,7 +99,11 @@ module Wiki
       @media_asset.commit
       extension = @media_asset.extension
 
-      FileUtils.move(file_info[:server_filepath], @media_asset.fs_path)
+      begin
+        FileUtils.move(file_info[:server_filepath], @media_asset.fs_path)
+      rescue ::Exception => e
+        raise ::Exception.new("Failed to import file from path #{file_info[:server_filepath].inspect}")
+      end
       File.chmod(0777, @media_asset.fs_path)
 
       @@logger.log('IMAGE UP | Importing')
@@ -214,7 +218,8 @@ module Wiki
       @@logger.log 'Import file from ' << file_path.inspect
       @@logger.log 'Import file to ' << Aurita.project_path + 'public/assets/tmp/' << server_filename
       if file_or_filename.is_a? String then
-        FileUtils.copy(file_path, Aurita.project_path + 'public/assets/tmp/' << server_filename)
+        dest_path = Aurita.project_path + 'public/assets/tmp/' << server_filename
+        FileUtils.copy(file_path, dest_path) if file_path != dest_path
       elsif file_or_filename.respond_to?(:read)
         File.open(Aurita.project_path + 'public/assets/tmp/' << server_filename, "w") { |f|
           f.write(file.read)

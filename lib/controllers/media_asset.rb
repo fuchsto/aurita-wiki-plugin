@@ -121,17 +121,23 @@ module Wiki
     end
     alias find_full find_all
 
-    def perform_delete
+    # Use parameter :physically => true to really delete a file 
+    # instead of just marking it as deleted. 
+    def perform_delete(args={})
     # {{{
       asset = load_instance()
-      return unless asset.user_group_id == Aurita.user.user_group_id or Aurita.user.is_admin?
-      asset.deleted = true
-      Container.delete { |c|
-        c.where(c.content_id_child == asset.content_id)
-      }
-      asset.commit()
-
-      exec_js("Aurita.Wiki.after_media_asset_delete(#{asset.media_asset_id}); ")
+      media_asset_id = asset.media_asset_id
+      if args[:physically] then
+        super()
+      else
+        return unless asset.user_group_id == Aurita.user.user_group_id or Aurita.user.is_admin?
+        asset.deleted = true
+        Container.delete { |c|
+          c.where(c.content_id_child == asset.content_id)
+        }
+        asset.commit()
+      end
+      exec_js("Aurita.Wiki.after_media_asset_delete(#{media_asset_id}); ")
     end # }}}
 
     def add
@@ -378,9 +384,10 @@ module Wiki
     
       asset_req  = param(:asset).to_s.split('.')
       asset_id   = asset_req[0]
-      asset_id ||= id()
-      asset      = Media_Asset.load(:media_asset_id => asset_id)
+      asset_id ||= param(:media_asset_id)
+      asset      = Media_Asset.load(:media_asset_id => asset_id) if asset_id
       asset    ||= load_instance()
+      asset_id ||= asset.media_asset_id
 
       version    = param(:version)
 

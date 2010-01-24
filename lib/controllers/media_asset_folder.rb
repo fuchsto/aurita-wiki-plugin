@@ -354,7 +354,7 @@ module Wiki
         folder_sort_params[:sort_dir] = sort_dir
       end
       folders = folder.media_asset_folders(folder_sort_params)
-      assets = folder.media_assets(:sort => sort, :sort_dir => sort_dir)
+      assets  = folder.media_assets(:sort => sort, :sort_dir => sort_dir)
     
       folder_grid = Media_Asset_Folder_Grid.new(folders)
       asset_grid  = Media_Asset_Grid.new(assets)

@@ -68,26 +68,33 @@ module Wiki
     #
     #   [ ['123', '1024'], ['343, '2048'] ]
     #
-    def file_sizes
+    def file_sizes(filter_params={})
       return @file_sizes if @file_sizes
 
-      @file_sizes = {}
+      @file_sizes   = {}
+      folder_params = {}
+      clause = (Media_Asset.media_folder_id == media_asset_folder_id) 
+      if !filter_params[:filter] then
+        clause = clause & (Media_Asset.is_accessible)
+      elsif filter_params[:filter].is_a?(Lore::Clause) then
+        clause = clause & filter_params[:filter]
+        folder_params = { :filter => :none }
+      end
       Media_Asset.select_values(:media_asset_id, :filesize) { |ma|
-        ma.where((Media_Asset.media_folder_id == media_asset_folder_id) & 
-                 (Media_Asset.is_accessible))
+        ma.where(clause)
         ma.order_by(:filesize, :asc)
       }.each { |pair| 
         @file_sizes[pair.at(0).to_i] = pair.at(1).to_i
       }
-      media_asset_folders().each { |f|
-        @file_sizes.update(f.file_sizes)
+      media_asset_folders(folder_params).each { |f|
+        @file_sizes.update(f.file_sizes(filter_params))
       }
       return @file_sizes
     end
 
-    def num_files()
+    def num_files(filter_params={})
       return @num_files if @num_files
-      @num_files = file_sizes().length
+      @num_files = file_sizes(filter_params).length
       return @num_files
     end
 
@@ -97,7 +104,7 @@ module Wiki
 
     def self.media_assets_of(folder_id, params={})
       sort     = params[:sort]
-      sort_dir = params[:sort_dir].to_sym 
+      sort_dir = params[:sort_dir].to_sym if params[:sort_dir]
       assets   = Media_Asset.all_with((Media_Asset.media_folder_id == folder_id) & 
                                       (Media_Asset.deleted == 'f') & 
                                       (Media_Asset.accessible))
@@ -116,9 +123,13 @@ module Wiki
       sort_dir   = params[:sort_dir]
       sort     ||= :physical_path
       sort_dir ||= :asc
-      folders = Media_Asset_Folder.all_with((Media_Asset_Folder.trashbin == 'f') & 
-                                            (Media_Asset_Folder.accessible) & 
-                                            (Media_Asset_Folder.media_folder_id__parent == folder_id))
+
+      clause     = ((Media_Asset_Folder.trashbin == 'f') & 
+                    (Media_Asset_Folder.media_folder_id__parent == folder_id))
+      if params[:filter] != :none then
+        clause = clause & (Media_Asset_Folder.accessible) 
+      end
+      folders = Media_Asset_Folder.all_with(clause)
       folders.sort_by(sort, sort_dir.to_sym)
       entries = folders.entities
       entries
