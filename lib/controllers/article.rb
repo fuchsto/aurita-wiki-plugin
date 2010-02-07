@@ -184,7 +184,7 @@ module Wiki
 
     def find_all(params)
     # {{{
-
+      
       return unless params[:key]
       key = params[:key].to_s
       tags = key.split(' ')
@@ -196,7 +196,7 @@ module Wiki
       box.body = view_string(:article_list, :articles => articles)
       box.header = tl(:articles)
       return box
-
+      
     end # }}}
 
     def find_full(params)
@@ -327,12 +327,14 @@ module Wiki
 
     def perform_update
     # {{{
+      return super()
+
       if param(:locked).to_s == '' then 
         @params[Content.locked] = 'f' 
         @params[:locked] = 'f' 
         @params['public.content.locked'] = 'f' 
       end
-      article = load_instance()
+      article    = load_instance()
       content_id = article.content_id
       Content_Category.update_for(article, param(:category_ids))
 
@@ -345,7 +347,6 @@ module Wiki
       instance.commit_version
 
       redirect_to(:action => :show, :article_id => instance.article_id)
-
     end # }}}
 
     def perform_delete

@@ -177,7 +177,9 @@ module Wiki
         end
         clause = (Media_Asset.deleted == 'f')
         param(:key).to_s.split(' ').each { |key|
-          clause = clause & Media_Asset.tags.has_element_ilike(key + '%') & 
+          clause = clause & 
+                   (Media_Asset.tags.has_element_ilike("#{key}%") | 
+                    Media_Asset.title.ilike("#{key}%")) & 
                    category_clause & 
                    (Content.deleted == 'f')
         }

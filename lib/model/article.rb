@@ -55,8 +55,9 @@ module Wiki
       Article.find(1).with(Article.content_id == content_id).entity.commit_version(action)
     end
     # Same as Article.touch(article.content_id
-    def touch(action='CHANGED')
-      Article.touch(content_id, action)
+    def touch(attrib_name)
+#     Article.touch(content_id, action)
+      super(attrib_name)
     end
 
     # Return highest version number of this 
@@ -109,11 +110,13 @@ module Wiki
     def media_assets(params={})
       amount   = params[:max]
       amount ||= params[:amount]
-      amoutn ||= :all
-      Media_Asset.find(amount).with(Media_Asset.content_id.in(Container.select(:content_id_child) { |mcid|
-          mcid.where(Container.content_id_parent.in(Container.select(:content_id_child) { |tcid|
-                        tcid.where(Container.content_id_parent == content_id)
-            })
+      amount ||= :all
+      return Media_Asset.find(amount).with(Media_Asset.media_asset_id.in(Media_Container_Entry.select(:media_asset_id) { |maid|
+          maid.where(Media_Container_Entry.media_container_id.in(Media_Container.select(:media_container_id) { |mcid|
+             mcid.where(Media_Container.asset_id.in(Container.select(:asset_id_child) { |aid|
+               aid.where(Container.content_id_parent == content_id)
+             }))
+          })
           )
         })
       ).entities

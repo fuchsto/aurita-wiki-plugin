@@ -39,11 +39,12 @@ module Wiki
     end
 
     def find_articles(params={})
-      return unless params[:keys]
-			return unless Aurita.user.category_ids.length > 0
-			tags = params[:keys]
+			tags   = params[:keys]
+      tags ||= params[:key]
+      return unless tags
+			return unless Aurita.user.readable_category_ids.length > 0
 			tag  = "%#{tags.join(' ')}%"
-      
+
       articles       = Article.find(10).with((Article.has_tag(tags) | 
                                               Article.title.ilike(tag)) & 
                                              Article.is_accessible)
