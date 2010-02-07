@@ -55,8 +55,9 @@ module Wiki
       Article.find(1).with(Article.content_id == content_id).entity.commit_version(action)
     end
     # Same as Article.touch(article.content_id
-    def touch(action='CHANGED')
-      Article.touch(content_id, action)
+    def touch(attrib_name)
+#     Article.touch(content_id, action)
+      super(attrib_name)
     end
 
     # Return highest version number of this 
