@@ -607,12 +607,15 @@ module Wiki
 
       form = GUI::Form.new(:id => :editor_insert_file_form) 
       form.add_css_class(:wide)
-      form.onsubmit = "Aurita.Wiki.insert_file($('media_asset_insert_id').value); return false;"
 
-      form.add(GUI::Media_Asset_Selection_Field.new(:name  => :media_asset, 
-                                                    :key   => :media_asset_id, 
-                                                    :label => tl(:select_file), 
-                                                    :id    => :media_asset))
+      variant   = param(:variant)
+      variant ||= Aurita::Project_Configuration.article_inserted_image_variant
+
+      form.add(GUI::Media_Asset_Selection_Field.new(:name    => :media_asset, 
+                                                    :key     => :media_asset_id, 
+                                                    :variant => variant, 
+                                                    :label   => tl(:select_file), 
+                                                    :id      => :media_asset))
       decorate_form(form, 
                     :buttons => Proc.new { |btn_params|
                       Text_Button.new(:class   => :submit, 
@@ -623,8 +626,10 @@ module Wiki
     end
 
     def editor_list_choice
+      variant   = param(:variant)
+      variant ||= Aurita::Project_Configuration.article_inserted_image_variant
       select_list = render_controller(Media_Asset_Folder_Controller, :list_choice, @params)
-      select_list.row_onclick = Proc.new { |m| "Aurita.Wiki.insert_file('#{m.media_asset_id}'); " } 
+      select_list.row_onclick = Proc.new { |m| "Aurita.Wiki.insert_file('#{m.media_asset_id}', '#{variant}'); " } 
       select_list.rebuild
       select_list
     end

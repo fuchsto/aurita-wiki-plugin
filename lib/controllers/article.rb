@@ -327,8 +327,6 @@ module Wiki
 
     def perform_update
     # {{{
-      return super()
-
       if param(:locked).to_s == '' then 
         @params[Content.locked] = 'f' 
         @params[:locked] = 'f' 
