@@ -633,7 +633,7 @@ module Wiki
         c.sortpos = (positions.index(c.asset_id_child).to_i + 1)
         c.commit
       }
-      Article.find(1).with(Article.content_id == content_id_parent).entity.touch
+      Content.touch(Article.find(1).with(Article.content_id == content_id_parent).entity.content_id)
 
     end # }}}
 

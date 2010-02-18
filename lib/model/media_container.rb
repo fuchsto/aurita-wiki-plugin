@@ -17,20 +17,23 @@ module Wiki
     has_n Media_Container_Entry, :media_container_id
 
     def media_assets(clause=nil)
+      filter = ((Media_Container_Entry.media_container_id == media_container_id) & 
+                (Media_Asset.deleted == 'f'))
+      if clause then
+        clause = clause & filter 
+      else
+        clause = filter 
+      end
+
       begin
         Media_Asset.select { |c|
           c.join(Media_Container_Entry).on(Media_Container_Entry.media_asset_id == Media_Asset.media_asset_id) { |ma|
             ma.order_by(Media_Container_Entry.position, :asc)
-            if clause then
-              ma.where((Media_Container_Entry.media_container_id == media_container_id) & clause)
-            else
-              ma.where(Media_Container_Entry.media_container_id == media_container_id)
-            end
-            ma
+            ma.where(clause)
           }
         }.to_a
       rescue ::Exception => e
-        return []
+        raise e
       end
     end
   end
