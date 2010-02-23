@@ -93,7 +93,7 @@ module Wiki
       box    = Box.new(:class => :topic_inline, 
                        :type => :none)
       box.body   = body
-      box.header = tl(:files)
+      box.header = tl(:recently_changed_files)
       return box
     end
 
@@ -229,6 +229,7 @@ module Wiki
       use_decorator :none
 
       begin
+        instances = []
         param(:upload_file).each_with_index { |file_uploaded, idx|
           param[:title] = file_uploaded[:filename] unless param(:title)
           instance = super()
@@ -263,7 +264,9 @@ module Wiki
               u.where(User_Profile.user_group_id == Aurita.user.user_group_id)
             }
           end
+          instances << instance
         }
+        return instances
       rescue ::Exception => excep
         log { 'Error in image upload: ' << excep.message } 
         excep.backtrace.each { |l| log { l } } 

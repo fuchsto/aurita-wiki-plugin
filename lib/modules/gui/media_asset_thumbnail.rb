@@ -33,11 +33,11 @@ module GUI
     def element
       HTML.div(:class => [ :media_asset_thumbnail, :bright_bg, @thumbnail_size ]) { 
         HTML.div(:class => [ :image, @thumbnail_size ]) { 
-          HTML.img(:src => @entity.icon_path(:size => @thumbnail_size))
-        } +
+          HTML.img(:src => @entity.icon_path(:size => @thumbnail_size)) 
+        } + 
         HTML.div(:class => [:info, :default_bg, @thumbnail_size ]) { 
-          HTML.div.title { link_to(@entity) { @entity.title } } + 
-          HTML.div.tags { @entity.tags }
+           HTML.div.title { @entity.title } +
+           HTML.div.tags { @entity.tags }
         }
       }
     end

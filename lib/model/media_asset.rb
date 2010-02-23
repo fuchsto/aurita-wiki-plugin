@@ -65,7 +65,7 @@ module Wiki
     def self.before_commit(instance)
       asset_folder_id   = instance.media_folder_id
       asset_folder_id ||= '0'
-      if asset_folder_id != '0' then
+      if asset_folder_id.to_s != '0' then
         folder = Media_Asset_Folder.find(1).with(Media_Asset_Folder.media_asset_folder_id == asset_folder_id).entity
         folder_path   = folder.folder_path if folder
         folder_path ||= []
@@ -74,7 +74,6 @@ module Wiki
         tmp_tags      = (instance.tags.strip.split(' ') + folder_tags)
         tmp_tags.uniq!
         instance[:tags] = '{' + tmp_tags.join(',').gsub('{','').gsub('}','') + '}'
-        log(tmp_tags)
       end
     end
 

@@ -26,7 +26,7 @@ module Wiki
       end
 
       begin
-        Media_Asset.select { |c|
+        return Media_Asset.select { |c|
           c.join(Media_Container_Entry).on(Media_Container_Entry.media_asset_id == Media_Asset.media_asset_id) { |ma|
             ma.order_by(Media_Container_Entry.position, :asc)
             ma.where(clause)

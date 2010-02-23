@@ -111,15 +111,17 @@ module Wiki
       amount   = params[:max]
       amount ||= params[:amount]
       amount ||= :all
-      return Media_Asset.find(amount).with(Media_Asset.media_asset_id.in(Media_Container_Entry.select(:media_asset_id) { |maid|
-          maid.where(Media_Container_Entry.media_container_id.in(Media_Container.select(:media_container_id) { |mcid|
-             mcid.where(Media_Container.asset_id.in(Container.select(:asset_id_child) { |aid|
-               aid.where(Container.content_id_parent == content_id)
-             }))
-          })
-          )
-        })
-      ).entities
+
+      assets = []
+      containers = Media_Container.select { |mc|
+        mc.join(Container).on(Container.asset_id_child == Media_Container.asset_id) { |c|
+          c.where(Container.content_id_parent == content_id)
+          c.order_by(Container.sortpos, :asc)
+        }
+      }.to_a.map { |mc|
+        assets += mc.media_assets
+      }
+      assets
     end
     
   end 

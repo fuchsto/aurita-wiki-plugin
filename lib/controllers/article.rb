@@ -106,13 +106,13 @@ module Wiki
         a.join(Content_Category).on(Article.content_id == Content_Category.content_id) { |ac|
           ac.where((Content_Category.category_id == params[:category_id]))
           ac.order_by(Article.changed, :desc)
+          ac.limit(50)
         }
       }
       article_box        = Box.new(:class => :topic_inline, 
                                    :type => :none)
-      body = view_string(:article_list, :articles => articles)
-      article_box.body   = body
-      article_box.header = tl(:articles)
+      article_box.body   = view_string(:article_list, :articles => articles)
+      article_box.header = tl(:recently_changed_articles)
       return article_box
 
     end # }}}
