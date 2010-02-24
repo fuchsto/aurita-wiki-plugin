@@ -1,6 +1,10 @@
 
 require('aurita/plugin_controller')
-Aurita.import_plugin_module :syntax, :string_decorator
+begin
+	Aurita.import_plugin_module :syntax, :string_decorator
+rescue LoadError => ignore
+end
+
 Aurita.import_plugin_module :wiki, 'gui/article_selection_field'
 Aurita.import_plugin_module :wiki, 'gui/media_asset_selection_field'
 Aurita.import_plugin_module :wiki, 'gui/text_asset_partial'
@@ -13,6 +17,8 @@ module Wiki
   #
   class Text_Asset_Parser
     def self.parse(text)
+      return text
+
       text.gsub!(/\[code ([^\]]+)\]\s*<br\/>/m,'[code \1]')
       text.gsub!("\n[/code]",'[/code]')
       text.gsub(/\[code ([^\]]+)\](.+?)\[\/code\]/) { |code| 
