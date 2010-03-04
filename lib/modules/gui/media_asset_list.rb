@@ -80,6 +80,70 @@ module GUI
 
   end
 
+  class Media_Asset_Select_Variant_List < Media_Asset_List
+  include Aurita::GUI
+
+    attr_accessor :row_onclick, :onselect
+
+    def initialize(media_assets, params={})
+      params[:class] = [ :media_asset_table, :media_asset_select_variant_list ] unless params[:class]
+      params[:column_css_classes] = [ :icon, :info, :type, :variant ] unless params[:column_css_classes]
+      super(media_assets, params)
+      @row_class   = params[:row_class] 
+      @row_class ||= Media_Asset_Select_Variant_List_Row
+      @row_onclick = params[:row_onclick]
+      @onselect    = params[:onselect]
+    end
+    
+    def rows
+      @rows = @entities.map { |e| 
+        onclick = nil
+        onclick = @row_onclick.call(e) if @row_onclick
+        @row_class.new(e, :parent => self, :onclick => onclick, :onselect => @onselect) 
+      }
+      @rows
+    end
+
+  end
+
+  class Media_Asset_Select_Variant_List_Row < Entity_Table_Row
+  include Aurita::GUI
+  include Aurita::GUI::Datetime_Helpers
+  include Aurita::GUI::Link_Helpers
+  include Aurita::GUI::I18N_Helpers
+
+    def initialize(media_asset, params={})
+      @onselect = params[:onselect]
+      entity    = media_asset
+      if media_asset.is_a?(Hash) then
+        params = media_asset
+        entity = Wiki::Media_Asset.load(:media_asset_id => params[:media_asset_id])
+      end
+      super(entity, params)
+    end
+
+    def cells
+      icon = @entity.icon(:tiny) 
+      info = HTML.div { 
+        HTML.p.name { @entity.title } +
+        HTML.p.tags { @entity.tags  }
+      }
+      type      = @entity.extension.upcase
+      select_id = "variant_select_#{@entity.pkey}"
+      variant   = Select_Field.new(:name => :variant, 
+                                   :id   => select_id)
+      variant.options = { :tiny    => tl(:variant_tiny), 
+                          :thumb   => tl(:variant_thumb), 
+                          :preview => tl(:variant_preview), 
+                          :medium  => tl(:variant_medium) }
+      onclick = @onselect.call(@entity, "$('#{select_id}').value".to_sym)
+#     variant_btn = Text_Button.new(:onclick => Javascript.alert("$('#{select_id}').value".to_sym)) { tl(:ok) }
+      variant_btn = Text_Button.new(:onclick => onclick) { tl(:ok) }
+      [ icon, info, type, variant + variant_btn ]
+    end
+
+  end
+
   class Media_Asset_Selection_Entry < Media_Asset_Table
     
     def initialize(media_asset, params={})

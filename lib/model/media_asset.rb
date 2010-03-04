@@ -90,7 +90,7 @@ module Wiki
       return attribute_value[:extension]
     end
     def mime_extension
-      @mime_extension ||= mime.split('/')[-1].downcase.gsub('x-','')
+      @mime_extension ||= mime.split('/')[-1].downcase.gsub('x-','').gsub('jpeg','jpg')
       return @mime_extension
     end
 

@@ -16,7 +16,8 @@ module GUI
       @key           = params[:key] || :content_id
       @variant       = params[:variant] || :thumb
       @row_action    = params[:row_action]
-      @row_action  ||= 'Wiki::Media_Asset/editor_list_choice'
+      @row_action  ||= 'Wiki::Media_Asset/editor_list_choice' unless params[:variant]
+      @row_action  ||= 'Wiki::Media_Asset/editor_list_variant_choice'
       super(params, &block)
     end
 
