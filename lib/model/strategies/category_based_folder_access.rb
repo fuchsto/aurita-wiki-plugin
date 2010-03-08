@@ -1,0 +1,49 @@
+
+require('aurita')
+Aurita.import_plugin_model :wiki, :strategies, :abstract_folder_access
+
+module Aurita
+module Plugins
+module Wiki
+
+  class Category_Based_Folder_Access < Abstract_Folder_Access
+
+    def permits_read_access_for(user)
+      return true if user.is_admin? 
+      return true if user.user_group_id == @folder.user_group_id
+  
+      return false unless user.readable_category_ids.first
+      return false unless @folder.category_ids.first
+
+      common_cats = (user.readable_category_ids) & (@folder.category_ids)
+      return (common_cats && common_cats.first) 
+    end
+
+    def permits_edit_for(user)
+      return true if user.is_admin? 
+      return true if user.user_group_id == @folder.user_group_id
+      common_cats = (user.writeable_category_ids) & (@folder.category_ids)
+      return (common_cats && common_cats.first) 
+    end
+
+    def permits_write_access_for(user)
+      return true if user.is_admin? 
+      return true if user.user_group_id == @folder.user_group_id
+
+      common_cats = (user.writeable_category_ids) & (@folder.category_ids)
+      return (common_cats && common_cats.first) 
+    end
+
+    def permits_subfolders_for(user)
+      return true if @folder.user_group_id == user.user_group_id
+      return false unless permits_write_access_for(@folder)
+      return true if @folder.is_child_of?(user.home_dir)
+      return true if (!@folder.is_user_folder?) && user.may(:create_public_folders)
+    end
+
+  end
+
+end
+end
+end
+
