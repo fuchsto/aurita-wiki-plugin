@@ -11,7 +11,6 @@ module Plugins
 module Wiki
 
   class Media_Asset_Folder < Aurita::Model
-  extend Categorized_Behaviour
   include Access_Strategy
 
     table :media_asset_folder, :public
@@ -21,8 +20,9 @@ module Wiki
 
     expects :physical_path
 
-    use_category_map(Media_Asset_Folder_Category, :media_asset_folder_id => :category_id)
-    use_access_strategy(Category_Based_Folder_Access)
+    use_access_strategy(Category_Based_Folder_Access, 
+                        :managed_by => Media_Asset_Folder_Category, 
+                        :mapping    => { :media_asset_folder_id => :category_id })
 
     def access_strategy
       @access_strategy ||= self.class.access_strategy.new(self)

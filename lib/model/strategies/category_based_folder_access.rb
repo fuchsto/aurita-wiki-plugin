@@ -41,6 +41,13 @@ module Wiki
       return true if (!@folder.is_user_folder?) && user.may(:create_public_folders)
     end
 
+    def self.on_use(klass, params=false)
+      klass.extend(Categorized_Access_Class_Behaviour)
+      if params then
+        klass.use_category_map(params[:managed_by], params[:mapping])
+      end
+    end
+
   end
 
 end
