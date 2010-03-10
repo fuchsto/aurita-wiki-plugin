@@ -435,7 +435,7 @@ module Wiki
       
       author = User_Profile.load(:user_group_id => article.user_group_id)
       article_id = article.article_id
-      if(!Aurita.user.may_view_content?(article.content_id)) then
+      if(!Aurita.user.may_view_content?(article)) then
         return HTML.div { tl(:no_permission_to_access_article) } +
                HTML.div { tl(:article_owned_by_user).gsub('{1}', author.label) +
                           tl(:article_is_in_category).gsub('{1}', article.category.category_name) }
