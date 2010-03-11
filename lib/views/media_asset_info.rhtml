@@ -58,7 +58,7 @@
     >
     <tr>
       <td width="180">
-        <b><%= tl(:category) %></b> 
+        <b><%= tl(:categories) %></b> 
       </td>
       <td>
         <%= media_asset.categories.map { |category| gui.link_to(category) { category.category_name } }.join(', ') %>
