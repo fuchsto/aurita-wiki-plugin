@@ -13,7 +13,7 @@
           <tr>
             <td width="140"><%= tl(:categories) %></td>
             <td>
-              <%= article.categories.map { |category| gui.link_to(category) { category.category_name } }.join(', ') %>
+              <%= article.categories.map { |category| gui.link_to(category, :controller => 'Category') { category.category_name } }.join(', ') %>
             </td>
           </tr>
           <tr>
