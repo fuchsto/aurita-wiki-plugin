@@ -8,7 +8,6 @@ Aurita.import_plugin_model :wiki, :article
 Aurita.import_plugin_model :wiki, :container
 Aurita.import_plugin_model :wiki, :text_asset
 Aurita.import_plugin_model :wiki, :media_asset
-# Aurita.import_plugin_model :wiki, :form_asset
 Aurita.import_plugin_model :wiki, :article_version
 Aurita.import_plugin_model :wiki, :article_access
 Aurita.import_plugin_module :wiki, :article_cache
@@ -86,35 +85,16 @@ module Wiki
 
     def list_category(params)
     # {{{
-
-      return unless Aurita.user.is_in_category?(params[:category_id])
-=begin
-# TODO: Use as test case! 
-
       articles = Article.select { |a|
-        a.join(Article_Version).on((Article.article_id == Article_Version.article_id) & (Article_Version.version == Article.version)) { |av|
-          av.join(Content_Category).on(Article.content_id == Content_Category.content_id) { |ac|
-            ac.join(User_Group).on(Article_Version.user_group_id == User_Group.user_group_id) { |au|
-              au.where((Content_Category.category_id == params[:category_id]))
-              au.order_by(Article.title, :asc)
-            }
-          }
-        }
-      }
-=end
-      articles = Article.select { |a|
-        a.join(Content_Category).on(Article.content_id == Content_Category.content_id) { |ac|
-          ac.where((Content_Category.category_id == params[:category_id]))
-          ac.order_by(Article.changed, :desc)
-          ac.limit(50)
-        }
+        a.where(Article.in_category(params[:category_id]))
+        a.order_by(Article.changed, :desc)
+        a.limit(50)
       }
       article_box        = Box.new(:class => :topic_inline, 
                                    :type => :none)
       article_box.body   = view_string(:article_list, :articles => articles)
       article_box.header = tl(:recently_changed_articles)
       return article_box
-
     end # }}}
 
     def toolbar_buttons
@@ -179,7 +159,9 @@ module Wiki
     end # }}}
     
     def find_in_category(category, key)
-      Article.all_with((Article.has_tag(key.to_s.split(' ')) | Article.title.ilike("%#{key}%")) & Article.in_category(category.category_id)).entities
+      Article.all_with((Article.has_tag(key.to_s.split(' ')) | 
+                        Article.title.ilike("%#{key}%")) & 
+                       Article.in_category(category.category_id)).entities
     end
 
     def find_all(params)
@@ -312,7 +294,7 @@ module Wiki
     def perform_add
     # {{{
       article = super()
-      Content_Category.create_for(article, param(:category_ids))
+      article.set_categories(param(:category_ids))
 
       @params.set('public.text_asset.text', tl(:text_asset_blank_text))
       @params.set('public.article.content_id', article.content_id)
@@ -334,7 +316,7 @@ module Wiki
       end
       article    = load_instance()
       content_id = article.content_id
-      Content_Category.update_for(article, param(:category_ids))
+      article.set_categories(param(:category_ids))
 
       super()
 
@@ -351,17 +333,6 @@ module Wiki
       super()
       exec_js("Aurita.Wiki.after_article_delete(#{param(:article_id)}); ")
     end
-
-    def perform_publish
-    # {{{
-
-      article = Article.load(:article_id => param(:article_id))
-      content_category = Content_Category.all_with(Content_Category.content_id == article.content_id).each { |c|
-        c['category_id'] = param(:category_id)
-        c.commit
-      }
-
-    end # }}}
 
     def self.touch_article(article_id)
       Article.load(:article_id => article_id).touch
