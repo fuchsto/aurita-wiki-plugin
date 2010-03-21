@@ -132,12 +132,12 @@ module GUI
       select_id = "variant_select_#{@entity.pkey}"
       variant   = Select_Field.new(:name => :variant, 
                                    :id   => select_id)
-      variant.options = { :tiny    => tl(:variant_tiny), 
+      variant.options = { :original => tl(:variant_original), 
+                          :tiny    => tl(:variant_tiny), 
                           :thumb   => tl(:variant_thumb), 
                           :preview => tl(:variant_preview), 
                           :medium  => tl(:variant_medium) }
       onclick = @onselect.call(@entity, "$('#{select_id}').value".to_sym)
-#     variant_btn = Text_Button.new(:onclick => Javascript.alert("$('#{select_id}').value".to_sym)) { tl(:ok) }
       variant_btn = Text_Button.new(:onclick => onclick) { tl(:ok) }
       [ icon, info, type, variant + variant_btn ]
     end
