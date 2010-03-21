@@ -256,7 +256,7 @@ module Wiki
                                          :media_asset_id     => instance.media_asset_id)
           end
           
-          Content_Category.create_for(instance, param(:category_ids)) 
+          instance.set_categories(param(:category_ids))
           
           if param(:set_as_profile_image) then
             User_Profile.update { |u|
@@ -282,7 +282,7 @@ module Wiki
     # {{{
       super()
       media_asset = Media_Asset.load(:media_asset_id => param(:media_asset_id))
-      Content_Category.update_for(media_asset, param(:category_ids))
+      media_asset.set_categories(param(:category_ids))
       exec_js("Aurita.flash('#{tl(:changes_have_been_saved)}');")
     end # }}}
 

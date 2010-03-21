@@ -1,6 +1,5 @@
 
 require('aurita/model')
-require('RMagick') # Require manually in dispatch runner if needed (big lib!)
 
 Aurita::Main.import_model :content
 Aurita.import_plugin_model :wiki, :asset

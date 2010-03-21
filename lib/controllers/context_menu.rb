@@ -15,9 +15,9 @@ module Wiki
       article = Article.load(:article_id => article_id)
 
       content_id = article.content_id
-      targets = { } 
-      title = article.title
-      title = title[0..30] << ' ...' if title.length > 33
+      targets    = { } 
+      title      = article.title
+      title      = title[0..30] << ' ...' if title.length > 33
       header(tl(:article) +': '+title)
 
       entry(:bookmark_article, "Bookmarking::Bookmark/perform_add/type=ARTICLE&url=article--#{article_id}&title=#{article.title}&user_id=#{Aurita.user.user_group_id}", targets)
@@ -131,8 +131,7 @@ module Wiki
 
       header(tl(:container))
       if !container_clicked then 
-        puts "<div style=\"padding: 3px; \">#{tl(:cannot_be_edited)}</div>"
-        return
+        return HTML.div(:style => 'padding: 3px;') { tl(:cannot_be_edited) }
       end
 
       targets = { "article_#{param(:article_id)}" => "Wiki::Article/show/article_id=#{param(:article_id)}" }
@@ -144,16 +143,16 @@ module Wiki
     end
 
     def media_asset_folder
-      folder_id = param(:media_asset_folder_id).to_s
-      if !(Aurita.user.may_edit_folder?(folder_id)) then
+      folder_id = param(:media_asset_folder_id)
+      folder    = Media_Asset_Folder.load(:media_asset_folder_id => folder_id)
+      if !(Aurita.user.may_edit_folder?(folder)) then
         puts tl(:no_permission_to_edit_folder)
         return
       end
-      folder = Media_Asset_Folder.load(:media_asset_folder_id => folder_id)
       header(tl(:media_folder))
-      entry(:edit_folder, 'Wiki::Media_Asset_Folder/update/media_asset_folder_id='+folder_id) unless folder.access == 'PRIVATE'
-      entry(:add_subfolder, 'Wiki::Media_Asset_Folder/add/media_folder_id__parent='+folder_id)
-      entry(:delete_folder, 'Wiki::Media_Asset_Folder/delete/media_asset_folder_id='+folder_id) unless folder.access == 'PRIVATE'
+      entry(:edit_folder, 'Wiki::Media_Asset_Folder/update/media_asset_folder_id='+folder_id) if Aurita.user.may_edit_folder?(folder)
+      entry(:add_subfolder, 'Wiki::Media_Asset_Folder/add/media_folder_id__parent='+folder_id) if Aurita.user.may_create_subfolder_in_folder?(folder)
+      entry(:delete_folder, 'Wiki::Media_Asset_Folder/delete/media_asset_folder_id='+folder_id) if Aurita.user.may_edit_folder?(folder)
     end
 
     def media_asset_folder_box

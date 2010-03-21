@@ -1,7 +1,9 @@
 
 require('aurita/model')
 Aurita::Main.import_model :content
+Aurita.import_module :access_strategy
 Aurita.import_plugin_model :wiki, :asset
+Aurita.import_plugin_model :wiki, :strategies, :category_based_folder_access
 Aurita.import_plugin_model :wiki, :media_asset_folder_category
 
 module Aurita
@@ -9,7 +11,7 @@ module Plugins
 module Wiki
 
   class Media_Asset_Folder < Aurita::Model
-  extend Categorized_Behaviour
+  include Access_Strategy
 
     table :media_asset_folder, :public
     primary_key :media_asset_folder_id, :media_asset_folder_id_seq
@@ -18,7 +20,14 @@ module Wiki
 
     expects :physical_path
 
-    use_category_map(Media_Asset_Folder_Category, :media_asset_folder_id => :category_id)
+    use_access_strategy(Category_Based_Folder_Access, 
+                        :managed_by => Media_Asset_Folder_Category, 
+                        :mapping    => { :media_asset_folder_id => :category_id })
+
+    def access_strategy
+      @access_strategy ||= self.class.access_strategy.new(self)
+      @access_strategy
+    end
 
     def label
       physical_path
@@ -157,7 +166,8 @@ module Wiki
     alias folders child_nodes
 
     def has_subfolders? 
-      !Media_Asset_Folder.find(1).with(Media_Asset_Folder.accessible & (Media_Asset_Folder.media_folder_id__parent == media_asset_folder_id)).entity.nil?
+      !Media_Asset_Folder.find(1).with(Media_Asset_Folder.accessible & 
+          (Media_Asset_Folder.media_folder_id__parent == media_asset_folder_id)).entity.nil?
     end
 
     def is_child_of?(folder)
@@ -192,7 +202,8 @@ module Wiki
       constraints = (constraints & (Media_Asset_Folder.media_folder_id__parent == parent_id)) 
       constraints = (constraints & filter) if filter
       if params[:exclude_folder_ids] && params[:exclude_folder_ids].length > 0 then
-        constraints = (constraints & (Media_Asset_Folder.media_asset_folder_id.not_in(params[:exclude_folder_ids])))
+        constraints = (constraints & 
+                       (Media_Asset_Folder.media_asset_folder_id.not_in(params[:exclude_folder_ids])))
       end
       Media_Asset_Folder.all_with(constraints).sort_by(:physical_path, :asc).each { |folder| 
         hierarchy << { :folder => folder, :indent => indent }
@@ -217,12 +228,8 @@ module Wiki
 
     def self.private_folders(params={})
       hierarchy(:filter => (Media_Asset_Folder.user_group_id == Aurita.user.user_group_id),
-                :parent_id => 0
-         #      :exclude_folder_ids => params[:exclude_folder_ids]
-               ) +
-      hierarchy(:filter => (Media_Asset_Folder.user_group_id == Aurita.user.user_group_id)
-         #      :exclude_folder_ids => params[:exclude_folder_ids]
-               ) 
+                :parent_id => 0) +
+      hierarchy(:filter => (Media_Asset_Folder.user_group_id == Aurita.user.user_group_id)) 
     end
     def self.private_folders_root
       hierarchy_level(:filter => (Media_Asset_Folder.user_group_id == Aurita.user.user_group_id))
@@ -231,15 +238,9 @@ module Wiki
     def self.public_folders(params={})
       if Aurita.user.is_admin? then 
         return hierarchy(:filter => (Media_Asset_Folder.user_group_id <=> Aurita.user.user_group_id),
-                         :exclude_folder_ids => params[:exclude_folder_ids]
-                        )
+                         :exclude_folder_ids => params[:exclude_folder_ids])
       else
-        return hierarchy(:filter => (:user_group_id <=> Aurita.user.user_group_id)
-        #                            (:media_asset_folder_id.in( Media_Asset_Folder_Category.select(:media_asset_folder_id) { |fid| 
-        #                                fid.where(:user_group_id.eq(Aurita.user.user_group_id))
-        #                             })
-        #                :exclude_folder_ids => params[:exclude_folder_ids]
-                        )
+        return hierarchy(:filter => (:user_group_id <=> Aurita.user.user_group_id))
       end
     end
     def self.public_folders_root
@@ -258,6 +259,26 @@ end # module
 module Main
 
   class User_Group < Aurita::Model
+
+    def may_view_folder?(folder)
+      folder.access_strategy.permits_read_access_for(self)
+    end
+    alias may_view_folder may_view_folder? 
+
+    # Folder may be edited if user is admin or folder has 
+    # been created by user himself. 
+    def may_edit_folder?(folder)
+      folder.access_strategy.permits_edit_for(self)
+    end
+
+    def may_write_to_folder?(folder)
+      folder.access_strategy.permits_write_access_for(self)
+    end
+
+    def may_create_subfolder_in_folder?(folder)
+      folder.access_strategy.permits_subfolders_for(self)
+    end
+
     def media_asset_folder
       Aurita::Plugins::Wiki::Media_Asset_Folder.find(1).with((:user_group_id.eq(user_group_id)) & 
                                                              (:access.eq('PRIVATE')) & 
@@ -275,6 +296,6 @@ module Main
 
   end
 
-end
-
 end # module
+end # module
+
