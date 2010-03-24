@@ -25,7 +25,7 @@ module Wiki
                                   :locked       => article.locked } 
         }
         @hierarchy[:parts] = [] 
-        article.parts.each { |part| 
+        article.elements.each { |part| 
           @hierarchy[:parts] << part.accept_visitor(self) if part
         }
         return @hierarchy
@@ -35,6 +35,10 @@ module Wiki
       
       def visit(part)
         node = { :id => part.key, :model => part.class.to_s }
+        if part.respond_to?(:version_dump) then
+          node[:dump] = part.version_dump
+        end
+        node
       end
 
     end

@@ -72,13 +72,13 @@ module Wiki
 
     def perform_add()
 
-      text                   = param(:text, tl(:text_asset_blank_text))
+      text = param(:text, tl(:text_asset_blank_text))
       if Wiki::Plugin.surpress_article_tag_links then
         @params[:display_text] = text
       else
         @params[:display_text] = Tagging.link_text_tags(Text_Asset_Parser.parse(param(:text).to_s.dup))
       end
-      @params[:tags]         = 'text'
+      @params[:tags] = :text
 
       content_id_parent = param(:content_id_parent) 
       content_id_parent = param(:content_id) unless content_id_parent
@@ -113,14 +113,15 @@ module Wiki
       content_id = Container.value_of(Container.content_id_parent).where(
                       Container.content_id_child == param(:content_id)
                    ).to_i
-      Content.touch(content_id, 'DELETE:TEXT')
+      article = load_instance().article
+      article.commit_version('DELETE:TEXT_ASSET')
       exec_js("Element.hide('container_#{param(:content_id)}'); ")
 
       super()
     end
 
     def perform_update
-      param[:text]         = param(:text).to_s.gsub("'",'&apos;')
+      param[:text] = param(:text).to_s.gsub("'",'&apos;')
       if Wiki::Plugin.surpress_article_tag_links then
         @params[:display_text] = param(:text)
       else
@@ -128,7 +129,7 @@ module Wiki
       end
       result  = super()
       article = load_instance().article
-      article.touch('UPDATE:TEXT')
+      article.commit_version('UPDATE:TEXT_ASSET')
       redirect_to(article)
       return result
     end

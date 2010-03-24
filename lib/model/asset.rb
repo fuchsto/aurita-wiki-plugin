@@ -30,6 +30,10 @@ module Wiki
       v.visit(self)
     end
 
+    def version_dump
+      text
+    end
+
   end 
 
 end # module

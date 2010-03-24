@@ -474,7 +474,7 @@ module Wiki
       version    = param(:version)    unless version
 
       article = Article.load(:article_id => article_id)
-      return unless Aurita.user.may_view_content?(article.content_id)
+      return unless Aurita.user.may_view_content?(article)
 
       version_entry = Article_Version.find(1).with((:article_id.is(article_id)) & 
                                                    (:version.is(version))).entity
