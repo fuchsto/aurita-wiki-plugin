@@ -19,15 +19,14 @@ module GUI
       @row_action  ||= 'Wiki::Media_Asset/editor_list_choice' unless params[:variant]
       @row_action  ||= 'Wiki::Media_Asset/editor_list_variant_choice'
       super(params, &block)
+      add_css_class(:search)
     end
 
     def element
       onkeyup = "Aurita.load({ action: '#{@row_action}/variant=#{@variant}&key='+$('#{@attrib[:id]}').value, 
                                element: '#{@attrib[:id]}_choices', 
                                silently: true });"
-      field_params = { :name    => @attrib[:name], 
-                       :id      => @attrib[:id], 
-                       :onkeyup => onkeyup }
+      field_params = @attrib.update(:onkeyup => onkeyup)
       HTML.div {
         GUI::Input_Field.new(field_params) + 
         HTML.div(:id => "#{@attrib[:id]}_choices", :class => :media_asset_list) {

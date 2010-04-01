@@ -105,8 +105,13 @@ module Wiki
         partial
       }
 
-      context_buttons = nil
+      sort_btn = HTML.div(:class => [ :context_menu_button, :sort_handle ]) { 
+        HTML.img(:src => '/aurita/images/icons/sort.gif')
+      } 
+
+      context_buttons = []
       context_buttons = partial.context_buttons if partial.respond_to?(:context_buttons)
+      context_buttons << sort_btn
 
       if Aurita.user.may_edit_content?(article) then
         tce = Context_Menu_Element.new(tce, 

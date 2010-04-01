@@ -49,6 +49,7 @@ module Wiki
        Media_Asset.title, 
        Content.tags, 
        Category.category_id, 
+       Media_Asset.description, 
        Media_Asset.media_folder_id, 
        :media_container_id
       ]
