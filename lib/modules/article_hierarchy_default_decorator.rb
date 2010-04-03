@@ -74,7 +74,7 @@ module Wiki
       
       article_string = ''
       parts_decorated().each { |part|
-        article_string << part.to_s if part
+        article_string << part.to_s 
       }
       
       template = @templates[:article]
@@ -101,6 +101,7 @@ module Wiki
                                     :article    => article, 
                                     :viewparams => @viewparams, 
                                     :part       => part_entity).first
+
       tce = HTML.div(:class => :article_text) { 
         partial
       }
@@ -115,14 +116,30 @@ module Wiki
 
       if Aurita.user.may_edit_content?(article) then
         tce = Context_Menu_Element.new(tce, 
+                                       :id                  => "article_part_asset_#{part_entity.asset_id}_contextual", 
                                        :show_button         => true, 
                                        :add_context_buttons => context_buttons, 
+                                       :class               => :article_contextual_partial, 
                                        :type                => part[:model].gsub('Aurita::Plugins::',''), 
-                                       :id                  => "article_part_asset_#{part_entity.asset_id}", 
                                        :params              => container_params)
+        div_buttons = HTML.div(:class => [ :context_menu_button, :sort_handle ]) { 
+          HTML.img(:src => '/aurita/images/icons/context_add_text_partial.gif') + HTML.span.label { tl(:add_text_partial) }  
+        } + HTML.div(:class => [ :context_menu_button, :sort_handle ]) { 
+          HTML.img(:src => '/aurita/images/icons/context_add_files_partial.gif') + HTML.span.label { tl(:add_files_partial) }
+        } 
+ 
+        tce += HTML.div.article_partial_divide(:id => "article_#{article.article_id}_part_#{part_entity.asset_id}") { 
+          Context_Menu_Element.new(:show_button     => true, 
+                                   :context_buttons => div_buttons, 
+                                   :entity          => part_entity, 
+                                   :type            => 'Wiki::Container', 
+                                   :params          => container_params) {
+            HTML.div.field { HTML.hr }
+          }
+        }
       end
       
-      return tce
+      return HTML.div.article_partial(:id => "article_part_asset_#{part_entity.asset_id}") { tce } 
     end
 
   end
