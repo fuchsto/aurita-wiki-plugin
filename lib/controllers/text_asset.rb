@@ -87,10 +87,12 @@ module Wiki
       position   = param(:position)
       position ||= param(:sortpos)
 
-      if !position then
+      if !position && param(:after_asset) then
+        position   = Container.load(:asset_id_child => param(:after_asset)).sortpos + 1
+      elsif !position then
         max_offset = Container.value_of.max(:sortpos).where(Container.content_id_parent == param(:content_id))
         max_offset = 0 if max_offset.nil? 
-        sortpos    = max_offset.to_i+1
+        position   = max_offset.to_i+1
       end
 
       container = Container.create(

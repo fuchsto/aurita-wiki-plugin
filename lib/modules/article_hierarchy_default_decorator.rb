@@ -125,17 +125,17 @@ module Wiki
                                        :type                => part[:model].gsub('Aurita::Plugins::',''), 
                                        :params              => container_params)
         div_buttons = HTML.div(:class => [ :context_menu_button, :sort_handle ]) { 
-          link_to(:controller => 'Wiki::Text_Asset', 
-                  :action     => :perform_add, 
-                  :position   => @partial_index+1, 
-                  :content_id => article.content_id) { 
+          link_to(:controller  => 'Wiki::Text_Asset', 
+                  :action      => :perform_add, 
+                  :after_asset => part_entity.asset_id, 
+                  :content_id  => article.content_id) { 
             HTML.img(:src => '/aurita/images/icons/context_add_text_partial.gif') + HTML.span.label { tl(:add_text_partial) }  
           }
         } + HTML.div(:class => [ :context_menu_button, :sort_handle ]) { 
-          link_to(:controller => 'Wiki::Media_Container', 
-                  :action     => :perform_add, 
-                  :position   => @partial_index+1, 
-                  :content_id => article.content_id) { 
+          link_to(:controller  => 'Wiki::Media_Container', 
+                  :action      => :perform_add, 
+                  :after_asset => part_entity.asset_id, 
+                  :content_id  => article.content_id) { 
             HTML.img(:src => '/aurita/images/icons/context_add_files_partial.gif') + HTML.span.label { tl(:add_files_partial) }
           }
         } 
