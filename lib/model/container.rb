@@ -30,6 +30,23 @@ module Wiki
       Asset.load(:asset_id => asset_id_child)
     end
 
+    def article
+      Article.load(:content_id => content_id_parent)
+    end
+
+    # Automatically re-sorts containers in a new 
+    # instances article. 
+    #
+    def self.before_create(params)
+      # Shift all containers after newly created instance 
+      # by 1 position: 
+      update { |c|
+        c.where((content_id_parent == params[:content_id_parent]) & 
+                (sortpos >= params[:sortpos]))
+        c.set(:sortpos => sortpos + 1)
+      }
+    end
+
   end 
 
   class Article < Aurita::Main::Content

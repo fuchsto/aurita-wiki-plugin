@@ -82,20 +82,23 @@ module Wiki
 
       content_id_parent = param(:content_id_parent) 
       content_id_parent = param(:content_id) unless content_id_parent
-      instance = super()
+      instance   = super()
 
-      if(param(:sortpos).to_s != '') then
+      position   = param(:position)
+      position ||= param(:sortpos)
+
+      if !position && param(:after_asset) then
+        position   = Container.load(:asset_id_child => param(:after_asset)).sortpos + 1
+      elsif !position then
         max_offset = Container.value_of.max(:sortpos).where(Container.content_id_parent == param(:content_id))
         max_offset = 0 if max_offset.nil? 
-        sortpos = max_offset.to_i+1
-      else
-        sortpos = param(:sortpos).to_i
+        position   = max_offset.to_i+1
       end
 
       container = Container.create(
                     :content_id_parent => content_id_parent, 
                     :asset_id_child    => instance.asset_id, 
-                    :sortpos           => sortpos
+                    :sortpos           => position
                   )
 
       article = Article.find(1).with(Article.content_id == content_id_parent).entity
