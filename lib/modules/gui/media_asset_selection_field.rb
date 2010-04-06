@@ -24,14 +24,14 @@ module GUI
 
     def element
       choices_id = "#{@attrib[:id]}_choices"
-      onkeyup    = "Aurita.load({ action: '#{@row_action}/variant=#{@variant}&key='+$('#{@attrib[:id]}').value, 
-                                  element: '#{@attrib[:id]}_choices', 
-                                  silently: true });"
       onfocus    = "$('#{choices_id}').show();"
       onblur     = "$('#{choices_id}').hide();"
+      onkeyup    = "Aurita.load({ action: '#{@row_action}/variant=#{@variant}&key='+$('#{@attrib[:id]}').value, 
+                                  element: '#{@attrib[:id]}_choices', 
+                                  onload: function() { #{onfocus} }, 
+                                  silently: true });"
 
-      field_params = @attrib.update(:onkeyup => onkeyup, 
-                                    :onfocus => onfocus)
+      field_params = @attrib.update(:onkeyup => onkeyup)
 
       HTML.div {
         GUI::Input_Field.new(field_params) + 
