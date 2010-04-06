@@ -660,6 +660,13 @@ module Wiki
       select_list
     end
 
+    def editor_list_download_link_choice
+      select_list = render_controller(Media_Asset_Folder_Controller, :list_choice, @params)
+      select_list.row_onclick = Proc.new { |m| "Aurita.Wiki.link_to_file_download('#{m.media_asset_id}'); $('message_box').hide(); " } 
+      select_list.rebuild
+      select_list
+    end
+
   end
 
 end

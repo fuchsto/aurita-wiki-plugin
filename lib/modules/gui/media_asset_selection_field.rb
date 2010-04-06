@@ -23,13 +23,21 @@ module GUI
     end
 
     def element
-      onkeyup = "Aurita.load({ action: '#{@row_action}/variant=#{@variant}&key='+$('#{@attrib[:id]}').value, 
-                               element: '#{@attrib[:id]}_choices', 
-                               silently: true });"
-      field_params = @attrib.update(:onkeyup => onkeyup)
+      choices_id = "#{@attrib[:id]}_choices"
+      onkeyup    = "Aurita.load({ action: '#{@row_action}/variant=#{@variant}&key='+$('#{@attrib[:id]}').value, 
+                                  element: '#{@attrib[:id]}_choices', 
+                                  silently: true });"
+      onfocus    = "$('#{choices_id}').show();"
+      onblur     = "$('#{choices_id}').hide();"
+
+      field_params = @attrib.update(:onkeyup => onkeyup, 
+                                    :onfocus => onfocus)
+
       HTML.div {
         GUI::Input_Field.new(field_params) + 
-        HTML.div(:id => "#{@attrib[:id]}_choices", :class => :media_asset_list) {
+        HTML.div(:id    => choices_id, 
+                 :class => :media_asset_list, 
+                 :style => 'display: none;') {
           
         }
       }

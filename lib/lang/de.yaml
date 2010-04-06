@@ -194,5 +194,12 @@ variant_thumb : klein
 variant_preview : mittel
 variant_medium : gro&szlig; 
 
+link_target : '&Ouml;ffnen in ...'
+open_in_new_window : Neuem Fenster
+open_in_same_window : Selben Fenster 
+
+link_to_media_asset_download : Link auf Dateidownload
+
+
 
 
