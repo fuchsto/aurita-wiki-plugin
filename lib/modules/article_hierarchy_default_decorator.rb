@@ -31,6 +31,7 @@ module Wiki
                       :form_element_rows => :form_element_listed, 
                       :form_element_cols => :form_element_horizontal }
       @templates.update(templates)
+      @partial_index = 0
     end
 
     def parts()
@@ -41,6 +42,7 @@ module Wiki
 
     def parts_decorated()
       return @parts_decorated if @parts_decorated
+      @partial_index   = 0
       @parts_decorated = parts().map { |p|
         decorate_part(p, @article) if p
       }
@@ -123,9 +125,19 @@ module Wiki
                                        :type                => part[:model].gsub('Aurita::Plugins::',''), 
                                        :params              => container_params)
         div_buttons = HTML.div(:class => [ :context_menu_button, :sort_handle ]) { 
-          HTML.img(:src => '/aurita/images/icons/context_add_text_partial.gif') + HTML.span.label { tl(:add_text_partial) }  
+          link_to(:controller => 'Wiki::Text_Asset', 
+                  :action     => :perform_add, 
+                  :position   => @partial_index+1, 
+                  :content_id => article.content_id) { 
+            HTML.img(:src => '/aurita/images/icons/context_add_text_partial.gif') + HTML.span.label { tl(:add_text_partial) }  
+          }
         } + HTML.div(:class => [ :context_menu_button, :sort_handle ]) { 
-          HTML.img(:src => '/aurita/images/icons/context_add_files_partial.gif') + HTML.span.label { tl(:add_files_partial) }
+          link_to(:controller => 'Wiki::Media_Container', 
+                  :action     => :perform_add, 
+                  :position   => @partial_index+1, 
+                  :content_id => article.content_id) { 
+            HTML.img(:src => '/aurita/images/icons/context_add_files_partial.gif') + HTML.span.label { tl(:add_files_partial) }
+          }
         } 
  
         tce += HTML.div.article_partial_divide(:id => "article_#{article.article_id}_part_#{part_entity.asset_id}") { 
@@ -138,6 +150,8 @@ module Wiki
           }
         }
       end
+
+      @partial_index += 1
       
       return HTML.div.article_partial(:id => "article_part_asset_#{part_entity.asset_id}") { tce } 
     end
