@@ -43,6 +43,7 @@ module Wiki
         tags.uniq!
         tags = "{#{tags.join(',')}}"
       else
+        tags = tags.to_s
         tags.downcase!
         tags = '{' << tags.gsub("'",'&apos;').gsub(',',' ').squeeze(' ').gsub(' ',',') << '}' 
         tags.gsub!('{{','{')

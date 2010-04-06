@@ -72,13 +72,13 @@ module Wiki
 
     def perform_add()
 
-      text                   = param(:text, tl(:text_asset_blank_text))
+      text = param(:text, tl(:text_asset_blank_text))
       if Wiki::Plugin.surpress_article_tag_links then
         @params[:display_text] = text
       else
         @params[:display_text] = Tagging.link_text_tags(Text_Asset_Parser.parse(param(:text).to_s.dup))
       end
-      @params[:tags]         = 'text'
+      @params[:tags] = :text
 
       content_id_parent = param(:content_id_parent) 
       content_id_parent = param(:content_id) unless content_id_parent
@@ -113,14 +113,15 @@ module Wiki
       content_id = Container.value_of(Container.content_id_parent).where(
                       Container.content_id_child == param(:content_id)
                    ).to_i
-      Content.touch(content_id, 'DELETE:TEXT')
+      article = load_instance().article
+      article.commit_version('DELETE:TEXT_ASSET')
       exec_js("Element.hide('container_#{param(:content_id)}'); ")
 
       super()
     end
 
     def perform_update
-      param[:text]         = param(:text).to_s.gsub("'",'&apos;')
+      param[:text] = param(:text).to_s.gsub("'",'&apos;')
       if Wiki::Plugin.surpress_article_tag_links then
         @params[:display_text] = param(:text)
       else
@@ -128,7 +129,7 @@ module Wiki
       end
       result  = super()
       article = load_instance().article
-      article.touch('UPDATE:TEXT')
+      article.commit_version('UPDATE:TEXT_ASSET')
       redirect_to(article)
       return result
     end
@@ -142,18 +143,32 @@ module Wiki
       form = GUI::Form.new(:id => :editor_link_form) 
       form.onsubmit = "Aurita.Wiki.insert_link('article_link_id', 'website_link'); return false;"
 
+      form.add(GUI::Select_Field.new(:options => { :_blank => tl(:open_in_new_window), 
+                                                   :_self  => tl(:open_in_same_window) }, 
+                                     :value   => :_self, 
+                                     :label   => tl(:link_target), 
+                                     :name    => :target))
+      
       form.add(GUI::Article_Selection_Field.new(:name  => :article, 
                                                 :key   => :article_id, 
                                                 :label => tl(:link_to_article), 
                                                 :id    => :article_link))
+      
       form.add(GUI::Media_Asset_Selection_Field.new(:name       => :media_asset, 
                                                     :key        => :media_asset_id, 
                                                     :label      => tl(:link_to_media_asset), 
                                                     :row_action => 'Wiki::Media_Asset/editor_list_link_choice', 
                                                     :id         => :media_asset_link))
+      form.add(GUI::Media_Asset_Selection_Field.new(:name       => :media_asset_download, 
+                                                    :key        => :media_asset_id, 
+                                                    :label      => tl(:link_to_media_asset_download), 
+                                                    :row_action => 'Wiki::Media_Asset/editor_list_download_link_choice', 
+                                                    :id         => :media_asset_download_link))
+      
       form.add(GUI::Text_Field.new(:name  => :url, 
                                    :label => tl(:link_to_website), 
                                    :id    => :website_link))
+
       decorate_form(form, 
                     :onclick_ok     => "$('editor_link_form').onsubmit(); $('message_box').hide();", 
                     :onclick_cancel => "$('message_box').hide();")

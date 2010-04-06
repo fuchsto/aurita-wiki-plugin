@@ -33,15 +33,15 @@ module Wiki
 
     def commit_version(action_type='CHANGED')
       last_version = latest_version
-      dump = accept_visitor(Aurita::Plugins::Wiki::Article_Hierarchy_Visitor.new(self)).inspect
+      dump = Aurita::Plugins::Wiki::Article_Hierarchy_Visitor.new(self).hierarchy.inspect
       version = 0
       version = (last_version.version.to_i + 1) if last_version
       if !last_version || dump != last_version.dump then
-        Article_Version.create(:article_id => article_id, 
-                               :version => version, 
+        Article_Version.create(:article_id    => article_id, 
+                               :version       => version, 
                                :user_group_id => Aurita.user.user_group_id, 
-                               :action_type => action_type, 
-                               :dump => dump)
+                               :action_type   => action_type, 
+                               :dump          => dump)
       end
     end
 

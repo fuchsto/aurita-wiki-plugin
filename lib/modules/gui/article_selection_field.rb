@@ -17,6 +17,7 @@ module GUI
       @key           = params[:key]
       @key         ||= :content_id
       @num_results ||= 10
+      add_css_class(:search)
       super(params, &block)
     end
 

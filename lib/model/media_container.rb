@@ -36,6 +36,11 @@ module Wiki
         raise e
       end
     end
+
+    def version_dump
+      media_assets.map { |m| m.media_asset_id }
+    end
+
   end
 
 end

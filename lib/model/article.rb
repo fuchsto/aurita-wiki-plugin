@@ -49,17 +49,6 @@ module Wiki
       title.downcase.gsub(' ','_')
     end
 
-    # Extends Content.touch by also commiting a new Article_Version entity. 
-    def self.touch(content_id, action='CHANGED')
-      super(content_id)
-      Article.find(1).with(Article.content_id == content_id).entity.commit_version(action)
-    end
-    # Same as Article.touch(article.content_id
-    def touch(attrib_name)
-#     Article.touch(content_id, action)
-      super(attrib_name)
-    end
-
     # Return highest version number of this 
     # article. 
     def max_version
@@ -67,37 +56,38 @@ module Wiki
     end
 
     # Returns part of an article hierarchy. 
-    # Immediate subs of an article are its Text_Asset 
-    # instances. 
-    # Article#subs returns a hash like: 
-    #
-    #  { :text_assets => [ text_asset, ... ]
-    #
-    # Text_Asset instances are ordered by their position 
-    # in the article
-    #
-    def subs
-      text_assets = Text_Asset.select { |c|
-        c.join(Container).on(Container.content_id_child == Text_Asset.content_id) { |ta|
-          ta.where(Container.content_id_parent == content_id) 
-          ta.order_by(Container.sortpos, :asc)
-        }
-      } 
-      { :text_assets => text_assets }
+    def elements(params={})
+      amount   = params[:max]
+      amount ||= params[:amount]
+      amount ||= :all
+      Asset.polymorphic_select { |a|
+        a.join(Container).on(Asset.asset_id == Container.asset_id_child) { |c|
+          c.where(Container.content_id_parent == content_id)
+          c.order_by(Container.sortpos, :asc)
+          c.limit(amount)
+        } 
+      }.to_a
     end
+    alias subs elements
+    alias parts elements
 
     def accept_visitor(v)
       v.visit(self)
     end
-
+    
     # Returns Text_Asset instances (paragraphs) of 
     # this article, as array, ordered by their positions. 
-    def text_assets
-      text_assets = []
-      Container.all_with(Container.content_id_parent == content_id).sort_by(:sortpos, :asc).entities.each { |c|
-        text_assets += Text_Asset.all_with(Asset.asset_id == c.asset_id_child).entities
-      }
-      text_assets
+    def text_assets(params={})
+      amount   = params[:max]
+      amount ||= params[:amount]
+      amount ||= :all
+      Text_Asset.select { |mc|
+        mc.join(Container).on(Container.asset_id_child == asset_id) { |c|
+          c.where(Container.content_id_parent == content_id)
+          c.order_by(Container.sortpos, :asc)
+          c.limit(amount)
+        }
+      }.to_a
     end
 
     # Returns Text_Asset instances (paragraphs) of 
@@ -117,6 +107,7 @@ module Wiki
         mc.join(Container).on(Container.asset_id_child == Media_Container.asset_id) { |c|
           c.where(Container.content_id_parent == content_id)
           c.order_by(Container.sortpos, :asc)
+          c.limit(amount)
         }
       }.to_a.map { |mc|
         assets += mc.media_assets
