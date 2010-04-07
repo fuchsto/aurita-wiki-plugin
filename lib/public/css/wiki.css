@@ -13,7 +13,7 @@
   margin: 0px; 
 }
 .article_partial_divide hr { 
-  background-color: #990000;
+  background-color: #c0c0c0;
   height: 1px; 
   padding: 0px; 
   margin: 0px; 
@@ -24,7 +24,7 @@
   min-height: 40px; 
 }
 .context_hover.article_contextual_partial { 
-  border-left: 1px solid #990000;
+  border-left: 1px solid #c0c0c0;
 }
 
 .article_view .context_hover { 

@@ -82,20 +82,23 @@ module Wiki
 
       content_id_parent = param(:content_id_parent) 
       content_id_parent = param(:content_id) unless content_id_parent
-      instance = super()
+      instance   = super()
 
-      if(param(:sortpos).to_s != '') then
+      position   = param(:position)
+      position ||= param(:sortpos)
+
+      if !position && param(:after_asset) then
+        position   = Container.load(:asset_id_child => param(:after_asset)).sortpos + 1
+      elsif !position then
         max_offset = Container.value_of.max(:sortpos).where(Container.content_id_parent == param(:content_id))
         max_offset = 0 if max_offset.nil? 
-        sortpos = max_offset.to_i+1
-      else
-        sortpos = param(:sortpos).to_i
+        position   = max_offset.to_i+1
       end
 
       container = Container.create(
                     :content_id_parent => content_id_parent, 
                     :asset_id_child    => instance.asset_id, 
-                    :sortpos           => sortpos
+                    :sortpos           => position
                   )
 
       article = Article.find(1).with(Article.content_id == content_id_parent).entity
@@ -143,18 +146,32 @@ module Wiki
       form = GUI::Form.new(:id => :editor_link_form) 
       form.onsubmit = "Aurita.Wiki.insert_link('article_link_id', 'website_link'); return false;"
 
+      form.add(GUI::Select_Field.new(:options => { :_blank => tl(:open_in_new_window), 
+                                                   :_self  => tl(:open_in_same_window) }, 
+                                     :value   => :_self, 
+                                     :label   => tl(:link_target), 
+                                     :name    => :target))
+      
       form.add(GUI::Article_Selection_Field.new(:name  => :article, 
                                                 :key   => :article_id, 
                                                 :label => tl(:link_to_article), 
                                                 :id    => :article_link))
+      
       form.add(GUI::Media_Asset_Selection_Field.new(:name       => :media_asset, 
                                                     :key        => :media_asset_id, 
                                                     :label      => tl(:link_to_media_asset), 
                                                     :row_action => 'Wiki::Media_Asset/editor_list_link_choice', 
                                                     :id         => :media_asset_link))
+      form.add(GUI::Media_Asset_Selection_Field.new(:name       => :media_asset_download, 
+                                                    :key        => :media_asset_id, 
+                                                    :label      => tl(:link_to_media_asset_download), 
+                                                    :row_action => 'Wiki::Media_Asset/editor_list_download_link_choice', 
+                                                    :id         => :media_asset_download_link))
+      
       form.add(GUI::Text_Field.new(:name  => :url, 
                                    :label => tl(:link_to_website), 
                                    :id    => :website_link))
+
       decorate_form(form, 
                     :onclick_ok     => "$('editor_link_form').onsubmit(); $('message_box').hide();", 
                     :onclick_cancel => "$('message_box').hide();")

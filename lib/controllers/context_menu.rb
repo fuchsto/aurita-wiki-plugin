@@ -136,8 +136,8 @@ module Wiki
 
       targets = { "article_#{param(:article_id)}" => "Wiki::Article/show/article_id=#{param(:article_id)}" }
  
-      switch_to_entry(:add_text_partial, "Wiki::Text_Asset/perform_add/content_id=#{content_id_parent}")
-      switch_to_entry(:add_files_partial, "Wiki::Media_Container/perform_add/content_id=#{content_id_parent}")
+#     switch_to_entry(:add_text_partial, "Wiki::Text_Asset/perform_add/content_id=#{content_id_parent}")
+#     switch_to_entry(:add_files_partial, "Wiki::Media_Container/perform_add/content_id=#{content_id_parent}")
       entry(:delete_container,  "Wiki::Container/delete/asset_id_child=#{asset_id_child}&content_id_parent=#{content_id_parent}&asset_id=#{asset_id_child}", {})
     end
 
