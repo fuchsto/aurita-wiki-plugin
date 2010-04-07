@@ -11,6 +11,49 @@ module Wiki
   extend Aurita::GUI::Helpers
   include Aurita::GUI
 
+    class Partial_Divide < Element
+    include Aurita::GUI
+    include Aurita::GUI::Link_Helpers
+    include Aurita::GUI::I18N_Helpers
+
+      def initialize(params={})
+        @params = params
+        super()
+      end
+
+      def string
+        partial = @params[:partial]
+        article = partial.article
+        div_buttons = HTML.div(:class => [ :context_menu_button, :sort_handle ]) { 
+          link_to(:controller  => 'Wiki::Text_Asset', 
+                  :action      => :perform_add, 
+                  :after_asset => partial.asset_id, 
+                  :content_id  => article.content_id) { 
+            HTML.img(:src => '/aurita/images/icons/context_add_text_partial.gif') + HTML.span.label { tl(:add_text_partial) }  
+          }
+        } + HTML.div(:class => [ :context_menu_button, :sort_handle ]) { 
+          link_to(:controller  => 'Wiki::Media_Container', 
+                  :action      => :perform_add, 
+                  :after_asset => partial.asset_id, 
+                  :content_id  => article.content_id) { 
+            HTML.img(:src => '/aurita/images/icons/context_add_files_partial.gif') + HTML.span.label { tl(:add_files_partial) }
+          }
+        } 
+
+        HTML.div.article_partial_divide(:id => "article_#{article.article_id}_part_#{partial.asset_id}") { 
+          Context_Menu_Element.new(:show_button     => true, 
+                                   :context_buttons => div_buttons, 
+                                   :entity          => partial, 
+                                   :type            => 'Wiki::Container', 
+                                   :params          => @params[:params]) {
+            HTML.div.field { HTML.hr }
+          }
+        }.string
+      end
+
+    end # class Partial_Divide
+
+
     attr_accessor :hierarchy, :viewparams, :templates
     
     def initialize(article_or_hierarchy, templates={})
@@ -124,31 +167,8 @@ module Wiki
                                        :class               => :article_contextual_partial, 
                                        :type                => part[:model].gsub('Aurita::Plugins::',''), 
                                        :params              => container_params)
-        div_buttons = HTML.div(:class => [ :context_menu_button, :sort_handle ]) { 
-          link_to(:controller  => 'Wiki::Text_Asset', 
-                  :action      => :perform_add, 
-                  :after_asset => part_entity.asset_id, 
-                  :content_id  => article.content_id) { 
-            HTML.img(:src => '/aurita/images/icons/context_add_text_partial.gif') + HTML.span.label { tl(:add_text_partial) }  
-          }
-        } + HTML.div(:class => [ :context_menu_button, :sort_handle ]) { 
-          link_to(:controller  => 'Wiki::Media_Container', 
-                  :action      => :perform_add, 
-                  :after_asset => part_entity.asset_id, 
-                  :content_id  => article.content_id) { 
-            HTML.img(:src => '/aurita/images/icons/context_add_files_partial.gif') + HTML.span.label { tl(:add_files_partial) }
-          }
-        } 
- 
-        tce += HTML.div.article_partial_divide(:id => "article_#{article.article_id}_part_#{part_entity.asset_id}") { 
-          Context_Menu_Element.new(:show_button     => true, 
-                                   :context_buttons => div_buttons, 
-                                   :entity          => part_entity, 
-                                   :type            => 'Wiki::Container', 
-                                   :params          => container_params) {
-            HTML.div.field { HTML.hr }
-          }
-        }
+        tce += Partial_Divide.new(:partial => part_entity, 
+                                  :params  => container_params).string
       end
 
       @partial_index += 1
