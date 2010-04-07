@@ -21,17 +21,12 @@
 
 .article_contextual_partial { 
   border-left: 1px solid transparent; 
+  min-height: 40px; 
 }
 .context_hover.article_contextual_partial { 
   border-left: 1px solid #990000;
 }
 
-.article_view .highlighted { 
-  margin-left: -2px; 
-  padding-left: 2px; 
-  margin-right: -2px; 
-  padding-right: 2px; 
-}
 .article_view .context_hover { 
   margin-left: -4px; 
   padding-left: 4px; 
