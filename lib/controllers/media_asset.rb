@@ -167,7 +167,7 @@ module Wiki
       form[Content.tags] = Tag_Autocomplete_Field.new(:name => Content.tags.to_s, :label => tl(:tags))
       form[Content.tags].required!
       form['upload_file[]'].required!
-      form[Media_Asset.title].required = false
+      form[Media_Asset.title] = nil
 
       exec_js('Aurita.Main.init_autocomplete_tags();')
 

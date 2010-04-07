@@ -16,79 +16,53 @@ module Wiki
     attr_accessor :hierarchy
     attr_reader :viewparams
 
-    
     def initialize(version_entry, templates={})
       @version_entry = version_entry
-      @templates = { :article           => :article_decorator, 
-                     :form_view_rows    => :form_view_vertical, 
-                     :form_view_cols    => :form_view, 
-                     :form_element_rows => :form_element_listed, 
-                     :form_element_cols => :form_element_horizontal }
-      @templates.update(templates)
-      @hierarchy = eval(version_entry.dump)
+      @hierarchy     = eval(version_entry.dump)
+      article_meta   = @hierarchy[:meta]
+      @article       = Article.get(article_meta[:article_id])
+      super(@hierarchy)
+      
+      STDERR.puts '---------- HIER ----------'
+      STDERR.puts @hierarchy.inspect
+      STDERR.puts '---------- END -----------'
     end
 
-    protected
+    def decorate_part(part, article=nil)
+      part.inspect
+    end
 
-    # Expands dump to full hierarchy. 
-    def decorate_article
-      article_content_id     = @hierarchy.keys.first
-      article_set            = @hierarchy[article_content_id]
-      article                = Article.find(1).with(Article.content_id == article_content_id).entity
-      article_set[:instance] = article
-      article_set[:text_assets].map { |ta|
-        text   = ta[:text_asset].dup
-        text ||= ta[:text].dup
-        ta[:text_asset] = Text_Asset.create_shallow(:text          => text, 
-                                                    :display_text  => text, 
-                                                    :tags          => 'text', 
-                                                    :content_id    => 0, 
-                                                    :text_asset_id => 0)
-        ta[:media_assets].map! { |ma| 
-          ma = Media_Asset.load(:media_asset_id => ma)
-        }
-        
-      # TODO: Use plugin hooks here: 
-      #  ta[:todo_asset] = Todo_Asset.load(:todo_asset_id => ta[:todo_asset]) if ta[:todo_asset]
-      #  ta[:form_asset] = Form_Asset.load(:form_asset_id => ta[:form_asset]) if ta[:form_asset]
-        
-        parts = Aurita::Plugin_Register.get(Hook.wiki.article.article_part, 
-                                            :article    => article, 
-                                            :text_asset => ta[:text_asset_id])
-
-        parts.each { |part|
-          ta[part.part_type] = part.part_entity
-        }
-      }
-      @hierarchy[article_content_id] = article_set
-
-      author_user             = User_Profile.load(:user_group_id => article.user_group_id)
-      version_author_user     = User_Profile.load(:user_group_id => @version_entry.user_group_id)
-      latest_version          = article.latest_version
+    def decorate_article(article=nil)
+      article        ||= @article
+      article_comments = Content_Comment_Controller.list_string(article.content_id) 
+      article_tags     = view_string(:editable_tag_list, :content => article)
+      article_version  = Article_Version.value_of.max(:version).with(Article_Version.article_id == article.article_id).to_i
+      
+      author_user      = User_Profile.load(:user_group_id => article.user_group_id) 
+      latest_version   = article.latest_version
       if latest_version then
         last_change_user = User_Profile.load(:user_group_id => article.latest_version.user_group_id) 
       else
         last_change_user = author_user
       end
-
+      
       article_string = ''
-      text_assets = article_set[:text_assets]
-      text_assets.each { |ta|
-        article_string << decorate_container(ta, article)
+      parts_decorated().each { |part|
+        article_string << part.to_s 
       }
-      @string = view_string(@templates[:article], 
-                            :article             => article, 
-                            :latest_version      => article.latest_version_number, 
-                            :version_dump        => article_set, 
-                            :version_entry       => @version_entry, 
-                            :article_content     => article_string, 
-                            :active_version      => @version_entry.version, 
-                            :version_author_user => version_author_user, 
-                            :last_change_user    => last_change_user, 
-                            :author_user         => author_user, 
-                            :content_tags        => article_set[:article][:tags], 
-                            :entry_counter       => 0)
-
+      
+      template = @templates[:article]
+      template = @templates[:article_public] if @viewparams['public'] == 'false' 
+      @string = view_string(template, 
+                            :version_entry    => @version_entry, 
+                            :article          => article, 
+                            :article_content  => article_string, 
+                            :article_version  => article_version, 
+                            :last_change_user => last_change_user, 
+                            :author_user      => author_user, 
+                            :content_tags     => article_tags, 
+                            :content_comments => article_comments, 
+                            :entry_counter    => 0)
     end
 
   end

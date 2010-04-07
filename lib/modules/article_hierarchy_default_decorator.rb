@@ -58,22 +58,24 @@ module Wiki
     
     def initialize(article_or_hierarchy, templates={})
       if article_or_hierarchy.kind_of?(Article) then
-        @hierarchy  = false
-        @article    = article_or_hierarchy
+        @hierarchy ||= false
+        @article   ||= article_or_hierarchy
       else
-        @hierarchy  = article_or_hierarchy
-        @article    = false
+        @hierarchy ||= article_or_hierarchy
+        @article   ||= false
       end
       @article  ||= @hierarchy[:instance]
       @string     = ''
       @viewparams = {}
-      @templates  = { :article           => :article_decorator, 
-                      :article_public    => :article_public_decorator, 
-                      :form_view_rows    => :form_view_vertical, 
-                      :form_view_cols    => :form_view, 
-                      :form_element_rows => :form_element_listed, 
-                      :form_element_cols => :form_element_horizontal }
-      @templates.update(templates)
+      if(!@templates) then
+        @templates  = { :article           => :article_decorator, 
+                        :article_public    => :article_public_decorator, 
+                        :form_view_rows    => :form_view_vertical, 
+                        :form_view_cols    => :form_view, 
+                        :form_element_rows => :form_element_listed, 
+                        :form_element_cols => :form_element_horizontal }
+        @templates.update(templates)
+      end
       @partial_index = 0
     end
 
