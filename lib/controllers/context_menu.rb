@@ -24,11 +24,6 @@ module Wiki
       entry(:recommend_article, "Content_Recommendation/editor/type=ARTICLE&content_id=#{content_id}")
 
       if Aurita.user.may_edit_content?(article) then 
-        if !param(:no_inline) then
-          switch_to_entry(:add_text_partial, "Wiki::Text_Asset/perform_add/content_id=#{content_id}") 
-          switch_to_entry(:add_files_partial, "Wiki::Media_Container/perform_add/content_id=#{content_id}") 
-        end
-
         plugin_get(Hook.wiki.article.hierarchy.partial_type).each { |type|
           model    = type[:model]
           label    = type[:label]

@@ -35,15 +35,15 @@ module Wiki
       elsif !position then
         max_offset = Container.value_of.max(:sortpos).where(Container.content_id_parent == param(:content_id))
         max_offset = 0 if max_offset.nil? 
-        sortpos = max_offset.to_i+1
+        position = max_offset.to_i+1
       else
-        sortpos = param(:sortpos).to_i
+        position = param(:sortpos).to_i
       end
 
       container = Container.create(
                     :content_id_parent => content_id_parent, 
                     :asset_id_child    => instance.asset_id, 
-                    :sortpos           => sortpos
+                    :sortpos           => position
                   )
 
       article = Article.find(1).with(Article.content_id == content_id_parent).entity
