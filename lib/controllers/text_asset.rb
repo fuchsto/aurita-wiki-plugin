@@ -167,6 +167,10 @@ module Wiki
                                                     :label      => tl(:link_to_media_asset_download), 
                                                     :row_action => 'Wiki::Media_Asset/editor_list_download_link_choice', 
                                                     :id         => :media_asset_download_link))
+
+      plugin_get(Hook.wiki.text_asset.link_editor).each { |field|
+        form.add(field)
+      }
       
       form.add(GUI::Text_Field.new(:name  => :url, 
                                    :label => tl(:link_to_website), 
