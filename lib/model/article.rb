@@ -82,7 +82,7 @@ module Wiki
       amount ||= params[:amount]
       amount ||= :all
       Text_Asset.select { |mc|
-        mc.join(Container).on(Container.asset_id_child == asset_id) { |c|
+        mc.join(Container).on(Container.asset_id_child == Text_Asset.asset_id) { |c|
           c.where(Container.content_id_parent == content_id)
           c.order_by(Container.sortpos, :asc)
           c.limit(amount)
