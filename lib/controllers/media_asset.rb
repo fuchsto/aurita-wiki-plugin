@@ -269,7 +269,7 @@ module Wiki
         }
         return instances
       rescue ::Exception => excep
-        log { 'Error in image upload: ' << excep.message } 
+        log { 'Error in file upload: ' << excep.message } 
         excep.backtrace.each { |l| log { l } } 
         begin
           instance.delete 

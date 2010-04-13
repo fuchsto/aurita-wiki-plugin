@@ -242,6 +242,9 @@ table.media_asset_table td.date {
   padding: 2px; 
   background: url('/aurita/images/icons/loading.gif') no-repeat scroll 88px 11px; 
 }
+.media_asset_thumbnail .image.no_loading_icon { 
+  background: none !important; 
+}
 
 .media_asset_thumbnail.preview .image { 
   height: 150px; 

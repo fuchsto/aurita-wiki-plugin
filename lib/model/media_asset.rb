@@ -34,6 +34,10 @@ module Wiki
       u ||= User_Group.load(:user_group_id => 5)
     end
 
+    def title
+      self.get_attribute_values()[:title].gsub(".#{extension}",'')
+    end
+
     def filesize
       self.get_attribute_values()[:filesize].to_i.filesize
     end
@@ -49,10 +53,13 @@ module Wiki
       asset_folder_id   = args[:media_folder_id] 
       asset_folder_id ||= 0
       if asset_folder_id.to_i != 0 then
-        folder = Media_Asset_Folder.find(1).with(Media_Asset_Folder.media_asset_folder_id == asset_folder_id).entity
+        folder      = Media_Asset_Folder.find(1).with(Media_Asset_Folder.media_asset_folder_id == asset_folder_id).entity
         folder_path = folder.folder_path
         folder_tags = ([folder] + folder_path).map { |f| f.physical_path.downcase }
-        tmp_tags = (args[:tags].strip.split(' ') + folder_tags)
+        tmp_tags    = (args[:tags].strip.split(' ')) unless args[:tags].is_a?(Array)
+        tmp_tags  ||= args[:tags]
+        tmp_tags   += folder_tags
+        tmp_tags.flatten!
         tmp_tags.uniq!
         args[:tags] = tmp_tags.join(' ')
         log(tmp_tags)

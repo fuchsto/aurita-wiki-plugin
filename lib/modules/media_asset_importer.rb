@@ -87,22 +87,22 @@ module Wiki
     def import(file_info={})
     # {{{ 
       id = @media_asset.media_asset_id
-      @@logger.log('FILE IMPORT | File info: ' << file_info.inspect)
+      @@logger.log("FILE IMPORT File info: #{file_info.inspect}")
       @media_asset.extension   = file_info[:original_filename].split('.')[-1].downcase if file_info[:original_filename]
       @media_asset.extension ||= file_info[:server_filename].split('.')[-1].downcase
       @media_asset.mime        = file_info[:type]
       @media_asset.filesize    = file_info[:filesize]
       @media_asset.checksum    = file_info[:md5_checksum]
-      @@logger.log('FILE IMPORT | FS path: ' << @media_asset.fs_path)
-      @@logger.log('FILE IMPORT | MIME: ' << @media_asset.mime)
-      @@logger.log('FILE IMPORT | MIME extension: ' << @media_asset.extension)
       @media_asset.commit
+      @@logger.log("FILE IMPORT FS path: #{@media_asset.fs_path}")
+      @@logger.log("FILE IMPORT MIME: #{@media_asset.mime}")
+      @@logger.log("FILE IMPORT MIME extension: #{@media_asset.extension}")
       extension = @media_asset.extension
 
       begin
         FileUtils.move(file_info[:server_filepath], @media_asset.fs_path)
       rescue ::Exception => e
-        raise ::Exception.new("Failed to import file from path #{file_info[:server_filepath].inspect}")
+        raise ::Exception.new("Failed to import file from path #{file_info[:server_filepath].inspect} to #{@media_asset.fs_path.inspect}. Media asset: #{@media_asset.inspect}")
       end
       File.chmod(0777, @media_asset.fs_path)
 
