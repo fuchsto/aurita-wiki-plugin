@@ -187,15 +187,19 @@ module Wiki
       key   = params[:key].to_s.strip
       tags  = key.split(' ')
       tag   = "%#{tags.last}%"
+      num   = params[:amount]
+      num ||= :all
 
       constraints = Article.title.ilike(tag)
-      articles    = Article.all_with((Article.has_tag(tags) | 
+      articles    = Article.find(num).with((Article.has_tag(tags) | 
                                       Article.title.ilike("%#{key}%")
                                      ) & 
                                      Article.is_accessible).sort_by(Wiki::Article.article_id, :desc).entities
 
+      num -= articles.length
       key.to_named_html_entities!
-      articles   += Article.all_with(Article.is_accessible & Article.content_id.in(
+      articles   += Article.find(num).with(Article.is_accessible & Article.content_id.in(
+
                                        Container.select(Container.content_id_parent) { |cid|
                                          cid.join(Text_Asset).on(Container.asset_id_child == Text_Asset.asset_id) { |ta|
                                            ta.where(Text_Asset.text.ilike("%#{key}%"))

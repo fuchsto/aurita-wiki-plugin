@@ -98,7 +98,7 @@ module Wiki
     end
 
     def inspect
-      puts text.to_s[0..200]
+      "Text_Asset #{text_asset_id}"
     end
       
   end 
