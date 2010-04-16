@@ -197,7 +197,10 @@ module Wiki
                                      Article.is_accessible).sort_by(Wiki::Article.article_id, :desc).entities
 
       num -= articles.length
-      key.to_named_html_entities!
+      begin
+        key.to_named_html_entities! # UTF-8 could be broken (1-Byte) but okay nonetheless
+      rescue ::Exception => e
+      end
       articles   += Article.find(num).with(Article.is_accessible & Article.content_id.in(
 
                                        Container.select(Container.content_id_parent) { |cid|
