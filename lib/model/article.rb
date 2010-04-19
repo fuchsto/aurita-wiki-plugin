@@ -21,9 +21,12 @@ module Wiki
 
     has_n Asset, :content_id
     
-    use_label :title
     def label_string
       title
+    end
+
+    def label
+      title().to_s
     end
 
     expects :title

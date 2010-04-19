@@ -612,11 +612,12 @@ module Wiki
       form = GUI::Form.new(:id => :editor_insert_file_form) 
       form.add_css_class(:wide)
 
-      form.add(GUI::Media_Asset_Selection_Field.new(:name    => :media_asset, 
-                                                    :key     => :media_asset_id, 
-                                                    :variant => true, 
-                                                    :label   => tl(:select_file), 
-                                                    :id      => :media_asset))
+      form.add(GUI::Media_Asset_Selection_Field.new(:name       => :media_asset, 
+                                                    :key        => :media_asset_id, 
+                                                    :variant    => true, 
+                                                    :label      => tl(:select_file), 
+                                                    :row_action => 'Wiki::Media_Asset/editor_list_variant_choice', 
+                                                    :id         => :media_asset))
       element = decorate_form(form, 
                               :buttons => Proc.new { |btn_params|
                                 Text_Button.new(:class   => :submit, 
@@ -649,6 +650,19 @@ module Wiki
       assets = Media_Asset.find(15).with(clause).entities
       select_list = GUI::Media_Asset_Select_Variant_List.new(assets)
       select_list.onselect = Proc.new { |m,variant| "Aurita.Wiki.insert_file('#{m.media_asset_id}', #{variant}); " } 
+      select_list.rebuild
+      select_list
+    end
+
+    def selection_list_choice
+      list_id     = param(:list_id)
+      field_name  = 'media_asset_ids'
+      select_list = render_controller(Media_Asset_Folder_Controller, :list_choice, @params)
+      select_list.row_onclick = Proc.new { |m| "Aurita.Wiki.media_asset_selection_list_onclick({ media_asset_id: '#{m.media_asset_id}', 
+                                                                                                 selection_list_id: '#{list_id}', 
+                                                                                                 label: '#{m.title}', 
+                                                                                                 name: '#{field_name}'
+                                                                                               }); " } 
       select_list.rebuild
       select_list
     end

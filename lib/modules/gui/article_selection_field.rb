@@ -18,24 +18,40 @@ module GUI
       @key         ||= :content_id
       @num_results ||= 10
       add_css_class(:search)
+      if @attrib[:value].respond_to?(:pkey) && @attrib[:value].respond_to?(:label) then
+        @value         = @attrib[:value].pkey
+        @option_label  = @attrib[:value].label
+      else
+        @value         = @attrib[:value]
+        @option_label  = @attrib[:option_label]
+      end
       super(params, &block)
+      @attrib.delete(:value)
+      @attrib.delete(:option_label)
     end
 
     def element
       HTML.div { 
-        HTML.ul(:id => "#{@attrib[:id]}_selection") { } + 
+        HTML.ulist(:id => "#{@attrib[:id]}_selection") { selected_entry } + 
         GUI::Input_Field.new(@attrib) + 
         HTML.div.autocomplete(:id    => "#{@attrib[:id]}_choices", 
                               :style => 'position: relative !important;') { } 
       }
     end
 
+    private
+
+    def selected_entry
+      HTML.li { @option_label + HTML.input(:type => :hidden, :name => @key, :value => @value) } if @value && @option_label
+    end
+
+    public
+
     def js_initialize()
       input_id     = @attrib[:id]
       choices_id   = "#{input_id}_choices"
       selection_id = "#{input_id}_selection"
 
-#      $('#{selection_id}').innerHTML = '<li>'+li.innerHTML+'<input type="hidden" name="content_id" value="'+li.id+'" /></li>';
 code = <<JS
       new Ajax.Autocompleter("#{input_id}", 
                              "#{choices_id}", 

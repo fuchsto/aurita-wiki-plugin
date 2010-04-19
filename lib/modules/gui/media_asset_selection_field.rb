@@ -13,9 +13,9 @@ module GUI
       @attrib = params
       @attrib[:id]   = 'media_asset' unless @attrib[:id]
       @attrib[:name] = 'media_asset' unless @attrib[:name]
-      @key           = params[:key] || :content_id
-      @variant       = params[:variant] || :thumb
-      @row_action    = params[:row_action]
+      @key         ||= params[:key] || :content_id
+      @variant     ||= params[:variant] || :thumb
+      @row_action  ||= params[:row_action]
       @row_action  ||= 'Wiki::Media_Asset/editor_list_choice' unless params[:variant]
       @row_action  ||= 'Wiki::Media_Asset/editor_list_variant_choice'
       super(params, &block)
