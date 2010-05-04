@@ -369,8 +369,8 @@ table.media_asset_table td.date {
 }
 
 .article_content td.mceToolbar { 
-  background: url('/aurita/images/icons/box_header_bg.png') repeat-x;
-  background-color: #c5c5c5; 
+/*  background: url('/aurita/images/icons/box_header_bg.png') repeat-x;*/
+  background-color: #f0f0f0; 
 }
 .article_content .mceLayout, .article_content .defaultSkin table.mceLayout { 
   border: 1px outset white; 
@@ -496,4 +496,14 @@ a.add_file_button {
   margin: 3px 3px -5px 0px; 
 }
 
-
+.container_inline_editor_button_bar { 
+  position: relative; 
+  top: -1px; 
+  padding: 4px 3px 5px 4px; 
+  margin: 0px 0px -2px; 
+  background-color: rgb(240, 240, 240); 
+  width: 50px; 
+  border-width: 1px 1px 0px; 
+  border-style: outset outset none; 
+  border-color: white white;
+}
