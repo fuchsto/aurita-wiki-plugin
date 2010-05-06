@@ -1,6 +1,7 @@
 
 require('aurita-gui/widget')
 Aurita.import_plugin_module :wiki, :gui, :media_asset_selection_field
+Aurita.import_plugin_module :wiki, :gui, :media_asset_selection_list_entry
 
 module Aurita
 module Plugins
