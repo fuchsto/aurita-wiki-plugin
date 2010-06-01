@@ -6,7 +6,7 @@ module Plugins
 module Wiki
 module GUI
 
-  class Article_Selection_Field < Aurita::GUI::Form_Field
+  class Article_Select_Field < Aurita::GUI::Form_Field
   include Aurita::GUI
 
     def initialize(params={}, &block)

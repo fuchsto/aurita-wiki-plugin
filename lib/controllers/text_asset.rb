@@ -5,9 +5,9 @@ begin
 rescue LoadError => ignore
 end
 
-Aurita.import_plugin_module :wiki, 'gui/article_selection_field'
-Aurita.import_plugin_module :wiki, 'gui/media_asset_selection_field'
-Aurita.import_plugin_module :wiki, 'gui/text_asset_partial'
+Aurita.import_plugin_module :wiki, :gui, :article_select_field
+Aurita.import_plugin_module :wiki, :gui, :media_asset_selection_field
+Aurita.import_plugin_module :wiki, :gui, :text_asset_partial
 
 module Aurita
 module Plugins
@@ -152,10 +152,10 @@ module Wiki
                                      :label   => tl(:link_target), 
                                      :name    => :target))
       
-      form.add(GUI::Article_Selection_Field.new(:name  => :article, 
-                                                :key   => :article_id, 
-                                                :label => tl(:link_to_article), 
-                                                :id    => :article_link))
+      form.add(GUI::Article_Select_Field.new(:name  => :article, 
+                                             :key   => :article_id, 
+                                             :label => tl(:link_to_article), 
+                                             :id    => :article_link))
       
       form.add(GUI::Media_Asset_Selection_Field.new(:name       => :media_asset, 
                                                     :key        => :media_asset_id, 
