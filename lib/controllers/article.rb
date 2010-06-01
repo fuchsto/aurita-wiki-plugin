@@ -270,7 +270,7 @@ module Wiki
     # {{{
       
       article  = load_instance()
-      form     = model_form(:model => Article, :instance => article, :action => :perform_update)
+      form     = update_form()
       category = Category_Selection_List_Field.new()
       category.value = article.category_ids
       form.add(category)
