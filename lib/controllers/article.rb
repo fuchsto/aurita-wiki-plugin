@@ -301,7 +301,7 @@ module Wiki
     def perform_add
     # {{{
       article = super()
-      article.set_categories(param(:category_ids))
+      article.set_categories(param(:category_id))
 
       @params.set('public.text_asset.text', tl(:text_asset_blank_text))
       @params.set('public.article.content_id', article.content_id)
@@ -323,7 +323,7 @@ module Wiki
       end
       article    = load_instance()
       content_id = article.content_id
-      article.set_categories(param(:category_ids))
+      article.set_categories(param(:category_id))
 
       super()
 

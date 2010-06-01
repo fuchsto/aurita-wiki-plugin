@@ -2,8 +2,9 @@
 <div style="margin-left: 0px; margin-top: 0px; width: 100%; ">
 
 <%= gui.begin_form_for('Wiki::Text_Asset.perform_update', 
-                       :name => "container_form_#{text_asset_id}", 
-                       :id   => "container_form_#{text_asset_id}") 
+                       :target => :asset_upload_frame,
+                       :name   => "container_form_#{text_asset_id}", 
+                       :id     => "container_form_#{text_asset_id}") 
 %>
 
   <%= gui.hidden_field(:text_asset_id     => text_asset_id,

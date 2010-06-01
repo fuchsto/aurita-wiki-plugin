@@ -6,10 +6,6 @@ module Plugins
 module Wiki
 
 
-  # Usage: 
-  #
-  #  plugin_get(Hook.right_column)
-  #
   class Permissions < Aurita::Plugin::Manifest
 
     register_permission(:create_articles, 
