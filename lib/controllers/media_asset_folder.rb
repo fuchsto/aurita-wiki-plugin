@@ -207,7 +207,7 @@ module Wiki
       @params[:user_group_id] = Aurita.user.user_group_id
       @params[:media_folder_id__parent] = '0' unless param(:media_folder_id__parent).to_s != ''
       instance = super() 
-      Media_Asset_Folder_Category.create_for(instance, param(:category_ids))
+      Media_Asset_Folder_Category.create_for(instance, param(:category_id))
       if param(:media_folder_id__parent) == '0' then
         redirect(:element => 'media_folder_box_body', :to => :tree_box_body)
       else
@@ -241,7 +241,7 @@ module Wiki
 
       super()
       
-      Media_Asset_Folder_Category.update_for(instance, param(:category_ids))
+      Media_Asset_Folder_Category.update_for(instance, param(:category_id))
 
       if param(:media_folder_id__parent) == '0' then
         redirect(:element => 'media_folder_box_body', :to => :tree_box_body)
