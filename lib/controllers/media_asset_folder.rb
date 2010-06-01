@@ -52,14 +52,6 @@ module Wiki
                                                  (Media_Asset_Folder.trashbin == 't')).entity 
 
       body = [ ]
-      if Aurita.user.may(:create_public_folders) then
-        add_folder = HTML.a(:class   => :icon, 
-                            :onclick => "Aurita.load({ action: 'Wiki::Media_Asset_Folder/add/'});") { 
-          HTML.img(:src => '/aurita/images/icons/add_folder.gif', :class => :icon) + 
-          tl(:add_folder) 
-        } 
-        body << add_folder
-      end
       body << tree_box_body 
       box.body = body
       return box
@@ -71,9 +63,18 @@ module Wiki
                                                                           (Media_Asset_Folder.user_group_id == Aurita.user.user_group_id)), 
                                                            :parent_id => 100)
       HTML.div.media_asset_folder_tree_box { 
-        view_string(:media_asset_folder_box, 
-                    :user_folder    => user_folder, 
-                    :public_folders => public_folders) 
+        s = ''
+        if Aurita.user.may(:create_public_folders) then
+          add_folder = HTML.a(:class   => :icon, 
+                              :onclick => "Aurita.load({ action: 'Wiki::Media_Asset_Folder/add/'});") { 
+            HTML.img(:src => '/aurita/images/icons/add_folder.gif', :class => :icon) + 
+            tl(:add_folder) 
+          } 
+          s << add_folder.to_s
+        end
+        s + view_string(:media_asset_folder_box, 
+                        :user_folder    => user_folder, 
+                        :public_folders => public_folders) 
       }
     end
 
