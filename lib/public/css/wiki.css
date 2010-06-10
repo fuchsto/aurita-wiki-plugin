@@ -42,7 +42,9 @@
   background-color: #dfdfdf; 
 }
 .form_fields .media_asset_list { 
-  width: 338px; 
+  width: 294px; 
+  margin-left: 10px; 
+  border: 1px solid white; 
 }
 .wide .form_fields .media_asset_list { 
   width: 538px; 
@@ -199,7 +201,7 @@ table.media_asset_table td.icon {
   height: 71px; 
 }
 table.media_asset_table tr.even td.icon { 
-/*  background-color: #c0c0c0; */
+  border-left: 0 none; 
 }
 table.media_asset_table tr.even td { 
 }

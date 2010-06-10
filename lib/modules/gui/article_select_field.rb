@@ -33,7 +33,7 @@ module GUI
     def element
       HTML.div { 
         HTML.ulist(:id => "#{@attrib[:id]}_selection") { selected_entry } + 
-        GUI::Input_Field.new(@attrib) + 
+        GUI::Input_Field.new(@attrib).decorated_element + 
         HTML.div.autocomplete(:id    => "#{@attrib[:id]}_choices", 
                               :style => 'position: relative !important;') { } 
       }
@@ -42,7 +42,7 @@ module GUI
     private
 
     def selected_entry
-      HTML.li { @option_label + HTML.input(:type => :hidden, :name => @key, :value => @value) } if @value && @option_label
+      HTML.li { @option_label + HTML.input(:type => :hidden, :name => @key, :value => @value).decorated_element } if @value && @option_label
     end
 
     public
