@@ -1,4 +1,16 @@
 
+.icon_button.add_article .icon { 
+  background: url('/aurita/images/icons/article_add.gif') no-repeat scroll 6px 3px; 
+}
+.icon_button.editor_save .icon { 
+  background: url('/aurita/images/icons/save.gif') no-repeat scroll 4px 5px; 
+}
+.icon_button.editor_close .icon { 
+  background: url('/aurita/images/icons/close.gif') no-repeat scroll 4px 5px; 
+}
+
+
+
 .article_content ul li { margin-left: 3px; list-style-type: square; }
 .article_content ol li { margin-left: 3px; list-style-type: decimal; }
 .article_content { line-height: 20px; } 
@@ -505,8 +517,17 @@ a.add_file_button {
   padding: 4px 3px 5px 4px; 
   margin: 0px 0px -2px; 
   background-color: rgb(240, 240, 240); 
-  width: 50px; 
+  width: 65px; 
   border-width: 1px 1px 0px; 
   border-style: outset outset none; 
   border-color: white white;
 }
+
+.container_inline_editor_button_bar .button { 
+  float: left; 
+  width: 30px; 
+  padding: 0px; 
+  padding-right: 2px; 
+}
+
+

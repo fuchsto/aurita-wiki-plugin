@@ -110,11 +110,10 @@ module Wiki
 
       result = []
       if Aurita.user.may(:create_articles) then
-        add_article = HTML.a(:class => :icon, 
-                             :onclick => link_to(:add)) { 
-          icon_tag(:article_add) + tl(:write_new_article) 
+        result << Text_Button.new(:icon    => :add_article, 
+                                  :action  => 'Wiki::Article/add') { 
+          tl(:write_new_article) 
         } 
-        result << add_article 
       end
 
       return result

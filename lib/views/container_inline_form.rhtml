@@ -16,8 +16,13 @@
   <div id="text_asset_form" class="text_asset_editor">
 
     <div class="container_inline_editor_button_bar">
-      <%= gui.button(:icon => 'save.gif',  :class => :no_border, :onclick => "Aurita.submit_form('container_form_#{text_asset_id}');") %>
-      <%= gui.button(:icon => 'close.gif', :class => :no_border, :onclick => "Aurita.Editor.save_all();" + gui.link_to(article) ) %>
+      <%= gui.button(:icon => :editor_save,  
+                     :class => :no_border, 
+                     :onclick => "Aurita.submit_form('container_form_#{text_asset_id}');") %>
+      <%= gui.button(:icon => :editor_close, 
+                     :class => :no_border, 
+                     :onclick => "Aurita.Editor.save_all();" + gui.link_to(article) ) %>
+      <div style="clear: both;"></div>
     </div>
    
     <textarea name="public.text_asset.text" class="fullwidth full editor" style="width: 100%; clear: both; " id="lore_textarea_<%= text_asset_id %>"><%= text %></textarea>
