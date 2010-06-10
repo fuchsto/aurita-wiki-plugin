@@ -55,20 +55,39 @@ module Wiki
       ]
     end
 
+    def form_hints
+      { 
+       'upload_file[]'                  => tl(:media_asset_file_hint),
+       Media_Asset.title.to_s           => tl(:media_asset_title_hint), 
+       Content.tags.to_s                => tl(:media_asset_tags_hint), 
+       Category.category_id.to_s        => tl(:media_asset_category_hint), 
+       Media_Asset.description.to_s     => tl(:media_asset_description_hint), 
+       Media_Asset.media_folder_id.to_s => tl(:media_asset_folder_hint), 
+      }
+    end
+
     def recent_changes_in_category(params={}) 
     # {{{
       clause = (Media_Asset.changed >= (Datetime.new - 7.days)) & 
                (Media_Asset.content_id.in(Content_Category.select(:content_id) { |cid| 
                    cid.where(Content_Category.category_id == params[:category_id]) 
                } ))
-      list_str = list(clause, :limit => 10, :order => [ Media_Asset.changed, :desc ])
+      list_str = list(clause, :limit => 100, :order => [ Media_Asset.changed, :desc ])
       return Element.new(:content => list_str) if list_str
     end # }}}
+
+    def recent_changes(params={})
+      clause = ((Media_Asset.changed >= (Datetime.new - 7.days)) & Media_Asset.accessible)
+      list_str = list(clause, :limit => 10, :order => [ Media_Asset.changed, :desc ], :mode => :table)
+      return Element.new(:content => list_str) if list_str
+    end
 
     def list(clause=Lore::Clause.new(true), params={})
     # {{{
       amount    = params[:limit]
       amount  ||= :all
+      mode      = params[:mode]
+      mode    ||= :grid
       order     = params[:order][0]
       order_dir = params[:order][1]
       order     ||= :created
@@ -81,7 +100,8 @@ module Wiki
       images    = images.entities
       return unless images.first
 
-      GUI::Media_Asset_Grid.new(images)
+      return GUI::Media_Asset_Table.new(images) if mode == :table
+      return GUI::Media_Asset_Grid.new(images) 
     end # }}}
 
     def list_category(params)

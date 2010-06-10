@@ -44,6 +44,14 @@ module Wiki
       ]
     end
 
+    def form_hints
+      { 
+        Article.title.to_s        => tl(:article_title_hint), 
+        Content.tags.to_s         => tl(:article_tags_hint), 
+        Category.category_id.to_s => tl(:article_category_hint)
+      }
+    end
+
     def hierarchy_entry_type
       { 
         :name       => 'ARTICLE', 

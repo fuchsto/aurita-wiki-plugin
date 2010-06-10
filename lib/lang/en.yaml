@@ -59,7 +59,7 @@ create_folder : New directory
 edit_folder : Edit directory
 delete_folder : Delete directory
 toplevel : Top
-folder : Direcory
+folder : Directory
 parent_folder : Parent directory
 folder_has_been_deleted : Directory has been deleted
 folder_is_empty : empty
@@ -163,4 +163,6 @@ media_container : Files
 edit_media_container : Edit files
 
 
-
+article_title_hint : Der Name des Artikels, der auch bei der Suche ber&uuml;cksichtigt wird
+article_tags_hint : Begriffe, unter denen dieser Artikel gruppiert und wiedergefunden werden kann
+article_category_hint : Eine oder mehrere Kategorien, in denen dieser Artikel freigegeben werden soll. Benutzer m&uuml;ssen Mitglied mindestens einer der hier gew&auml;hlten Kategorien sein, den Artikel lesen und bearbeiten zu k&ouml;nnen

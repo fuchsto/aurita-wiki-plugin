@@ -35,7 +35,7 @@
   <div id="upload_file_section">
     <div class="button_bar">
       <% if Aurita.user.may_write_to_folder?(folder) then %>
-        <%= gui.button(:icon    => 'button_add.gif', 
+        <%= gui.button(:icon    => :upload_small, 
                        :onclick => gui.link_to(:controller      => 'Wiki::Media_Asset', 
                                                :action          => :add, 
                                                :media_folder_id => folder.media_asset_folder_id, 
@@ -44,7 +44,7 @@
             }
         %>
         <% if Aurita.user.may_create_subfolder_in_folder?(folder) then %>
-          <%= gui.button(:icon    => 'button_add.gif', 
+          <%= gui.button(:icon    => :create_folder_small, 
                          :onclick => gui.link_to(:controller => 'Wiki::Media_Asset_Folder', 
                                                  :action     => :add, 
                                                  :element    => :upload_file_section, 

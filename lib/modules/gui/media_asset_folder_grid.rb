@@ -20,8 +20,8 @@ module GUI
       HTML.div.media_asset_folder_grid { 
         @entities.map { |e| 
           folder = Media_Asset_Folder_Thumbnail.new(e, :size => @thumbnail_size)
-          folder[0].onclick = link_to(e, :action => :show_grid) 
-          folder[0].add_css_class(:link)
+          folder[0].onclick = "#{link_to(e, :action => :show_grid)} return false;"
+          folder[0].href    = "/aurita/#{resource_url_for(e, :action => :show_grid)}"
           Context_Menu_Element.new(e, :show_button => :prepend) { folder }
         }
       }

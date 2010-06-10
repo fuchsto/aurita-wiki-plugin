@@ -29,9 +29,9 @@ module GUI
       @thumbnail_size   = params[:thumbnail_size]
       @thumbnail_size ||= :thumb
       @decorator        = params[:decorator]
-      @decorator ||= Proc.new { |e, element|
-        element[0].onclick = link_to(e) 
-        element[0].add_css_class(:link)
+      @decorator      ||= Proc.new { |e, element|
+        element[0].onclick = "#{link_to(e)} return false;"
+        element[0].href    = "/aurita/#{resource_url_for(e)}"
         Context_Menu_Element.new(e, :show_button => :prepend) { element } 
       }
       params.delete(:decorator)

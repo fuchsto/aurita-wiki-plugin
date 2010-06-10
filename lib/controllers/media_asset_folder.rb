@@ -1,6 +1,7 @@
 
 require('aurita/plugin_controller')
 
+Aurita.import_module :gui, :extras, :decobox
 Aurita.import_plugin_model :wiki, :media_asset
 Aurita.import_plugin_model :wiki, :media_asset_folder
 Aurita.import_plugin_model :wiki, :media_asset_folder_category
@@ -63,18 +64,18 @@ module Wiki
                                                                           (Media_Asset_Folder.user_group_id == Aurita.user.user_group_id)), 
                                                            :parent_id => 100)
       HTML.div.media_asset_folder_tree_box { 
-        s = ''
+        s = []
         if Aurita.user.may(:create_public_folders) then
-          add_folder = HTML.a(:class   => :icon, 
-                              :onclick => "Aurita.load({ action: 'Wiki::Media_Asset_Folder/add/'});") { 
-            HTML.img(:src => '/aurita/images/icons/add_folder.gif', :class => :icon) + 
-            tl(:add_folder) 
-          } 
-          s << add_folder.to_s
+          s << HTML.div.toolbar { 
+            GUI::Toolbar_Button.new(:icon   => :create_folder, 
+                                    :action => 'Wiki::Media_Asset_Folder/add/') { tl(:add_folder) }
+          }
         end
-        s + view_string(:media_asset_folder_box, 
-                        :user_folder    => user_folder, 
-                        :public_folders => public_folders) 
+        s + GUI::Decobox.new(:class => :inset) { 
+              view_string(:media_asset_folder_box, 
+                          :user_folder    => user_folder, 
+                          :public_folders => public_folders) 
+            }
       }
     end
 
@@ -227,7 +228,7 @@ module Wiki
       
       parent_folder_id = instance.media_folder_id__parent
       
-      form[Media_Asset_Folder.media_folder_id__parent] = GUI::Hierarchy_Node_Select_Field.new(:name => Media_Asset_Folder.media_folder_id__parent.to_s, 
+      form[Media_Asset_Folder.media_folder_id__parent] = GUI::Hierarchy_Node_Select_Field.new(:name  => Media_Asset_Folder.media_folder_id__parent.to_s, 
                                                                                               :label => tl(:parent_folder), 
                                                                                               :model => Media_Asset_Folder, 
                                                                                            #  :exclude_folder_ids => instance.media_asset_folder_id, 
@@ -362,7 +363,7 @@ module Wiki
       folder_grid = Media_Asset_Folder_Grid.new(folders)
       asset_grid  = Media_Asset_Grid.new(assets)
       
-      content = HTML.div.topic_inline { folder_grid.to_s + asset_grid.to_s }
+      content = HTML.div { folder_grid.to_s + asset_grid.to_s }
       render_view(:media_asset_folder, 
                   :table  => content, 
                   :view   => :grid, 
