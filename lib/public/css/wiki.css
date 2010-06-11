@@ -8,6 +8,13 @@
 .icon_button.editor_close .icon { 
   background: url('/aurita/images/icons/close.gif') no-repeat scroll 4px 5px; 
 }
+a.icon_button.create_folder_small .icon { 
+  background-image: url('/aurita/images/icons/folder_add_16.png'); 
+  background-position: 11px 4px; 
+}
+a.icon_button.create_folder .icon { 
+  background-image: url('/aurita/images/icons/folder_add_16.png'); 
+}
 
 
 
