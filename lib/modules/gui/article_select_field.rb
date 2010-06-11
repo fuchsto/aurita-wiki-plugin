@@ -42,7 +42,7 @@ module GUI
     private
 
     def selected_entry
-      HTML.li { @option_label + HTML.input(:type => :hidden, :name => @key, :value => @value).decorated_element } if @value && @option_label
+      HTML.li { @option_label.to_s + HTML.input(:type => :hidden, :name => @key, :value => @value) } if @value && @option_label
     end
 
     public
