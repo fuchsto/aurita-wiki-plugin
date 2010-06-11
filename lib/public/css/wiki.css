@@ -192,16 +192,14 @@ table.media_asset_table th {
   padding-left: 10px; 
   padding-right: 7px; 
   border-bottom: 1px solid #343434; 
-  border-left: 1px solid #898989; 
-/*  background: transparent url(/aurita/images/button_bg.gif) repeat scroll 0 0; */
-  background: transparent url(/aurita/images/icons/box_header_bg.png) repeat scroll 0 0; 
+  background: url("/aurita/images/icons/button_grey_bg.png") repeat scroll 0 -1px transparent;
   cursor: default; 
 }
 table #0_col_header { 
   border-left: 0px; 
 }
 table.media_asset_table th.hovered { 
-  background: transparent url(/aurita/images/button_hover_bg.gif) repeat scroll 0 0; 
+  background: transparent url(/aurita/icons/images/button_hover_bg.gif) repeat scroll 0 0; 
 }
 table.media_asset_table tr { 
   background: #f3f3f3 url(/aurita/images/icons/tall_row_brighter_bg.png) repeat-x scroll 0 0
