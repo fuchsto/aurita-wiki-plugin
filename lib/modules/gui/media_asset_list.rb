@@ -196,8 +196,9 @@ module GUI
 
   class Media_Asset_Selection_Thumbnail < Media_Asset_Thumbnail
     def element
-      entry_id  = "selected_media_asset_#{@entity.pkey()}"
-      delete_js = "$('#{entry_id}_field').value = ''; Element.hide('#{entry_id}');" 
+      entry_id   = "selected_media_asset_#{@entity.pkey()}"
+      delete_js  = "$('#{entry_id}_field').value = ''; Element.hide('#{entry_id}');" 
+      delete_btn = HTML.a(:class => :mini_button, :onclick => delete_js) { 'x' }
 
       e = HTML.div(:class => [ :media_asset_thumbnail, :bright_bg, @thumbnail_size ]) { 
         HTML.div(:class => [ :image, @thumbnail_size ]) { 
@@ -205,11 +206,9 @@ module GUI
                    :title => @entity.description) 
         } +
         HTML.div(:class => [:info, :default_bg, @thumbnail_size ]) { 
+          delete_btn +
           HTML.div.title { 
-              Text_Button.new(:onclick => delete_js, 
-                              :style   => 'float: left; margin-right: 4px; margin-top: 4px; padding: 2px; padding-right: 0px; ',
-                              :icon    => 'delete_small.png').string +
-              @entity.title 
+             HTML.span { ' ' + @entity.title } 
           } + 
           HTML.input(:type  => :hidden, 
                      :id    => "#{entry_id}_field", 

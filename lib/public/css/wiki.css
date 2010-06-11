@@ -3,10 +3,10 @@
   background: url('/aurita/images/icons/page_add_16.png') no-repeat scroll 8px 4px; 
 }
 .icon_button.editor_save .icon { 
-  background: url('/aurita/images/icons/save.gif') no-repeat scroll 4px 5px; 
+  background: url('/aurita/images/icons/floppy_disc_16.png') no-repeat scroll 4px 5px; 
 }
 .icon_button.editor_close .icon { 
-  background: url('/aurita/images/icons/close.gif') no-repeat scroll 4px 5px; 
+  background: url('/aurita/images/icons/cancel.png') no-repeat scroll 4px 5px; 
 }
 a.icon_button.create_folder_small .icon { 
   background-image: url('/aurita/images/icons/folder_add_16.png'); 
@@ -375,17 +375,10 @@ table.media_asset_table td.date {
 .media_asset_selection_list .toolbar { 
   background: url('/aurita/images/icons/box_header_bg.png') repeat-x;
   background-color: #c5c5c5; 
-  padding: 2px 5px 5px 6px;  
 }
 .media_asset_selection_list .toolbar img.icon { 
   position: relative; 
   top: 1px; 
-}
-
-.media_asset_selection_list .toolbar input, 
-.media_asset_selection_list #autocomplete_media, 
-.media_asset_selection_list .toolbar button { 
-  padding: 2px;
 }
 
 .article_content td.mceToolbar { 
@@ -528,11 +521,15 @@ a.add_file_button {
   border-color: white white;
 }
 
-.container_inline_editor_button_bar .button { 
+.container_inline_editor_button_bar .button, 
+.editor_button_bar .button { 
   float: left; 
   width: 30px; 
   padding: 0px; 
   padding-right: 2px; 
 }
 
-
+.container_inline_editor_button_bar .form_field, 
+.editor_button_bar .form_field { 
+  float: left; 
+}

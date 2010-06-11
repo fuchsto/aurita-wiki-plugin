@@ -12,21 +12,35 @@
      
       <div id="media_asset_autocomplete">
         <nobr>
-          <img class="icon" onclick="Aurita.Editor.save_all(); Aurita.submit_form('container_form_<%= media_container.asset_id %>'); " src="/aurita/images/icons/save.gif" />
-          <img class="icon" onclick="Aurita.Editor.save_all(); <%= gui.link_to(article) %>" src="/aurita/images/icons/close.gif" />
-            <input id="autocomplete_media" name="key" type="text" class="lore" 
-                   onKeyUp="Aurita.load({ action: 'Wiki::Media_Asset_Folder/list_choice/key='+$('autocomplete_media').value, 
-                                          element: 'media_folder_content' }); " />
-            <img src="/aurita/images/search.gif" class="icon" />
-            <%= gui.button(:onclick => gui.link_to(:controller         => 'Wiki::Media_Asset', 
-                                                   :action             => :add, 
-                                                   :media_container_id => media_container.media_container_id), 
-                           :icon  => 'button_add.gif', 
-                           :class => :form) { 
-                  tl(:upload_file) 
-                } 
-            %>
+          <div class="editor_button_bar">
+            <div class="form_field" style="padding: 3px;">
+              <%= GUI::Toolbar_Button.new(:icon    => :editor_save, 
+                                          :onclick => "Aurita.Editor.save_all(); Aurita.submit_form('container_form_#{media_container.asset_id}'); ")
+              %>
+              <%= GUI::Toolbar_Button.new(:icon    => :editor_close, 
+                                          :onclick => "Aurita.Editor.save_all(); #{gui.link_to(article)}")
+              %>
+              <%= GUI::Toolbar_Button.new(:icon    => :upload, 
+                                          :onclick => gui.link_to(:controller => 'Wiki::Media_Asset', 
+                                                                  :action     => :add, 
+                                                                  :media_container_id => media_container.pkey)) { 
+                    tl(:upload_file)
+                  } 
+                %>
+            </div>
+            <div class="form_field">
+              <%= 
+                GUI::Text_Field.new(:name    => :key, 
+                                    :class   => :search, 
+                                    :id      => :autocomplete_media, 
+                                    :onKeyUp => "Aurita.load({ action: 'Wiki::Media_Asset_Folder/list_choice/key='+$('autocomplete_media').value, 
+                                                               element: 'media_folder_content' }); ").decorated_element
+
+              %>
+            </div>
+          </div>
         </nobr>
+        <div style="clear: both;"> </div>
       </div>
 
     </div>
