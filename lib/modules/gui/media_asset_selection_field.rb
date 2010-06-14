@@ -34,7 +34,7 @@ module GUI
       field_params = @attrib.update(:onkeyup => onkeyup)
 
       HTML.div {
-        GUI::Input_Field.new(field_params) + 
+        GUI::Input_Field.new(field_params).decorated_element + 
         HTML.div(:id    => choices_id, 
                  :class => :media_asset_list, 
                  :style => 'display: none;') {
