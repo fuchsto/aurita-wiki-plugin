@@ -165,7 +165,11 @@ module Wiki
       return "asset_#{media_asset_id}.#{version}.#{extension}"
     end
     def url(version=0)
-      "/aurita/assets/#{filename(version)}"
+      if version.is_a?(Hash)
+        "/aurita/assets/#{rel_name(version)}" 
+      else
+        "/aurita/assets/#{filename(version)}" 
+      end
     end
 
     def is_archive?
