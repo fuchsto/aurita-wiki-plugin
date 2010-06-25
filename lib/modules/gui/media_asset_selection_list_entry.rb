@@ -21,7 +21,7 @@ module Wiki
                         :onclick => "$('#{random_id}').remove();" ) + 
           @params[:label] 
         } + 
-        HTML.input(:type => :hidden, :name => "#{@params[:name]}[]", :value => @media_asset_id) 
+        HTML.input(:type => :hidden, :name => "#{@params[:name]}", :value => @media_asset_id) 
       }
     end
 

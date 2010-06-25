@@ -675,8 +675,10 @@ module Wiki
     end
 
     def selection_list_choice
-      list_id     = param(:list_id)
-      field_name  = 'media_asset_ids'
+      list_id       = param(:list_id)
+      field_name    = params[:name]
+      field_name  ||= 'media_asset_ids'
+      # Returns configured GUI::Media_Asset_Select_List
       select_list = render_controller(Media_Asset_Folder_Controller, :list_choice, @params)
       select_list.row_onclick = Proc.new { |m| "Aurita.Wiki.media_asset_selection_list_onclick({ media_asset_id: '#{m.media_asset_id}', 
                                                                                                  selection_list_id: '#{list_id}', 
@@ -687,7 +689,24 @@ module Wiki
       select_list
     end
 
+    def selection_choice
+      list_id       = param(:list_id)
+      field_name    = params[:name]
+      field_name  ||= 'media_asset_ids'
+      # Returns configured GUI::Media_Asset_Select_List
+      select_list = render_controller(Media_Asset_Folder_Controller, :list_choice, @params)
+      select_list.row_onclick = Proc.new { |m| "$('#{list_id}').innerHTML = ''; 
+                                                Aurita.Wiki.media_asset_selection_list_onclick({ media_asset_id: '#{m.media_asset_id}', 
+                                                                                                 selection_list_id: '#{list_id}', 
+                                                                                                 label: '#{m.title}', 
+                                                                                                 name: '#{field_name}'
+                                                                                               }); " } 
+      select_list.rebuild
+      select_list
+    end
+
     def editor_list_link_choice
+      # Returns configured GUI::Media_Asset_Select_List
       select_list = render_controller(Media_Asset_Folder_Controller, :list_choice, @params)
       select_list.row_onclick = Proc.new { |m| "Aurita.Wiki.link_to_file('#{m.media_asset_id}'); $('message_box').hide(); " } 
       select_list.rebuild
@@ -695,6 +714,7 @@ module Wiki
     end
 
     def editor_list_download_link_choice
+      # Returns configured GUI::Media_Asset_Select_List
       select_list = render_controller(Media_Asset_Folder_Controller, :list_choice, @params)
       select_list.row_onclick = Proc.new { |m| "Aurita.Wiki.link_to_file_download('#{m.media_asset_id}'); $('message_box').hide(); " } 
       select_list.rebuild
