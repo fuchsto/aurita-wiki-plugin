@@ -251,9 +251,16 @@ module Wiki
 
       begin
         instances = []
+        inc_title = param(:title)
+        tags      = param(:tags)
+
         param(:upload_file).each_with_index { |file_uploaded, idx|
-          param[:title] = file_uploaded[:filename] unless param(:title)
-          instance = super()
+          
+          title           = "#{inc_title} #{idx}" if inc_title
+          title         ||= file_uploaded[:filename] 
+          param[:title]   = title
+          param[:tags]    = tags
+          instance        = super()
 
           raise ::Exception.new("Could not create Media_Asset instance") unless instance
 

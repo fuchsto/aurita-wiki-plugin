@@ -18,8 +18,7 @@ module GUI
       @row_action  ||= 'Wiki::Media_Asset/selection_choice'
       @value       ||= params[:value] 
       @value       ||= {}
-
-      @hidden_name   = params[:name]
+      @hidden_name ||= params[:name]
 
       super(params, &block)
       add_css_class(:search)

@@ -49,37 +49,35 @@ module Wiki
     end
 
     def self.before_create(args)
-      args[:mime] = '?' unless args[:mime]
+      args = super(args)
+      
+      args[:mime]       = '?' unless args[:mime]
       asset_folder_id   = args[:media_folder_id] 
       asset_folder_id ||= 0
-      if asset_folder_id.to_i != 0 then
-        folder      = Media_Asset_Folder.find(1).with(Media_Asset_Folder.media_asset_folder_id == asset_folder_id).entity
-        folder_path = folder.folder_path
-        folder_tags = ([folder] + folder_path).map { |f| f.physical_path.downcase }
-        tmp_tags    = (args[:tags].strip.split(' ')) unless args[:tags].is_a?(Array)
-        tmp_tags  ||= args[:tags]
-        tmp_tags   += folder_tags
-        tmp_tags.flatten!
-        tmp_tags.uniq!
-        args[:tags] = tmp_tags.join(' ')
-        log(tmp_tags)
-      end
-      super(args)
+
+      args
     end
 
-    def self.before_commit(instance)
-      asset_folder_id   = instance.media_folder_id
-      asset_folder_id ||= '0'
-      if asset_folder_id.to_s != '0' then
-        folder = Media_Asset_Folder.find(1).with(Media_Asset_Folder.media_asset_folder_id == asset_folder_id).entity
-        folder_path   = folder.folder_path if folder
-        folder_path ||= []
-        folder_tags   = ([folder] + folder_path).map { |f| f.physical_path.downcase } if folder
-        folder_tags ||= []
-        tmp_tags      = (instance.tags.strip.split(' ') + folder_tags)
-        tmp_tags.uniq!
-        instance[:tags] = '{' + tmp_tags.join(',').gsub('{','').gsub('}','') + '}'
+    def self.after_create(instance)
+      if instance.media_folder_id.to_i != 0 then
+        folder      = Media_Asset_Folder.get(instance.media_folder_id)
+        folder_path = folder.folder_path
+        folder_tags = ([folder] + folder_path).map { |f| f.physical_path.downcase }
+        instance.add_tags(folder_tags)
+        instance.commit!
       end
+      instance
+    end
+
+    def self.after_commit(instance)
+      if instance.media_folder_id.to_i != 0 then
+        folder      = Media_Asset_Folder.get(instance.media_folder_id)
+        folder_path = folder.folder_path
+        folder_tags = ([folder] + folder_path).map { |f| f.physical_path.downcase }
+        instance.add_tags(folder_tags)
+        instance.commit!
+      end
+      instance
     end
 
     def folder_path
