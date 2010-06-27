@@ -167,7 +167,8 @@ module Wiki
       folder_id ||= param(:media_folder_id)
       folder_id ||= Aurita.user.media_asset_folder_id
       form = add_form()
-      form[Media_Asset.media_folder_id] = GUI::Hierarchy_Node_Select_Field.new(:name => Media_Asset.media_folder_id.to_s, 
+
+      form[Media_Asset.media_folder_id] = GUI::Hierarchy_Node_Select_Field.new(:name  => Media_Asset.media_folder_id.to_s, 
                                                                                :label => tl(:folder), 
                                                                                :value => folder_id) 
       category = Category_Selection_List_Field.new()

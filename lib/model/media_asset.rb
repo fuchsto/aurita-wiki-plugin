@@ -16,6 +16,8 @@ module Wiki
     is_a Asset, :asset_id
     has_a Media_Asset_Folder, :media_folder_id
 
+    expects :media_folder_id
+
     use_label :title
     def label_string
       title
