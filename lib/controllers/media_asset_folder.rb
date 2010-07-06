@@ -185,7 +185,7 @@ module Wiki
                    category_clause & 
                    (Content.deleted == 'f')
         }
-        assets = Media_Asset.find(15).with(clause).entities
+        assets = Media_Asset.find(15).with(clause).sort_by(:media_asset_id, :desc).entities
       end
 
       return GUI::Media_Asset_Select_List.new(assets)

@@ -168,7 +168,7 @@ module Wiki
     def find_in_category(category, key)
       Article.all_with((Article.has_tag(key.to_s.split(' ')) | 
                         Article.title.ilike("%#{key}%")) & 
-                       Article.in_category(category.category_id)).entities
+                       Article.in_category(category.category_id)).sort_by(:article_id, :desc).entities
     end
 
     def find_all(params)
@@ -179,7 +179,7 @@ module Wiki
       tags = key.split(' ')
       articles = Article.all_with((Article.has_tag(tags) | 
                                    Article.title.ilike("%#{key}%")) &
-                                  Article.is_accessible).sort_by(Wiki::Article.title, :desc).entities
+                                  Article.is_accessible).sort_by(:article_id, :desc).entities
       return unless articles.first
       box = Box.new(:type => :none, :class => :topic_inline)
       box.body = view_string(:article_list, :articles => articles)
@@ -203,13 +203,12 @@ module Wiki
                                      ) & 
                                      Article.is_accessible).sort_by(Wiki::Article.article_id, :desc).entities
 
-      num -= articles.length
+      num -= articles.length unless num == :all
       begin
         key.to_named_html_entities! # UTF-8 could be broken (1-Byte) but okay nonetheless
       rescue ::Exception => e
       end
       articles   += Article.find(num).with(Article.is_accessible & Article.content_id.in(
-
                                        Container.select(Container.content_id_parent) { |cid|
                                          cid.join(Text_Asset).on(Container.asset_id_child == Text_Asset.asset_id) { |ta|
                                            ta.where(Text_Asset.text.ilike("%#{key}%"))
