@@ -675,7 +675,7 @@ module Wiki
                  (Media_Asset.accessible) & 
                  (Content.deleted == 'f')
       }
-      assets = Media_Asset.find(15).with(clause).entities
+      assets = Media_Asset.find(15).with(clause).sort_by(:media_asset_id, :desc).entities
       select_list = GUI::Media_Asset_Select_Variant_List.new(assets)
       select_list.onselect = Proc.new { |m,variant| "Aurita.Wiki.insert_file('#{m.media_asset_id}', #{variant}); " } 
       select_list.rebuild
@@ -683,6 +683,8 @@ module Wiki
     end
 
     def selection_list_choice
+      return HTML.div { } unless param(:key).to_s.length > 2
+      
       list_id       = param(:list_id)
       field_name    = params[:name]
       field_name  ||= 'media_asset_ids'
@@ -698,6 +700,8 @@ module Wiki
     end
 
     def selection_choice
+      return HTML.div { } unless param(:key).to_s.length > 2
+      
       list_id       = param(:list_id)
       field_name    = params[:name]
       field_name  ||= 'media_asset_ids'
@@ -714,6 +718,8 @@ module Wiki
     end
 
     def editor_list_link_choice
+      return HTML.div { } unless param(:key).to_s.length > 2
+      
       # Returns configured GUI::Media_Asset_Select_List
       select_list = render_controller(Media_Asset_Folder_Controller, :list_choice, @params)
       select_list.row_onclick = Proc.new { |m| "Aurita.Wiki.link_to_file('#{m.media_asset_id}'); $('message_box').hide(); " } 
@@ -722,6 +728,8 @@ module Wiki
     end
 
     def editor_list_download_link_choice
+      return HTML.div { } unless param(:key).to_s.length > 2
+      
       # Returns configured GUI::Media_Asset_Select_List
       select_list = render_controller(Media_Asset_Folder_Controller, :list_choice, @params)
       select_list.row_onclick = Proc.new { |m| "Aurita.Wiki.link_to_file_download('#{m.media_asset_id}'); $('message_box').hide(); " } 
