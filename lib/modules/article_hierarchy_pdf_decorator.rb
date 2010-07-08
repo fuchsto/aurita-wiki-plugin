@@ -95,9 +95,9 @@ module Wiki
 
     def decorate_part(part, article, pdf)
       case part
-      when Text_Asset: 
+      when Text_Asset then
         decorate_text(part.text, pdf)
-      when Media_Container: 
+      when Media_Container then
         decorate_images(part.media_assets, pdf)
       end
     end
