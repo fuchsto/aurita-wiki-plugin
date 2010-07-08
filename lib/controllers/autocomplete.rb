@@ -22,8 +22,9 @@ module Wiki
 
 			tag  = "%#{tags.join(' ')}%"
       
-      articles       = Article.find(num_results).with((Article.has_tag(tags) | 
-                                              Article.title.ilike(tag)))
+      articles       = Article.find(num_results).with(Article.accessible & 
+                                                      (Article.has_tag(tags) | 
+                                                       Article.title.ilike(tag)))
       articles.sort_by(Wiki::Article.article_id, :desc)
 
       article_result = HTML.ul.autocomplete { } 
