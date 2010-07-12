@@ -17,6 +17,7 @@ module GUI
     def initialize(params={}, &block)
       params[:id]    = 'media_asset_ids' unless params[:id]
       params[:name]  = 'media_asset_ids' unless params[:name]
+      params[:name]  = params[:name].to_s
       @key         ||= params[:key] || :content_id
       @row_action  ||= params[:row_action]
       @row_action  ||= 'Wiki::Media_Asset/selection_list_choice'
@@ -26,7 +27,6 @@ module GUI
 
       super(params, &block)
 
-
       add_css_class(:search)
     end
 
@@ -34,6 +34,7 @@ module GUI
 
       # If list of media_asset_ids has been passed, resolve 
       # actual instances and their title: 
+
       if @value.is_a?(Array) then
         entities = {}
         Wiki::Media_Asset.select { |m|
