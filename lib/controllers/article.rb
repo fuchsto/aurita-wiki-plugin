@@ -456,7 +456,8 @@ module Wiki
         end
       end
       exec_js("Aurita.Wiki.add_recently_viewed('Wiki::Article', '#{article.article_id}', '#{article.title.gsub("'",'&apos;').gsub('"','&quot;')}'); ")
-      exec_js("Aurita.Wiki.init_article(#{article.article_id});")
+      editable = Aurita.user.may_edit_content?(article)
+      exec_js("Aurita.Wiki.init_article(#{article.article_id}, { editable: #{editable} });")
       
       viewparams = param(:viewparams).to_s.gsub(' ','')
       if !Aurita.user.is_registered? then

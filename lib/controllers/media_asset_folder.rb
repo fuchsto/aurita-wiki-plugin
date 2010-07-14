@@ -59,8 +59,11 @@ module Wiki
     end
     
     def tree_box_body
-      public_folders  = Media_Asset_Folder.hierarchy_level()
-      user_folder     = Media_Asset_Folder.hierarchy_level(:filter    => ((Media_Asset_Folder.access == 'PRIVATE') & 
+
+      public_folders  = Media_Asset_Folder.hierarchy_level(:filter    => ((Media_Asset_Folder.locked == false) | 
+                                                                          ((Media_Asset_Folder.locked == true) &
+                                                                           (Media_Asset_Folder.user_group_id == Aurita.user.user_group_id))))
+      user_folder     = Media_Asset_Folder.hierarchy_level(:filter    => ((Media_Asset_Folder.access == 'PRIVATE') &
                                                                           (Media_Asset_Folder.user_group_id == Aurita.user.user_group_id)), 
                                                            :parent_id => 100)
       HTML.div.media_asset_folder_tree_box { 
@@ -123,7 +126,8 @@ module Wiki
     [
       Media_Asset_Folder.physical_path, 
       Media_Asset_Folder.media_folder_id__parent, 
-      Category.category_id
+      Category.category_id, 
+      Media_Asset_Folder.locked
     ]
     end
 

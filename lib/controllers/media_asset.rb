@@ -410,6 +410,16 @@ module Wiki
                                   :media_asset_id => param(:media_asset_id))
     end
 
+    def perform_reorder
+      puts param(:media_asset_sortable_list_body).inspect
+      param(:media_asset_sortable_list_body).each_with_index { |media_asset_id,position|
+        Media_Asset.update { |m| 
+          m.set(:sortpos => position)
+          m.where(:media_asset_id => media_asset_id)
+        }
+      }
+    end
+
     def proxy
     # {{{
       use_decorator(:none)
