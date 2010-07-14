@@ -251,7 +251,7 @@ module Wiki
         parent_id = param(:media_folder_id__parent)
         redirect(:element => "folder_children_#{parent_id}", :to => :tree_box_level, :media_folder_id => parent_id)
       end
-      exec_js(js.Aurita.flash(tl(:changed_have_been_saved)))
+      exec_js(js.Aurita.flash(tl(:changes_have_been_saved)))
     end
     
     def delete

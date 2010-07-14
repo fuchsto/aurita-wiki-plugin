@@ -422,7 +422,7 @@ module Wiki
       if(!Aurita.user.may_view_content?(article)) then
         return HTML.div { tl(:no_permission_to_access_article) } +
                HTML.div { tl(:article_owned_by_user).gsub('{1}', author.label) +
-                          tl(:article_is_in_category).gsub('{1}', article.category.category_name) }
+                          tl(:article_is_in_category).gsub('{1}', article.categories.map { |c| c.category_name }.join(', ')) }
       end
 
       if Aurita.user.may_edit_content?(article) && param(:edit_inline_content_id) then

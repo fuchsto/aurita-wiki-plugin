@@ -89,6 +89,10 @@ a.icon_button.create_folder .icon {
   padding: 5px; 
 }
 
+.search .media_asset_table select { 
+  width: 147px; 
+}
+
 .media_asset_selection { 
   margin-top: 7px; 
   margin-bottom: 7px; 
@@ -228,6 +232,7 @@ table.media_asset_table td.info {
 table.media_asset_table td.info p { 
   margin: 0px; 
   padding: 0px; 
+  word-wrap: break-word; 
 }
 table.media_asset_table td.info p.name { 
   font-weight: bold; 
@@ -399,10 +404,6 @@ table.media_asset_table td.date {
   border-color: transparent !important; 
 }
 
-a.add_file_button { 
-  margin: 5px; 
-}
-
 .article_content li.sortable { 
   list-style-type: none; 
   background-color: #eaeaea; 
@@ -515,7 +516,7 @@ a.add_file_button {
   padding: 4px 3px 5px 4px; 
   margin: 0px 0px -2px; 
   background-color: rgb(240, 240, 240); 
-  width: 65px; 
+  width: 67px; 
   border-width: 1px 1px 0px; 
   border-style: outset outset none; 
   border-color: white white;
@@ -524,7 +525,6 @@ a.add_file_button {
 .container_inline_editor_button_bar .button, 
 .editor_button_bar .button { 
   float: left; 
-  width: 30px; 
   padding: 0px; 
   padding-right: 2px; 
 }
