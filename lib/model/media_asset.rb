@@ -1,4 +1,5 @@
-('aurita/model')
+
+require('aurita/model')
 
 Aurita::Main.import_model :content
 Aurita.import_plugin_model :wiki, :asset
@@ -88,6 +89,10 @@ module Wiki
       folder = Media_Asset_Folder.find(1).with(Media_Asset_Folder.media_asset_folder_id == asset_folder_id).entity
       return folder.folder_path if folder
       return []
+    end
+
+    def folder
+      Wiki::Media_Asset_Folder.get(media_folder_id)
     end
 
     def extension

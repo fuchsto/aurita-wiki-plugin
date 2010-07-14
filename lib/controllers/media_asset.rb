@@ -310,7 +310,7 @@ module Wiki
     def perform_update
     # {{{
       super()
-      media_asset = Media_Asset.load(:media_asset_id => param(:media_asset_id))
+      media_asset = load_instance()
       media_asset.set_categories(param(:category_id))
       exec_js("Aurita.flash('#{tl(:changes_have_been_saved)}');")
     end # }}}
