@@ -93,6 +93,10 @@ a.icon_button.create_folder .icon {
   width: 147px; 
 }
 
+.search_wrap .media_asset_table td.info { 
+  width: 300px; 
+}
+
 .media_asset_selection { 
   margin-top: 7px; 
   margin-bottom: 7px; 
