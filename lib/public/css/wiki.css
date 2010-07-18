@@ -22,6 +22,11 @@ a.icon_button.create_folder .icon {
 .article_content ol li { margin-left: 3px; list-style-type: decimal; }
 .article_content { line-height: 20px; } 
 
+.text_asset_partial table td { 
+  padding-right: 15px; 
+  padding-bottom: 5px; 
+}
+
 .article_partial_divide { 
   display: block;
 }
@@ -94,7 +99,8 @@ a.icon_button.create_folder .icon {
 }
 
 .search_wrap .media_asset_table td.info { 
-  width: 300px; 
+  width: 197px; 
+  display: block; 
 }
 
 .media_asset_selection { 

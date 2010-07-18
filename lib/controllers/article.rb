@@ -191,38 +191,42 @@ module Wiki
     def find_full(params)
     # {{{
 
-      key   = params[:key].to_s.strip
-      tags  = key.split(' ')
-      tag   = "%#{tags.last}%"
-      num   = params[:amount]
-      num ||= :all
+      key         = params[:key].to_s.strip
+      tags        = key.split(' ')
+      tag         = "%#{tags.last}%"
+      num         = params[:amount]
+      num       ||= :all
+      
+      filter      = Article.is_accessible
+      filter      = filter & params[:filter] if params[:filter]
 
+      
       constraints = Article.title.ilike(tag)
       articles    = Article.find(num).with((Article.has_tag(tags) | 
                                       Article.title.ilike("%#{key}%")
                                      ) & 
-                                     Article.is_accessible).sort_by(Wiki::Article.article_id, :desc).entities
-
+                                     filter).sort_by(Wiki::Article.article_id, :desc).entities
+      
       num -= articles.length unless num == :all
       begin
         key.to_named_html_entities! # UTF-8 could be broken (1-Byte) but okay nonetheless
       rescue ::Exception => e
       end
-      articles   += Article.find(num).with(Article.is_accessible & Article.content_id.in(
+      articles   += Article.find(num).with(filter & Article.content_id.in(
                                        Container.select(Container.content_id_parent) { |cid|
                                          cid.join(Text_Asset).on(Container.asset_id_child == Text_Asset.asset_id) { |ta|
                                            ta.where(Text_Asset.text.ilike("%#{key}%"))
                                          }}
                                      )).sort_by(Article.article_id, :desc).entities
-
-
+      
+      
       return unless articles.first
-
+      
       box        = Box.new(:type => :none, :class => :topic_inline)
       box.body   = view_string(:article_list, :articles => articles)
       box.header = tl(:articles) 
       return box
-
+      
     end # }}}
 
     def own_articles_box
