@@ -29,6 +29,15 @@ module Wiki
       title().to_s
     end
 
+    def self.in_active_time_range
+      in_time_range = ((Wiki::Article.time_active_from <= :now) | (Wiki::Article.time_active_from.is_null))
+      return (in_time_range & ((Wiki::Article.time_active_to >= :now) | (Wiki::Article.time_active_to.is_null)))
+    end
+    def in_active_time_range
+      in_time_range = (time_active_from.to_s == '' || time_active_from <= Time.now.to_s)
+      return in_time_range && (time_active_to.to_s == ''|| time_active_to >= Time.now.to_s)
+    end
+
     expects :title
     expects :tags, Content
 

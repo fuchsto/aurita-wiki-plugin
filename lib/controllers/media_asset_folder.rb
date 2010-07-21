@@ -74,7 +74,7 @@ module Wiki
                                     :action => 'Wiki::Media_Asset_Folder/add/') { tl(:add_folder) }
           }
         end
-        s + GUI::Decobox.new(:class => :inset) { 
+        s + GUI::Decobox.new(:class => :inset, :id => :media_asset_folders_tree_box) { 
               view_string(:media_asset_folder_box, 
                           :user_folder    => user_folder, 
                           :public_folders => public_folders) 
