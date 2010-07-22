@@ -145,13 +145,13 @@ module Wiki
 
       form = GUI::Form.new(:id => :editor_link_form) 
       form.onsubmit = "Aurita.Wiki.insert_link('article_link_id', 'website_link'); return false;"
-
+=begin
       form.add(GUI::Select_Field.new(:options => { :_blank => tl(:open_in_new_window), 
                                                    :_self  => tl(:open_in_same_window) }, 
                                      :value   => :_self, 
                                      :label   => tl(:link_target), 
                                      :name    => :target))
-      
+=end
       form.add(GUI::Article_Select_Field.new(:name  => :article, 
                                              :key   => :article_id, 
                                              :label => tl(:link_to_article), 
