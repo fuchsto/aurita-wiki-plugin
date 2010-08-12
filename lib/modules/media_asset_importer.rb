@@ -1,7 +1,6 @@
 
 require('aurita')
 require('fileutils')
-require('RMagick')
 require('rubygems')
 require('mime/types')
 Aurita.import_plugin_module :wiki, :media_asset_helpers
@@ -13,7 +12,6 @@ module Wiki
 
   class Media_Asset_Importer
   include Media_Asset_Helpers
-  include Magick
 
     @@variants = {}
 
@@ -166,22 +164,6 @@ module Wiki
     # {{{
       begin
         @@logger.log('IMAGE UP | Importing image')
-        id  = @media_asset.media_asset_id
-
-        ext = @media_asset.extension.dup.downcase
-        ext << '[0]' if ext == 'pdf' # Only render first page of PDF
-
-        path = Aurita.project_path(:public, :assets, "asset_#{id}.#{ext}")
-        @@logger.log("IMAGE UP | Path is #{path}")
-        # Every image needs a jpeg base image (esp. needed for PDF): 
-        begin
-          img = ImageList.new(path) 
-        rescue ::Exception => e
-          @@logger.log("IMAGE UP | Error: #{e.message}")
-          raise ::Exception.new('Error importing file: ' << path)
-        end
-        img.write(Aurita.project_path(:public, :assets, "asset_#{id}.jpg"))
-        
         Image_Manipulation.new(@media_asset).create_image_variants(@@variants)
       rescue ::Exception => e
         @@logger.log('Error when trying to create image versions: ' << e.message)

@@ -1,6 +1,6 @@
 
 require('aurita')
-require('RMagick') # Require manually in dispatch runner if needed (big lib!)
+# require('RMagick') # Require manually in dispatch runner if needed (big lib!)
 Aurita.import_plugin_module :wiki, :media_asset_helpers
 
 module Aurita
