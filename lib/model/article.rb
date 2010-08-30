@@ -43,7 +43,9 @@ module Wiki
 
     validates :title, :maxlength => 100, :mandatory => true
 
-    html_escape_values_of :title
+    add_input_filter(:title) { |v|
+      v.gsub("'", "&apos;")
+    }
 
     # Returns true if this article is assigned to a 
     # versioned category. 
