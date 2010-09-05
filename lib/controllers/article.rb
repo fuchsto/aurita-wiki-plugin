@@ -182,7 +182,7 @@ module Wiki
                                   Article.is_accessible).sort_by(:article_id, :desc).entities
       return unless articles.first
       box = Box.new(:type => :none, :class => :topic_inline)
-      box.body = view_string(:article_list, :articles => articles)
+      box.body = view_string(:article_list, :articles => articles, :client_id => param[:client_id])
       box.header = tl(:articles)
       return box
       
@@ -223,7 +223,7 @@ module Wiki
       return unless articles.first
       
       box        = Box.new(:type => :none, :class => :topic_inline)
-      box.body   = view_string(:article_list, :articles => articles)
+      box.body   = view_string(:article_list, :articles => articles, :client_id => params[:client_id])
       box.header = tl(:articles) 
       return box
       
@@ -656,7 +656,7 @@ module Wiki
 
       viewed_articles = Box.new(:type => :none, :class => :topic, :id => 'viewed_articles', :params => {})
       viewed_articles.header = tl(:recently_viewed_articles)
-      viewed_articles.body = recently_viewed()
+      viewed_articles.body = recently_viewed_string
       return viewed_articles
 
     end # }}}

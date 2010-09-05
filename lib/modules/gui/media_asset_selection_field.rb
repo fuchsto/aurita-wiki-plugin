@@ -36,6 +36,7 @@ module GUI
       key_value  = "$('#{input_id}').value"
       onkeyup    = "Aurita.load({ action: '#{@row_action}/name=#{@hidden_name}&list_id=#{list_id}&variant=#{@variant}&key='+#{key_value}, 
                                   element: '#{@attrib[:id]}_choices', 
+                                  method: 'POST', 
                                   onload: function() { #{onfocus} }, 
                                   silently: true });"
 

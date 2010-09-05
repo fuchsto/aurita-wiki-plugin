@@ -44,7 +44,7 @@ module Wiki
     validates :title, :maxlength => 100, :mandatory => true
 
     add_input_filter(:title) { |v|
-      v.gsub("'", "&apos;")
+      v.to_s.gsub("'", "&apos;")
     }
 
     # Returns true if this article is assigned to a 

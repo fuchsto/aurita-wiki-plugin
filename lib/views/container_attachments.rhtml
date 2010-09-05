@@ -34,6 +34,7 @@
                                     :class   => :search, 
                                     :id      => :autocomplete_media, 
                                     :onKeyUp => "Aurita.load({ action: 'Wiki::Media_Asset_Folder/list_choice/key='+$('autocomplete_media').value, 
+                                                               method: 'POST', 
                                                                element: 'media_folder_content' }); ").decorated_element
 
               %>
