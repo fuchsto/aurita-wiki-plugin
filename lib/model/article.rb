@@ -29,6 +29,12 @@ module Wiki
       title().to_s
     end
 
+    def self.after_active_time_range
+      return (Wiki::Article.time_active_to.is_not_null) & (Wiki::Article.time_active_to <= :now) 
+    end
+    def after_active_time_range
+      return (time_active_to.to_s != '' && time_active_to <= Time.now.to_s)
+    end
     def self.in_active_time_range
       in_time_range = ((Wiki::Article.time_active_from <= :now) | (Wiki::Article.time_active_from.is_null))
       return (in_time_range & ((Wiki::Article.time_active_to >= :now) | (Wiki::Article.time_active_to.is_null)))
@@ -43,9 +49,7 @@ module Wiki
 
     validates :title, :maxlength => 100, :mandatory => true
 
-    add_input_filter(:title) { |v|
-      v.to_s.gsub("'", "&apos;")
-    }
+    html_encode :title, :header
 
     # Returns true if this article is assigned to a 
     # versioned category. 
@@ -131,7 +135,7 @@ module Wiki
     
   end 
 
-  Article.prepare(:recently_changed, Lore::Type.integer) { |a|
+  Article.prepare_select(:recently_changed, Lore::Type.integer) { |a|
     a.where(true)
     a.order_by(:changed, :desc)
     a.limit(Lore::Clause.new('$1'))

@@ -232,9 +232,13 @@ module Wiki
       @doctype
     end
 
-    def icon(size=:tiny, version=nil)
-      return "<img src=\"/aurita/assets/#{size}/asset_#{media_asset_id}.jpg?#{checksum}\" />" if has_preview? && version.nil?
-      return "<img src=\"/aurita/assets/#{size}/asset_#{media_asset_id}.#{version}.jpg?#{checksum}\" />" if has_preview? 
+    def icon(size=:tiny, version=nil, append_checksum=true)
+      cs = ''
+      if append_checksum then
+        cs = "?#{checksum}"
+      end
+      return "<img src=\"/aurita/assets/#{size}/asset_#{media_asset_id}.jpg#{cs}\" />" if has_preview? && version.nil?
+      return "<img src=\"/aurita/assets/#{size}/asset_#{media_asset_id}.#{version}.jpg#{cs}\" />" if has_preview? 
       return "<img src=\"/aurita/assets/#{size}/asset_#{extension}.jpg\" />"
     end
 

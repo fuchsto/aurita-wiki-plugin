@@ -28,7 +28,7 @@ module Wiki
     
   end 
 
-  Article.prepare(:access_of_user, Lore::Type.integer, Lore::Type.integer) { |a| 
+  Article.prepare_select(:access_of_user, Lore::Type.integer, Lore::Type.integer) { |a| 
         a.join(Article_Access).using(:article_id) { |aa|
           aa.where(Article_Access.user_group_id == Lore::Clause.new('$1'))
           aa.order_by(Article_Access.changed, :desc)

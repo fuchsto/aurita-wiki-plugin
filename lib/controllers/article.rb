@@ -96,7 +96,7 @@ module Wiki
       articles = Article.select { |a|
         a.where(Article.in_category(params[:category_id]))
         a.order_by(Article.changed, :desc)
-        a.limit(50)
+        a.limit(100)
       }
       article_box        = Box.new(:class => :topic_inline, 
                                    :type => :none)
@@ -379,7 +379,7 @@ module Wiki
       use_decorator :none
 
       article    = load_instance()
-      return unless Aurita.user.may_view_content?(article.content_id)
+      return unless Aurita.user.may_view_content?(article)
 
       article_id = article.article_id
       hierarchy  = Article_Full_Hierarchy_Visitor.new(article).hierarchy
