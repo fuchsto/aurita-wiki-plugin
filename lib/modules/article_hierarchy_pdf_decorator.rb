@@ -1,5 +1,6 @@
 
 require('aurita')
+require('prawn')
 Aurita.import_plugin_module :wiki, :article_hierarchy_default_decorator
 
 begin
@@ -74,7 +75,7 @@ module Wiki
                                :page_size    => 'A4', 
                                :left_margin  => 70, 
                                :right_margin => 70) do |pdf|
-        pdf.bounding_box([340,770], :height => 50) { 
+        pdf.bounding_box([340,770], :height => 50, :width => 50) { 
           pdf.image(Aurita.project.base_path + 'public/images/pdf_banner.png', :height => 50)
         }
 
