@@ -178,8 +178,12 @@ module Wiki
             # in paths like 
             #   asset_<media_asset_id>-<page idx>.jpg
             #
-            img = ImageList.new(path) 
-            img.write(Aurita.project_path(:public, :assets, "asset_#{id}.jpg"))
+            img = ImageList.new(path) {
+              self['density'] = '150x150'
+            }
+            img.write(Aurita.project_path(:public, :assets, "asset_#{id}.png")) { 
+              self['quality'] = 85
+            }
           end
         end
 
