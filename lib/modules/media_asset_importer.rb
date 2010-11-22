@@ -44,7 +44,7 @@ module Wiki
 
     @@logger = Aurita::Log::Class_Logger.new(self)
     add_variant(:medium) { |img, asset|
-      img.resize_to_fit(320,320).write(Aurita.project_path + "public/assets/medium/asset_#{asset.media_asset_id}.jpg") { self.quality = 82 }
+      img.resize_to_fit(320,320).write(Aurita.project_path + "public/assets/medium/asset_#{asset.media_asset_id}.jpg") { self.quality = 92 }
     }
     add_variant(:thumb) { |img, asset|
       img.resize_to_fit(120,120).write(Aurita.project_path + "public/assets/thumb/asset_#{asset.media_asset_id}.jpg") { self.quality = 82 }
@@ -169,7 +169,19 @@ module Wiki
         id  = @media_asset.media_asset_id
 
         ext = @media_asset.extension.dup.downcase
-        ext << '[0]' if ext == 'pdf' # Only render first page of PDF
+        path = Aurita.project_path(:public, :assets, "asset_#{id}.#{ext}")
+        if ext == 'pdf' then
+          # Only render first page of PDF for thumbnails
+          ext << '[0]' 
+          if Aurita.project.full_pdf_rendering then 
+            # Additionally export all pages of PDF as separate (large) images
+            # in paths like 
+            #   asset_<media_asset_id>-<page idx>.jpg
+            #
+            img = ImageList.new(path) 
+            img.write(Aurita.project_path(:public, :assets, "asset_#{id}.jpg"))
+          end
+        end
 
         path = Aurita.project_path(:public, :assets, "asset_#{id}.#{ext}")
         @@logger.log("IMAGE UP | Path is #{path}")
