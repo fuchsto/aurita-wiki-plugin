@@ -96,6 +96,7 @@ module Wiki
     # Returns Text_Asset instances (paragraphs) of 
     # this article, as array, ordered by their positions. 
     def text_assets(params={})
+    # {{{
       amount   = params[:max]
       amount ||= params[:amount]
       amount ||= :all
@@ -106,6 +107,22 @@ module Wiki
           c.limit(amount)
         }
       }.to_a
+    end # }}}
+
+    def teaser_text(params={})
+      length     = params[:length]
+      length   ||= 200
+      text_asset = text_assets(:amount => 1).first
+      text       = text_asset.text if text_asset
+      text     ||= ''
+      text       = text[0..length].split(' ')[0..-2].join(' ')
+      text.gsub(/<[^>]+>/,'').gsub('&nbsp;','')
+    end
+    
+    def teaser_image
+      image = Media_Asset.get(teaser_media_asset_id)
+      return image if image
+      media_assets(:amount => 1).first
     end
 
     # Returns Text_Asset instances (paragraphs) of 
@@ -116,6 +133,7 @@ module Wiki
     # instances. 
     #
     def media_assets(params={})
+    # {{{
       amount   = params[:max]
       amount ||= params[:amount]
       amount ||= :all
@@ -131,7 +149,7 @@ module Wiki
         assets += mc.media_assets
       }
       assets
-    end
+    end # }}} 
     
   end 
 
