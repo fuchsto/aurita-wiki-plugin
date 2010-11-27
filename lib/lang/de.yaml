@@ -213,6 +213,5 @@ media_asset_category_hint : Kategorien, in der die Datei freigegeben werden soll
 media_asset_description_hint : (Optional) Beschreibung f&uuml;r die Datei. 
 media_asset_folder_hint : Ordner, in dem diese Datei abgelegt wird. 
 
-
-
+public--article--teaser_media_asset_id : Vorschaubild
 

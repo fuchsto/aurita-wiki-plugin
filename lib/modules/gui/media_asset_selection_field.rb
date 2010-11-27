@@ -43,6 +43,7 @@ module GUI
       field_params = @attrib.dup
       field_params.update(:onkeyup => onkeyup, 
                           :name    => input_id, 
+                          :class   => :search, 
                           :id      => input_id) 
       field_params.delete(:value)
 
@@ -59,7 +60,7 @@ module GUI
         entities = {}
         m = Wiki::Media_Asset.select { |m|
           m.where(m.media_asset_id == (@value))
-        }.first
+        }.first if @value
         if m then
           entities[m.media_asset_id] = m.title
           @value = entities
