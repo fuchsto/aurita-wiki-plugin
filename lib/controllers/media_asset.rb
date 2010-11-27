@@ -747,6 +747,29 @@ module Wiki
       select_list
     end
 
+    def viewer_info
+      ma_id       = param(:media_asset_id)
+      media_asset = Media_Asset.get(ma_id)
+      return unless media_asset
+
+      set_content_type('text/xml')
+      use_decorator(:none)
+
+      pages = []
+      idx   = 0 
+      while File.exists?(Aurita.project.base_path + "public/assets/asset_#{ma_id}-#{idx}.png") do
+        pages << Aurita.project.host + "/aurita/assets/asset_#{ma_id}-#{idx}.png"
+        idx += 1
+      end
+      XML::Document.new { 
+        XML.meta { 
+          XML.pages { 
+            pages.map { |p| XML.page { "<![CDATA[#{p}]]>" } }
+          } 
+        }
+      }
+    end
+
   end
 
 end

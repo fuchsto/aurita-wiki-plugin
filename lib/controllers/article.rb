@@ -99,7 +99,8 @@ module Wiki
         a.limit(100)
       }
       article_box        = Box.new(:class => :topic_inline, 
-                                   :type => :none)
+                                   :id    => :category_articles, 
+                                   :type  => :none)
       article_box.body   = view_string(:article_list, :articles => articles)
       article_box.header = tl(:recently_changed_articles)
       return article_box
