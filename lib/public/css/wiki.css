@@ -543,3 +543,41 @@ table.media_asset_table td.date {
 .editor_button_bar .form_field { 
   float: left; 
 }
+
+#media_asset_ids_selected { 
+  background-color: rgba(255, 255, 255, 0.4); 
+  border: 1px solid white; 
+  -moz-border-radius: 3px; 
+  -webkit-border-radius: 3px; 
+  border-radius: 3px; 
+  margin-left: 10px; 
+  width: 290px; 
+  padding: 3px; 
+}
+
+.media_asset_selection_list_entry { 
+  height: 73px; 
+}
+
+.media_asset_selection_list_entry .icon, 
+.media_asset_selection_list_entry .thumb, 
+.media_asset_selection_list_entry .label { 
+  float: left; 
+}
+.media_asset_selection_list_entry .icon { 
+  display: block; 
+  margin-top: 29px; 
+}
+.media_asset_selection_list_entry .thumb { 
+  display: block; 
+  margin-right: 5px; 
+  background-color: white; 
+  width: 70px; 
+  height: 70px; 
+  padding: 1px; 
+  text-align: center; 
+}
+.media_asset_selection_list_entry .label { 
+  width: 188px; 
+  overflow: hidden; 
+}
