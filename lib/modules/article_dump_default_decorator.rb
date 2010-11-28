@@ -29,7 +29,14 @@ module Wiki
     end
 
     def decorate_part(part, article=nil)
-      part.inspect
+      article        ||= @article
+      partial = Plugin_Register.get(Hook.wiki.article_version.hierarchy.partial, 
+                                    :article    => article, 
+                                    :part       => part).first
+      tce = HTML.div(:class => :article_text) { 
+        partial
+      }
+      return HTML.div.article_partial { tce } 
     end
 
     def decorate_article(article=nil)

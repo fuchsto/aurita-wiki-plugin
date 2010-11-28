@@ -8,6 +8,7 @@ end
 Aurita.import_plugin_module :wiki, :gui, :article_select_field
 Aurita.import_plugin_module :wiki, :gui, :media_asset_selection_field
 Aurita.import_plugin_module :wiki, :gui, :text_asset_partial
+Aurita.import_plugin_module :wiki, :gui, :text_asset_dump_partial
 
 module Aurita
 module Plugins
@@ -23,7 +24,7 @@ module Wiki
       text.gsub!("\n[/code]",'[/code]')
       text.gsub(/\[code ([^\]]+)\](.+?)\[\/code\]/) { |code| 
       	string = code.gsub(/\[code ([^\]]+)\](.+)\[\/code\]/, '\2')
-      	lang = code.gsub(/\[code ([^\]]+)\](.+)\[\/code\]/, '\1')
+      	lang   = code.gsub(/\[code ([^\]]+)\](.+)\[\/code\]/, '\1')
         string.gsub!('&amp;','&')
         string.gsub!('&nbsp;',' ')
         string.gsub!('&lt;',"<")
@@ -52,6 +53,13 @@ module Wiki
       text_asset = params[:part]
       viewparams = params[:viewparams]
       GUI::Text_Asset_Partial.new(text_asset)
+    end
+
+    def article_version_partial(params={})
+      article    = params[:article]
+      text_asset = params[:part]
+      viewparams = params[:viewparams]
+      GUI::Text_Asset_Dump_Partial.new(text_asset)
     end
 
     def update_inline
