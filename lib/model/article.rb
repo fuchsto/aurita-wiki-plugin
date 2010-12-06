@@ -29,19 +29,34 @@ module Wiki
       title().to_s
     end
 
+    def time_active_from
+      if attr[:time_active_from].is_a?(String) then
+        Date.parse(attr[:time_active_from]) if attr[:time_active_from] != ''
+      else
+        attr[:time_active_from]
+      end
+    end
+    def time_active_to
+      if attr[:time_active_to].is_a?(String) then
+        Date.parse(attr[:time_active_to]) if attr[:time_active_to] != ''
+      else
+        attr[:time_active_to]
+      end
+    end
+
     def self.after_active_time_range
       return (Wiki::Article.time_active_to.is_not_null) & (Wiki::Article.time_active_to <= :now) 
     end
     def after_active_time_range
-      return (time_active_to.to_s != '' && time_active_to <= Time.now.to_s)
+      return (time_active_to.to_s != '' && time_active_to <= Date.today)
     end
     def self.in_active_time_range
       in_time_range = ((Wiki::Article.time_active_from <= :now) | (Wiki::Article.time_active_from.is_null))
       return (in_time_range & ((Wiki::Article.time_active_to >= :now) | (Wiki::Article.time_active_to.is_null)))
     end
     def in_active_time_range
-      in_time_range = (time_active_from.to_s == '' || time_active_from <= Time.now.to_s)
-      return in_time_range && (time_active_to.to_s == ''|| time_active_to >= Time.now.to_s)
+      in_time_range = (time_active_from.to_s == '' || time_active_from <= Date.today)
+      return in_time_range && (time_active_to.to_s == ''|| time_active_to >= Date.today)
     end
 
     expects :title
