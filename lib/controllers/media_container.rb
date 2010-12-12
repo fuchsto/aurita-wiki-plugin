@@ -20,34 +20,18 @@ module Wiki
     end
 
     def perform_add
-
-      @params[:tags] = 'media'
+      @params[:tags] = ':media_container'
 
       content_id_parent = param(:content_id_parent) 
       content_id_parent = param(:content_id) unless content_id_parent
-      instance = super()
-
+      instance   = super()
       position   = param(:position)
       position ||= param(:sortpos)
-      
-      if !position && param(:after_asset) then
-        position   = Container.load(:asset_id_child => param(:after_asset)).sortpos + 1
-      elsif !position then
-        max_offset = Container.value_of.max(:sortpos).where(Container.content_id_parent == param(:content_id))
-        max_offset = 0 if max_offset.nil? 
-        position = max_offset.to_i+1
-      else
-        position = param(:sortpos).to_i
-      end
-
-      container = Container.create(
-                    :content_id_parent => content_id_parent, 
-                    :asset_id_child    => instance.asset_id, 
-                    :sortpos           => position
-                  )
 
       article = Article.find(1).with(Article.content_id == content_id_parent).entity
-      article.commit_version('ADD:MEDIA_CONTAINER')
+      article.add_partial(instance, 
+                          :position    => position, 
+                          :after_asset => param(:after_asset))
 
       redirect_to(article, :edit_inline_content_id => instance.content_id, 
                            :article_id             => article.article_id, 

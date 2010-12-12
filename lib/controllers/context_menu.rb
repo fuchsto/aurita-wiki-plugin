@@ -104,7 +104,7 @@ module Wiki
       content_id_parent = param(:content_id_parent)
       targets = { "article_#{param(:article_id)}" => "Wiki::Article/show/article_id=#{param(:article_id)}" }
 
-      article = Article.load(:article_id => param(:article_id))
+      article = Article.get(param(:article_id))
       if !Aurita.user.may_edit_content?(article) then 
         render_view(:message_box, :message => tl(:article_is_locked))
         return

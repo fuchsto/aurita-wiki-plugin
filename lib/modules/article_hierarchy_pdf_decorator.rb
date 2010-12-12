@@ -1,6 +1,5 @@
 
 require('aurita')
-require('prawn')
 Aurita.import_plugin_module :wiki, :article_hierarchy_default_decorator
 
 begin

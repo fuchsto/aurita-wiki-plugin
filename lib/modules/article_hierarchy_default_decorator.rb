@@ -13,11 +13,13 @@ module Wiki
 
     class Partial_Divide < Element
     include Aurita::GUI
+    include Aurita::Plugin_Methods
     include Aurita::GUI::Link_Helpers
     include Aurita::GUI::I18N_Helpers
 
       def initialize(params={})
-        @params = params
+        @params    = params
+        @decorator = params[:decorator]
         super()
       end
 
@@ -29,18 +31,30 @@ module Wiki
                   :action      => :perform_add, 
                   :after_asset => partial.asset_id, 
                   :content_id  => article.content_id) { 
-            HTML.img(:src => '/aurita/images/icons/context_add_text_partial.gif') + HTML.span.label { tl(:add_text_partial) }  
+            HTML.img(:src => '/aurita/images/icons/context_add_text_partial.gif') + 
+            HTML.span.label { tl(:add_text_partial) }  
           }
         } + HTML.div(:class => [ :context_menu_button, :sort_handle ]) { 
           link_to(:controller  => 'Wiki::Media_Container', 
                   :action      => :perform_add, 
                   :after_asset => partial.asset_id, 
                   :content_id  => article.content_id) { 
-            HTML.img(:src => '/aurita/images/icons/context_add_files_partial.gif') + HTML.span.label { tl(:add_files_partial) }
+            HTML.img(:src => '/aurita/images/icons/context_add_files_partial.gif') + 
+            HTML.span.label { tl(:add_files_partial) }
           }
         } 
-
-        HTML.div.article_partial_divide(:id => "article_#{article.article_id}_part_#{partial.asset_id}") { 
+        
+        partial_divide_dom_id = "article_#{article.article_id}_part_#{partial.asset_id}"
+        
+        plugin_get(Aurita::Hook.wiki.article.add_partial_type, 
+                   :partial => partial, 
+                   :target  => partial_divide_dom_id, 
+                   :article => article).each { |component|
+          component.add_css_class(:context_menu_button, :sort_handle)
+          div_buttons << component
+        }
+        
+        HTML.div.article_partial_divide(:id => partial_divide_dom_id) { 
           Context_Menu_Element.new(:show_button     => true, 
                                    :context_buttons => div_buttons, 
                                    :entity          => partial, 
@@ -169,8 +183,9 @@ module Wiki
                                        :class               => :article_contextual_partial, 
                                        :type                => part[:model].gsub('Aurita::Plugins::',''), 
                                        :params              => container_params)
-        tce += Partial_Divide.new(:partial => part_entity, 
-                                  :params  => container_params).string
+        tce += Partial_Divide.new(:decorator => self, 
+                                  :partial   => part_entity, 
+                                  :params    => container_params).string
       end
 
       @partial_index += 1

@@ -73,6 +73,27 @@ module Wiki
       Article_Version.value_of.max(:version).with(Article_Version.article_id == article_id).to_i
     end
 
+    def add_partial(partial, params={})
+      position = params[:position]
+      
+      if !position && params[:after_asset] then
+        position   = Container.load(:asset_id_child => params[:after_asset]).sortpos + 1
+      elsif !position then
+        max_offset = Container.value_of.max(:sortpos).where(Container.content_id_parent == content_id)
+        max_offset = 0 if max_offset.nil? 
+        position = max_offset.to_i+1
+      else
+        position = position.to_i
+      end
+
+      container = Container.create(
+                    :content_id_parent => content_id, 
+                    :asset_id_child    => partial.asset_id, 
+                    :sortpos           => position
+                  )
+      commit_version("ADD:Partial")
+    end
+
     # Returns part of an article hierarchy. 
     def elements(params={})
       amount   = params[:max]
