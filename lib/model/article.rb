@@ -161,12 +161,25 @@ module Wiki
       media_assets(:amount => 1).first
     end
 
-    # Returns Text_Asset instances (paragraphs) of 
+    # Returns Media_Asset instances (paragraphs) of 
     # this article, as array, ordered by their appearance 
     # in the article. 
     # Note that Media_Asset instances can only be part 
-    # of an article as file attachment of its Text_Asset 
-    # instances. 
+    # of an article as part of Media_Container instances: 
+    #
+    #   Article
+    #   |- Text_Asset
+    #   |- Text_Asset
+    #   |- Media_Container
+    #      |- Media_Asset  \
+    #      |- Media_Asset   )
+    #      |- ...          / \
+    #   |- ...                \
+    #   |- ...                 )- Returned by article.media_assets
+    #   |- Media_Container    /
+    #      |- Media_Asset  \ /
+    #      |- Media_Asset   ) 
+    #      |- ...          /
     #
     def media_assets(params={})
     # {{{
@@ -182,10 +195,32 @@ module Wiki
           c.limit(amount)
         }
       }.to_a.map { |mc|
-        assets += mc.media_assets
+        assets += mc.media_assets(params[:filter])
       }
       assets
     end # }}} 
+
+    # Like Article#media_assets, but returns non-image files only. 
+    #
+    def files(params={})
+      filter = Media_Asset.mime.not_ilike('image/%')
+      if params[:filter] then
+        filter = filter & params[:filter]
+      end
+      params[:filter] = filter
+      media_assets(params)
+    end
+
+    # Like Article#media_assets, but returns image files only. 
+    #
+    def images(params={})
+      filter = Media_Asset.mime.ilike('image/%')
+      if params[:filter] then
+        filter = filter & params[:filter]
+      end
+      params[:filter] = filter
+      media_assets(params)
+    end
     
   end 
 
