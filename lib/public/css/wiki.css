@@ -275,6 +275,7 @@ table.media_asset_table td.date {
   text-align: center; 
   padding: 2px; 
   display: block; 
+  overflow: hidden; 
   background: url('/aurita/images/icons/loading.gif') no-repeat scroll 88px 11px; 
 }
 .media_asset_thumbnail .image.no_loading_icon { 
