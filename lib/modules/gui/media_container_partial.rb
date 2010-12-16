@@ -4,9 +4,9 @@ require('aurita-gui')
 require('aurita-gui/html')
 require('aurita-gui/element')
 require('aurita-gui/widget')
-
 Aurita.import_module :gui, :link_helpers
-Aurita.import_plugin_module :wiki, 'gui/media_asset_thumbnail'
+Aurita.import_plugin_module :wiki, :gui, :media_asset_thumbnail
+
 
 module Aurita
 module Plugins

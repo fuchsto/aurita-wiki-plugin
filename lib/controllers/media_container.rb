@@ -4,7 +4,7 @@ require('aurita/plugin_controller')
 Aurita.import_plugin_model :wiki, :media_container
 Aurita.import_plugin_model :wiki, :media_container_entry
 Aurita.import_plugin_model :wiki, :media_asset
-Aurita.import_plugin_module :wiki, 'gui/media_container_partial'
+Aurita.import_plugin_module :wiki, :gui, :media_container_partial
 
 module Aurita
 module Plugins

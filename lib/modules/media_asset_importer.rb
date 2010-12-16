@@ -111,10 +111,14 @@ module Wiki
         @@logger.log('FILE IMPORT: Create preview')
         create_thumbnails()
       elsif @media_asset.is_movie? and @media_asset.mime != 'application/x-flv' then
-        system('ffmpeg -i ' << @media_asset.fs_path + ' ' << Aurita.project_path + 'public/assets/asset_' << id + '.flv')
-        FileUtils.remove(@media_asset.fs_path)
-        @media_asset['mime'] = 'application/x-flv'
-        @media_asset.commit 
+        begin
+          system('ffmpeg -i ' << @media_asset.fs_path + 
+                 ' ' << Aurita.project_path + 'public/assets/asset_' << id + '.flv')
+          FileUtils.remove(@media_asset.fs_path)
+          @media_asset['mime'] = 'application/x-flv'
+          @media_asset.commit 
+        rescue ::Exception => e
+        end
       else 
         @@logger.log('No preview created')
       end
@@ -184,6 +188,16 @@ module Wiki
             img.write(Aurita.project_path(:public, :assets, "asset_#{id}.png")) { 
               self['quality'] = 85
             }
+          end
+        elsif @media_asset.is_video? then
+          begin
+            dest = Aurita.project_path(:public, :assets, "asset_#{id}.jpg")
+            # File.open(source, 'w')
+            # system "ffmpeg -i #{path}  -ar 22050 -ab 32 -acodec mp3
+            #         -s 480x360 -vcodec flv -r 25 -qscale 8 -f flv -y #{ dest }"
+            system("ffmpeg -i '#{path}' -ss 00:00:10 -vframes 1 -f image2 -vcodec mjpeg '#{dest}'")
+            ext = 'jpg'
+          rescue ::Exception => e
           end
         end
 

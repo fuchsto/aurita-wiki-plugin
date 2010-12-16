@@ -2,11 +2,14 @@
 require('aurita/plugin_controller')
 require('enumerator')
 
+Aurita.import :base, :plugin_methods
+
 module Aurita
 module Plugins
 module Wiki
 
   class Article_Hierarchy_Default_Decorator < Plugin_Controller
+  include Aurita::Plugin_Methods
   include Aurita::GUI::Helpers
   extend Aurita::GUI::Helpers
   include Aurita::GUI
@@ -159,6 +162,7 @@ module Wiki
                            :article_id        => article.article_id}
 
       partial = Plugin_Register.get(Hook.wiki.article.hierarchy.partial, 
+                                    self, 
                                     :article    => article, 
                                     :viewparams => @viewparams, 
                                     :part       => part_entity).first
@@ -177,6 +181,7 @@ module Wiki
 
       if Aurita.user.may_edit_content?(article) then
         tce = Context_Menu_Element.new(tce, 
+                                       :entity              => part_entity, 
                                        :id                  => "article_part_asset_#{part_entity.asset_id}_contextual", 
                                        :show_button         => true, 
                                        :add_context_buttons => context_buttons, 
