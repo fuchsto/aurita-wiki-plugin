@@ -108,7 +108,6 @@ module Wiki
 
     def toolbar_buttons
     # {{{
-
       result = []
       if Aurita.user.may(:create_articles) then
         result << Text_Button.new(:icon    => :add_article, 
@@ -116,9 +115,7 @@ module Wiki
           tl(:write_new_article) 
         } 
       end
-
       return result
-
     end # }}}
 
     def recent_changes

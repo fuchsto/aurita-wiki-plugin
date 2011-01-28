@@ -582,3 +582,16 @@ table.media_asset_table td.date {
   width: 188px; 
   overflow: hidden; 
 }
+
+.article_text .form_box, 
+.article_partial_divide .form_box { 
+  width: auto; 
+  margin-bottom: 5px; 
+  background-color: #f4f4f4;
+}
+
+.article_text ul li.form_field, 
+.article_partial_divide ul li.form_field { 
+  list-style-type: none; 
+  margin-left: 1px; 
+}

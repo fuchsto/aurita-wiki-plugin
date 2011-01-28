@@ -16,14 +16,16 @@
 
 <div class="topic_inline">
   <div class="box_body" >
-  <% if media_asset.is_video? then %>
+  <% if media_asset.is_video? then 
+    preview = "/aurita/assets/medium/asset_#{media_asset.pkey}.jpg"
+  %>
     <embed 
-      src="/aurita/shared/mediaplayer.swf" 
-      width="420" 
-      height="350"
+      src="/aurita/shared/jwplayer/player.swf" 
+      width="450" 
+      height="370"
       allowscriptaccess="always" 
       allowfullscreen="true" 
-      flashvars="width=420&height=350&file=/aurita/assets/asset_<%= media_asset.media_asset_id %>.<%= media_asset.extension %>"
+      flashvars="image=<%= preview %>&width=450&height=370&file=/stream/asset_<%= media_asset.media_asset_id %>.<%= media_asset.extension %>"
     />
     <hr />
 

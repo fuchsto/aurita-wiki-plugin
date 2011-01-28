@@ -450,6 +450,13 @@ module Wiki
       end
     end # }}}
 
+    def icon
+      m = load_instance()
+      HTML.div(:class => "media_asset_thumbnail #{param(:size)}") { 
+        m.icon(param(:size)) 
+      } 
+    end
+
     def show_latest
       show(Media_Asset.latest_of_user.media_asset_id)
     end
@@ -656,6 +663,7 @@ module Wiki
                                                     :label      => tl(:select_file), 
                                                     :row_action => 'Wiki::Media_Asset/editor_list_variant_choice', 
                                                     :id         => :media_asset))
+
       element = decorate_form(form, 
                               :buttons => Proc.new { |btn_params|
                                 Text_Button.new(:class   => :submit, 

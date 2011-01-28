@@ -3,6 +3,8 @@ require('aurita/plugin_controller')
 require('enumerator')
 
 Aurita.import :base, :plugin_methods
+Aurita.import_plugin_module :wiki, :gui, :article_partial
+
 
 module Aurita
 module Plugins
@@ -13,63 +15,6 @@ module Wiki
   include Aurita::GUI::Helpers
   extend Aurita::GUI::Helpers
   include Aurita::GUI
-
-    class Partial_Divide < Element
-    include Aurita::GUI
-    include Aurita::Plugin_Methods
-    include Aurita::GUI::Link_Helpers
-    include Aurita::GUI::I18N_Helpers
-
-      def initialize(params={})
-        @params    = params
-        @decorator = params[:decorator]
-        super()
-      end
-
-      def string
-        partial = @params[:partial]
-        article = partial.article
-        div_buttons = HTML.div(:class => [ :context_menu_button, :sort_handle ]) { 
-          link_to(:controller  => 'Wiki::Text_Asset', 
-                  :action      => :perform_add, 
-                  :after_asset => partial.asset_id, 
-                  :content_id  => article.content_id) { 
-            HTML.img(:src => '/aurita/images/icons/context_add_text_partial.gif') + 
-            HTML.span.label { tl(:add_text_partial) }  
-          }
-        } + HTML.div(:class => [ :context_menu_button, :sort_handle ]) { 
-          link_to(:controller  => 'Wiki::Media_Container', 
-                  :action      => :perform_add, 
-                  :after_asset => partial.asset_id, 
-                  :content_id  => article.content_id) { 
-            HTML.img(:src => '/aurita/images/icons/context_add_files_partial.gif') + 
-            HTML.span.label { tl(:add_files_partial) }
-          }
-        } 
-        
-        partial_divide_dom_id = "article_#{article.article_id}_part_#{partial.asset_id}"
-        
-        plugin_get(Aurita::Hook.wiki.article.add_partial_type, 
-                   :partial => partial, 
-                   :target  => partial_divide_dom_id, 
-                   :article => article).each { |component|
-          component.add_css_class(:context_menu_button, :sort_handle)
-          div_buttons << component
-        }
-        
-        HTML.div.article_partial_divide(:id => partial_divide_dom_id) { 
-          Context_Menu_Element.new(:show_button     => true, 
-                                   :context_buttons => div_buttons, 
-                                   :entity          => partial, 
-                                   :type            => 'Wiki::Container', 
-                                   :params          => @params[:params]) {
-            HTML.div.field { HTML.hr }
-          }
-        }.string
-      end
-
-    end # class Partial_Divide
-
 
     attr_accessor :hierarchy, :viewparams, :templates
     
@@ -157,45 +102,18 @@ module Wiki
     def decorate_part(part, article=nil)
       article        ||= @article
       part_entity      = part[:instance]
-      container_params = { :content_id_parent => article.content_id, 
-                           :asset_id_child    => part_entity.asset_id, 
-                           :article_id        => article.article_id}
-
+      
+      @partial_index += 1
+      
       partial = Plugin_Register.get(Hook.wiki.article.hierarchy.partial, 
                                     self, 
                                     :article    => article, 
                                     :viewparams => @viewparams, 
                                     :part       => part_entity).first
-
-      tce = HTML.div(:class => :article_text) { 
-        partial
-      }
-
-      sort_btn = HTML.div(:class => [ :context_menu_button, :sort_handle ]) { 
-        HTML.img(:src => '/aurita/images/icons/sort.gif')
-      } 
-
-      context_buttons = []
-      context_buttons = partial.context_buttons if partial.respond_to?(:context_buttons)
-      context_buttons << sort_btn
-
-      if Aurita.user.may_edit_content?(article) then
-        tce = Context_Menu_Element.new(tce, 
-                                       :entity              => part_entity, 
-                                       :id                  => "article_part_asset_#{part_entity.asset_id}_contextual", 
-                                       :show_button         => true, 
-                                       :add_context_buttons => context_buttons, 
-                                       :class               => :article_contextual_partial, 
-                                       :type                => part[:model].gsub('Aurita::Plugins::',''), 
-                                       :params              => container_params)
-        tce += Partial_Divide.new(:decorator => self, 
-                                  :partial   => part_entity, 
-                                  :params    => container_params).string
-      end
-
-      @partial_index += 1
       
-      return HTML.div.article_partial(:id => "article_part_asset_#{part_entity.asset_id}") { tce } 
+      GUI::Article_Partial.new(:partial        => partial, 
+                               :article        => article, 
+                               :partial_entity => part_entity)
     end
 
   end
