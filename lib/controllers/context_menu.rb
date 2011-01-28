@@ -93,7 +93,7 @@ module Wiki
       end
      
       header(tl(:text))
-      load_entry(:edit_text, { "article_part_asset_#{asset_id_child}" => "Wiki::Text_Asset/update_inline/asset_id_child=#{asset_id_child}&content_id_parent=#{content_id_parent}&asset_id=#{asset_id_child}" })
+      load_entry(:edit_text, { "article_part_asset_#{asset_id_child}" => "Wiki::Text_Asset/update/asset_id_child=#{asset_id_child}&content_id_parent=#{content_id_parent}&asset_id=#{asset_id_child}" })
 
       container()
     end

@@ -77,26 +77,29 @@ module GUI
     def string
       partial = @params[:partial]
       article = partial.article
+      
+      partial_divide_dom_id = "article_#{article.article_id}_part_#{partial.asset_id}"
+      partial_dom_id        = "article_part_asset_#{partial.asset_id}"
+      
       div_buttons = HTML.div(:class => [ :context_menu_button, :sort_handle ]) { 
-        link_to(:controller  => 'Wiki::Text_Asset', 
-                :action      => :perform_add, 
-                :after_asset => partial.asset_id, 
-                :content_id  => article.content_id) { 
+        link_to(:element       => 'dispatcher', 
+                :controller    => 'Wiki::Text_Asset', 
+                :action        => :perform_add, 
+                :after_asset   => partial.asset_id, 
+                :content_id    => article.content_id) { 
           HTML.img(:src => '/aurita/images/icons/context_add_text_partial.gif') + 
           HTML.span.label { tl(:add_text_partial) }  
         }
       } + HTML.div(:class => [ :context_menu_button, :sort_handle ]) { 
-        link_to(:controller  => 'Wiki::Media_Container', 
-                :action      => :perform_add, 
-                :after_asset => partial.asset_id, 
-                :content_id  => article.content_id) { 
+        link_to(:element       => 'dispatcher', 
+                :controller    => 'Wiki::Media_Container', 
+                :action        => :perform_add, 
+                :after_asset   => partial.asset_id, 
+                :content_id    => article.content_id) { 
           HTML.img(:src => '/aurita/images/icons/context_add_files_partial.gif') + 
           HTML.span.label { tl(:add_files_partial) }
         }
       } 
-      
-      partial_divide_dom_id = "article_#{article.article_id}_part_#{partial.asset_id}"
-      partial_dom_id        = "article_part_asset_#{partial.asset_id}"
       
       plugin_get(Aurita::Hook.wiki.article.add_partial_type, 
                  :partial        => partial, 
