@@ -25,9 +25,6 @@ module GUI
     end
 
     def element
-      container_params = { :content_id_parent => @article.content_id, 
-                           :asset_id_child    => @partial_entity.asset_id, 
-                           :article_id        => @article.article_id}
       
       tce = HTML.div.article_text { 
         @partial
@@ -37,7 +34,13 @@ module GUI
         HTML.img(:src => '/aurita/images/icons/sort.gif')
       } 
 
-      if Aurita.user.may_edit_content?(@article) then
+      asset_id   = @partial_entity.asset_id if @partial_entity
+      asset_id ||= :new
+
+      if @partial_entity && Aurita.user.may_edit_content?(@article) then
+        container_params = { :content_id_parent => @article.content_id, 
+                             :asset_id_child    => asset_id, 
+                             :article_id        => @article.article_id}
         context_buttons = []
         context_buttons = @partial.context_buttons if @partial.respond_to?(:context_buttons)
         context_buttons << sort_btn
@@ -53,7 +56,7 @@ module GUI
         tce += Partial_Divide.new(:partial => @partial_entity, 
                                   :params  => container_params).string
       end
-      HTML.div.article_partial(:id => "article_part_asset_#{@partial_entity.asset_id}") { 
+      HTML.div.article_partial(:id => "article_part_asset_#{asset_id}") { 
         tce
       }
     end
@@ -93,11 +96,13 @@ module GUI
       } 
       
       partial_divide_dom_id = "article_#{article.article_id}_part_#{partial.asset_id}"
+      partial_dom_id        = "article_part_asset_#{partial.asset_id}"
       
       plugin_get(Aurita::Hook.wiki.article.add_partial_type, 
-                 :partial => partial, 
-                 :target  => partial_divide_dom_id, 
-                 :article => article).each { |component|
+                 :partial        => partial, 
+                 :divider_dom_id => partial_divide_dom_id, 
+                 :partial_dom_id => partial_dom_id,
+                 :article        => article).each { |component|
         component.add_css_class(:context_menu_button, :sort_handle)
         div_buttons << component
       }

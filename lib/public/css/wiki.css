@@ -587,7 +587,7 @@ table.media_asset_table td.date {
 .article_partial_divide .form_box { 
   width: auto; 
   margin-bottom: 5px; 
-  background-color: #f4f4f4;
+  background-color: transparent; 
 }
 
 .article_text ul li.form_field, 
