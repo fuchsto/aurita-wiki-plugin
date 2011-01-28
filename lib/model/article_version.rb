@@ -43,6 +43,7 @@ module Wiki
                                :action_type   => action_type, 
                                :dump          => dump)
       end
+      Content.touch(content_id)
     end
 
     def latest_version_number

@@ -14,15 +14,10 @@ module GUI
     def initialize(params={})
       @params        = params
       @text_asset    = params[:text_asset]
-      if @text_asset then
-        @text_asset_id = @text_asset.text_asset_id
-        @text          = @text_asset.text
-        @mode          = :update
-      else
-        @text_asset_id = :new
-        @text          = ''
-        @mode          = :add
-      end
+      @text_asset_id = @text_asset.text_asset_id
+      @text          = @text_asset.text
+      @mode          = :update
+      @asset_id      = @text_asset.asset_id
       if @params[:article] 
         @article_id = @params[:article].article_id
       end
@@ -34,6 +29,10 @@ module GUI
       container_dom_id = "text_asset_#{@mode}_container_#{@text_asset_id}"
       action           = :perform_add if @mode = :add
       action           = :perform_update if @mode = :update
+
+      close_onclick = Javascript.Aurita.load(:element => "article_part_asset_#{@asset_id}_contextual", 
+                                             :replace => true, 
+                                             :action  => "Wiki::Text_Asset/article_partial/id=#{@text_asset_id}")
 
       HTML.div.text_asset_editor_container { 
         
@@ -51,7 +50,7 @@ module GUI
                               :onclick => Javascript.Aurita.submit_form(form_dom_id)) + 
               Text_Button.new(:icon    => :editor_close, 
                               :class   => :no_border, 
-                              :onclick => "$('#{container_dom_id}').hide(); Aurita.Editor.save_all()") +
+                              :onclick => close_onclick) +
               HTML.div(:style => 'clear: both;') { } 
             } + 
 
