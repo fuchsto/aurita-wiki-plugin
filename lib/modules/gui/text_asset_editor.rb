@@ -16,6 +16,7 @@ module GUI
       @text_asset    = params[:text_asset]
       @text_asset_id = @text_asset.text_asset_id
       @text          = @text_asset.text
+      @mode          = params[:mode]
       @mode          = :update
       @asset_id      = @text_asset.asset_id
       if @params[:article] 
@@ -27,8 +28,8 @@ module GUI
     def element
       form_dom_id      = "text_asset_#{@mode}_form_#{@text_asset_id}"
       container_dom_id = "text_asset_#{@mode}_container_#{@text_asset_id}"
-      action           = :perform_add if @mode = :add
-      action           = :perform_update if @mode = :update
+      action           = :perform_add if @mode == :add
+      action           = :perform_update if @mode == :update
 
       close_onclick = Javascript.Aurita.load(:element => "article_part_asset_#{@asset_id}_contextual", 
                                              :replace => true, 
