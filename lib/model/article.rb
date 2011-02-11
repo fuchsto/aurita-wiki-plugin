@@ -131,7 +131,7 @@ module Wiki
       text       = text_asset.text if text_asset
       text     ||= ''
       text       = text[0..length].split(' ')[0..-2].join(' ')
-      text.gsub(/<[^>]+>/,'').gsub('&nbsp;','')
+      text.gsub(/<[^>]+>/,'').gsub('&nbsp;',' ')
     end
     
     def teaser_image
