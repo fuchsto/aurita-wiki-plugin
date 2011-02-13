@@ -62,6 +62,7 @@ module Wiki
       GUI::Text_Asset_Dump_Partial.new(text_asset)
     end
 
+    # Partial without Context_Element decoration
     def update
       text_asset   = load_instance()
       text_asset ||= Text_Asset.find(1).with(Text_Asset.asset_id == param(:asset_id)).entity
@@ -77,6 +78,23 @@ module Wiki
 
     def add
       # undef
+    end
+
+    # Partial as Context_Element (returns GUI::Article_Partial)
+    def partial
+      text_asset   = load_instance()
+      text_asset ||= Text_Asset.find(1).with(Text_Asset.asset_id == param(:asset_id)).entity
+      article      = text_asset.article
+
+      return unless Aurita.user.may_edit_content?(article)
+      
+      partial = GUI::Text_Asset_Editor.new(:text_asset  => text_asset, 
+                                           :article     => article, 
+                                           :after_asset => param(:after_asset))
+      
+      GUI::Article_Partial.new(:article => article, 
+                               :partial => partial, 
+                               :entity  => text_asset)
     end
 
     def perform_add()
@@ -102,7 +120,7 @@ module Wiki
                           :after_asset => param(:after_asset))
       
       dom_insert(:after_element => "article_part_asset_#{param(:after_asset)}",
-                 :action        => :update, 
+                 :action        => :partial, 
                  :text_asset_id => instance.text_asset_id, 
                  :after_asset   => param(:after_asset))
 

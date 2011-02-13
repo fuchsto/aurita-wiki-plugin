@@ -25,6 +25,21 @@ module Wiki
       GUI::Media_Container_Dump_Partial.new(media_container)
     end
 
+    def partial
+      instance    = load_instance()
+      instance  ||= Media_Container.find(1).with(Media_Container.asset_id == param(:asset_id_child)).entity
+      article     = instance.article
+      
+      editor = view_string(:container_attachments, 
+                           :article          => instance.article, 
+                           :media_container  => instance, 
+                           :media_asset_list => Media_Asset_Controller.choice_list(:selected => instance.media_assets))
+      
+      GUI::Article_Partial.new(:article => article, 
+                               :partial => HTML.div { editor }, 
+                               :entity  => instance)
+    end
+    
     def add
       # undef
     end
@@ -58,7 +73,7 @@ module Wiki
 #                           :edit_inline_type       => 'MEDIA_CONTAINER')
       
       dom_insert(:after_element      => "article_part_asset_#{param(:after_asset)}",
-                 :action             => :update, 
+                 :action             => :partial, 
                  :media_container_id => instance.media_container_id, 
                  :after_asset        => param(:after_asset))
 

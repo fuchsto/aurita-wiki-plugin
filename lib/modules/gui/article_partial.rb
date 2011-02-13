@@ -16,10 +16,11 @@ module GUI
   class Article_Partial < Aurita::GUI::Widget
 
     def initialize(params={}, &block)
-      @article        = params[:article]
-      @partial_entity = params[:partial_entity]
-      @partial        = params[:partial]
-      @partial      ||= yield if block_given?
+      @article          = params[:article]
+      @partial_entity   = params[:entity]
+      @partial_entity ||= params[:partial_entity]
+      @partial          = params[:partial]
+      @partial        ||= yield if block_given?
       raise ::Exception.new("No parameter :partial given for Article_Partial") unless @partial
       super()
     end
