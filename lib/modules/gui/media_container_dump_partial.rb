@@ -9,15 +9,31 @@ module GUI
   include Aurita::GUI::Link_Helpers
     
     def initialize(part)
-      @dump = part[:dump]
-      @media_container = Media_Container.get(@dump[:media_container_id])
+      @part = part
+      @media_container = Media_Container.get(part[:media_container_id])
+      @media_asset_ids = @part[:dump]
       super()
     end
     
     def element
+      # Preserve order by mapping 
+      media_assets = @media_asset_ids.map { |m|
+        Media_Asset.get(m)
+      }
+      images = []
+      files  = []
+
+      media_assets.each { |m|
+        if m.is_image? then
+          images << m
+        else
+          files << m
+        end
+      }
+
       HTML.div.media_container_partial { 
         HTML.div.images { 
-          @media_container.media_assets(Media_Asset.mime.ilike('image/%')).map { |image|
+          images.map { |image|
             entry = HTML.div.image_partial { 
               link_to(image) { GUI::Media_Asset_Thumbnail.new(image, :size => :preview).string }
             }
@@ -26,7 +42,7 @@ module GUI
         } + 
         HTML.div(:style => 'clear: both;') + 
         HTML.div.files { 
-          @media_container.media_assets(Media_Asset.mime.not_ilike('image/%')).map { |file|
+          files.map { |file|
             entry = HTML.div.file_partial { 
               link_to(file) { GUI::Media_Asset_Thumbnail.new(file, :size => :tiny).string }
             }
