@@ -49,6 +49,7 @@ module GUI
         tce = Context_Menu_Element.new(tce, 
                                        :entity              => @partial_entity, 
                                        :id                  => "article_part_asset_#{@partial_entity.asset_id}_contextual", 
+                                       :highlight_id        => "article_part_asset_#{@partial_entity.asset_id}", 
                                        :show_button         => true, 
                                        :add_context_buttons => context_buttons, 
                                        :class               => :article_contextual_partial, 
@@ -113,6 +114,7 @@ module GUI
       
       HTML.div.article_partial_divide(:id => partial_divide_dom_id) { 
         Context_Menu_Element.new(:show_button     => true, 
+                                 :highlight_id    => "article_part_asset_#{partial.asset_id}", 
                                  :context_buttons => div_buttons, 
                                  :entity          => partial, 
                                  :type            => 'Wiki::Container', 
