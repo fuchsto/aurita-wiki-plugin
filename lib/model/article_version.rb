@@ -42,6 +42,8 @@ module Wiki
                                :user_group_id => Aurita.user.user_group_id, 
                                :action_type   => action_type, 
                                :dump          => dump)
+      else 
+        log "No change in article found"
       end
       Content.touch(content_id)
     end

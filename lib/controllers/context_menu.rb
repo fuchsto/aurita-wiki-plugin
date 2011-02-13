@@ -84,8 +84,7 @@ module Wiki
 
       asset_id_child    = param(:asset_id_child)
       content_id_parent = param(:content_id_parent)
-      targets = { "article_#{param(:article_id)}" => "Wiki::Article/show/article_id=#{param(:article_id)}" }
-
+      
       article = Article.load(:article_id => param(:article_id))
       if !Aurita.user.may_edit_content?(article) then 
         render_view(:message_box, :message => tl(:article_is_locked))
@@ -93,7 +92,7 @@ module Wiki
       end
      
       header(tl(:text))
-      load_entry(:edit_text, { "article_part_asset_#{asset_id_child}" => "Wiki::Text_Asset/update/asset_id_child=#{asset_id_child}&content_id_parent=#{content_id_parent}&asset_id=#{asset_id_child}" })
+      load_entry(:edit_text, { "article_part_asset_#{asset_id_child}_contextual" => "Wiki::Text_Asset/update/asset_id_child=#{asset_id_child}&content_id_parent=#{content_id_parent}&asset_id=#{asset_id_child}" })
 
       container()
     end
@@ -102,8 +101,7 @@ module Wiki
 
       asset_id_child    = param(:asset_id_child)
       content_id_parent = param(:content_id_parent)
-      targets = { "article_#{param(:article_id)}" => "Wiki::Article/show/article_id=#{param(:article_id)}" }
-
+      
       article = Article.get(param(:article_id))
       if !Aurita.user.may_edit_content?(article) then 
         render_view(:message_box, :message => tl(:article_is_locked))
@@ -111,7 +109,7 @@ module Wiki
       end
      
       header(tl(:media_container))
-      load_entry(:edit_media_container, { "article_part_asset_#{asset_id_child}" => "Wiki::Media_Container/update_inline/asset_id_child=#{asset_id_child}&content_id_parent=#{content_id_parent}&asset_id=#{asset_id_child}" })
+      load_entry(:edit_media_container, { "article_part_asset_#{asset_id_child}_contextual" => "Wiki::Media_Container/update/asset_id_child=#{asset_id_child}&content_id_parent=#{content_id_parent}&asset_id=#{asset_id_child}" })
 
       container()
     end

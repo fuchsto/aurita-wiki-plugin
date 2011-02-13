@@ -63,6 +63,14 @@ module Wiki
       instance
     end
 
+    def self.after_instance_delete(instance)
+      instance.article.commit_version('DELETE:Text_Asset')
+    end
+
+    def version_dump
+      text().to_s.gsub('"','\"')
+    end
+
 =begin
     def subs
       # TODO: Change into

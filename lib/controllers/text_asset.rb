@@ -69,12 +69,10 @@ module Wiki
 
       return unless Aurita.user.may_edit_content?(article)
       
-      editor = GUI::Text_Asset_Editor.new(:text_asset  => text_asset, 
-                                          :article     => article, 
-                                          :after_asset => param(:after_asset))
-      GUI::Article_Partial.new(:article        => article, 
-                               :partial_entity => text_asset, 
-                               :partial        => editor)
+      GUI::Text_Asset_Editor.new(:text_asset  => text_asset, 
+                                 :article     => article, 
+                                 :after_asset => param(:after_asset))
+
     end
 
     def add
@@ -103,8 +101,6 @@ module Wiki
                           :position    => position, 
                           :after_asset => param(:after_asset))
       
-      article.commit_version('ADD:TEXT_ASSET')
-
       dom_insert(:after_element => "article_part_asset_#{param(:after_asset)}",
                  :action        => :update, 
                  :text_asset_id => instance.text_asset_id, 
@@ -114,15 +110,24 @@ module Wiki
     end
 
     def perform_delete()
+=begin
+# See Container.perform_delete
 
-      content_id = Container.value_of(Container.content_id_parent).where(
-                      Container.content_id_child == param(:content_id)
-                   ).to_i
+      content_id   = param(:content_id)
+      content_id ||= Container.value_of(Container.content_id_parent).where(
+                       Container.content_id_child == param(:content_id)
+                     ).to_i
       article = load_instance().article
-      article.commit_version('DELETE:TEXT_ASSET')
-      exec_js("Element.hide('container_#{param(:content_id)}'); ")
+      # Load text asset in container
+      asset = Asset.find(1).with(Asset.asset_id == container.asset_id_child).polymorphic.entity
 
-      super()
+      exec_js("Element.hide('article_part_asset_#{asset_asset_id}'); ")
+
+      result = super()
+      container.delete
+      article.commit_version('D:Text_Asset')
+      result
+=end
     end
 
     def perform_update
@@ -136,13 +141,12 @@ module Wiki
       instance = load_instance()
       article  = load_instance().article
       
-      article.commit_version('UPDATE:TEXT_ASSET')
+      article.commit_version('U:Text_Asset')
   
       redirect(:element       => "article_part_asset_#{instance.asset_id}_contextual", 
                :action        => :article_partial, 
                :text_asset_id => instance.text_asset_id)
 
-#     redirect_to(article)
       return result
     end
 

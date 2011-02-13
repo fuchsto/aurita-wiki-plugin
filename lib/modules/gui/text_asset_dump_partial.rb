@@ -12,8 +12,12 @@ module GUI
     end
     
     def element
-      HTML.div(:class => :text_asset_partial) { 
-        @text
+      HTML.div.article_text { 
+        HTML.div.article_contextual_partial { 
+          HTML.div.text_asset_partial { 
+            @text
+          }
+        }
       }
     end
 

@@ -1,3 +1,7 @@
+<%
+  latest_version = article.latest_version_number
+  active_version = article_version.version
+%>
 
 <div id="article_<%= article.article_id %>">
 
@@ -16,7 +20,7 @@
           <tr>
             <td><%= tl(:version_created_by) %></td>
             <td>
-              <%= gui.datetime(version_entry.timestamp_created) %> | <%= gui.link_to(author_user) { author_user.user_group_name } %> 
+              <%= gui.datetime(article_version.timestamp_created) %> | <%= gui.link_to(author_user) { author_user.user_group_name } %> 
             </td>
           </tr>
           <tr>
@@ -28,29 +32,27 @@
           <tr>
             <td><%= tl(:download) %></td>
             <td>
-              <a href="/aurita/Wiki::Article/show_pdf/article_id=<%= article.article_id %>&version=<%= article_version %>">PDF</a>
+              <a href="/aurita/Wiki::Article/show_pdf/article_id=<%= article.article_id %>&version=<%= latest_version %>">PDF</a>
             </td>
           </tr>
           <tr>
             <td><%= tl(:version) %></td>
             <td>
               <% if active_version.to_i > 0 then %>
-                <a class="icon button" 
-                   onclick="<%= gui.link_to(article, :action => :show_version, :version => active_version.to_i-1) %>">&lt;&lt;</a>
+                <a onclick="<%= gui.link_to(article, :action => :show_version, :version => active_version.to_i-1) %>">&lt;&lt;</a>
                 &nbsp;
               <% end %>
               <select name="article_version" id="article_version" class="varwidth" 
                 onchange="<%= gui.link_to(article, :action => :show_version, :version => "'+$('article_version').value + '") %>">
-                <% for version in 0..latest_version.to_i do %>
-                  <option value="<%= version %>" <% if version == active_version.to_i then %>selected="selected"<% end %>>
+                <% for version in 0..article.latest_version_number do %>
+                  <option value="<%= version %>" <% if version == article_version.version then %>selected="selected"<% end %>>
                     <%= version %> 
                   </option>
                 <% end %>
               </select>
-              <% if active_version.to_i < latest_version.to_i then %>
+              <% if active_version.to_i < article.latest_version_number then %>
                 &nbsp;
-                <a class="icon button" 
-                   onclick="<%= gui.link_to(article, :action => :show_version, :version => active_version.to_i+1) %>">&gt;&gt;</a>
+                <a onclick="<%= gui.link_to(article, :action => :show_version, :version => active_version.to_i+1) %>">&gt;&gt;</a>
               <% end %>
             </td>
           </tr>

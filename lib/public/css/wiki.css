@@ -448,7 +448,7 @@ table.media_asset_table td.date {
 }
 
 .article_view .context_menu_element .article_text { 
-  border-left: 1px solid transparent; 
+/*  border-left: 1px solid transparent; */
 }
 .article_view .context_menu_element .article_text.context_hover { 
   border-left: 1px solid #dadada; 

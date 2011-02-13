@@ -106,7 +106,7 @@ module Wiki
                     :asset_id_child    => partial.asset_id, 
                     :sortpos           => position
                   )
-      commit_version("ADD:Partial")
+    # commit_version("ADD:Partial")
     end
 
     # Returns part of an article hierarchy. 
