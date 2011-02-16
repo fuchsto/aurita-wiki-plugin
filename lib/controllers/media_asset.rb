@@ -10,9 +10,9 @@ Aurita.import_plugin_model :wiki, :media_asset_folder
 Aurita.import_plugin_module :wiki, :media_asset_renderer
 Aurita.import_plugin_module :wiki, :media_asset_importer
 Aurita.import_plugin_module :wiki, :media_meta_data
-Aurita.import_plugin_module :wiki, 'gui/media_asset_version_list'
-Aurita.import_plugin_module :wiki, 'gui/media_asset_list'
-Aurita.import_plugin_module :wiki, 'gui/media_asset_selection_field'
+Aurita.import_plugin_module :wiki, :gui, :media_asset_version_list
+Aurita.import_plugin_module :wiki, :gui, :media_asset_list
+Aurita.import_plugin_module :wiki, :gui, :media_asset_selection_field
 
 Aurita::Main.import_controller :content_comment
 Aurita::Main.import_controller :category

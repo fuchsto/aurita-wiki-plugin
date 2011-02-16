@@ -45,6 +45,7 @@ module Wiki
       else 
         log "No change in article found"
       end
+      reindex_content()
       Content.touch(content_id)
     end
 

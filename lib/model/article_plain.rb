@@ -18,10 +18,11 @@ module Wiki
   class Article < Content
     
     def reindex_content
-      content = ''
+      content = ' '
       text_assets.each { |ta|
-        content << ta.text.to_plaintext
+        content << ta.text.to_s.to_plaintext
       }
+      
       article_plain   = Article_Plain.find(1).with(:article_id => article_id).entity
       article_plain ||= Article_Plain.create(:article_id => article_id)
       article_plain[:content] = content
