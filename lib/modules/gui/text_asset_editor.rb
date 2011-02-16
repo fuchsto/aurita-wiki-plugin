@@ -32,7 +32,6 @@ module GUI
       action           = :perform_update if @mode == :update
 
       close_onclick = Javascript.Aurita.load(:element => "article_part_asset_#{@asset_id}_contextual", 
-                                             :replace => true, 
                                              :action  => "Wiki::Text_Asset/article_partial/id=#{@text_asset_id}")
 
       HTML.div.text_asset_editor_container { 
