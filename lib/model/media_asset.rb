@@ -81,14 +81,14 @@ module Wiki
     # For a greedy variant, see #versions, which returns all version 
     # entities. 
     #
-    def version(version_nr)
+    def version_data(version_nr)
       Media_Asset_Version.find(1).with(:media_asset_id => media_asset_id, 
                                        :version        => version_nr).entity
     end
     
     # Return array of all Media_Asset_Version entities 
     # associated to this Media_Asset instance. 
-    # For a non-greedy variant, see #version, which returns a specific 
+    # For a non-greedy variant, see #version_data, which returns a specific 
     # version entity. 
     #
     def versions
