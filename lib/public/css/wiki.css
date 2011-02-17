@@ -595,3 +595,16 @@ table.media_asset_table td.date {
   list-style-type: none; 
   margin-left: 1px; 
 }
+
+.index_entry.media_asset {
+  height: auto;
+  padding-left: 1px; 
+}
+.index_entry.media_asset .image { 
+  float: left; 
+  background: white; 
+  padding: 1px; 
+  margin-right: 11px; 
+  text-align: center; 
+  width: 121px;
+}

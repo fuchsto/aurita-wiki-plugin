@@ -17,15 +17,20 @@ module GUI
   include Aurita::GUI
 
     def initialize(media_assets, params={})
-      params[:class] = :media_asset_table unless params[:class]
-      params[:column_css_classes] = [ :icon, :info, :version, :user, :date ] unless params[:column_css_classes]
+      params[:class]                = :media_asset_table unless params[:class]
+      params[:column_css_classes] ||= [ :icon, :info, :version, :user, :date ] 
+      params[:headers]            ||= [ '', :description, :version, :user, :date]
       super(media_assets, params)
-      @row_class   = params[:row_class] 
-      @row_class ||= Media_Asset_Version_List_Row
+      @row_class      = params[:row_class] 
+      @row_class    ||= Media_Asset_Version_List_Row
     end
     
     def rows()
-      @rows = @entities.map { |e| Context_Menu_Element.new(@row_class.new(e, :parent => self), :entity => e) }
+      @rows  = []
+      @rows << Context_Menu_Element.new(@row_class.new(@entities.first, :parent => self), :entity => @entities.first.media_asset) 
+      @rows += @entities[1..-1].map { |e| Context_Menu_Element.new(@row_class.new(e, :parent => self), :entity => e) }
+      @rows.first.add_css_class(:active_version)
+      @rows.first.each { |cell| cell.add_css_class(:darker_bg) }
       @rows
     end
 
@@ -43,8 +48,7 @@ module GUI
     def cells
       icon = @entity.media_asset.icon(:tiny, @entity.version) 
       info = HTML.div { 
-        HTML.p.name { @entity.media_asset.title } +
-        HTML.p.tags { @entity.media_asset.tags  }
+        HTML.p.name { @entity.media_asset.title } 
       }
       version = @entity.version
       user    = link_to(@entity.user) { @entity.user.user_group_name } 

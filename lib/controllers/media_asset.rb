@@ -431,22 +431,29 @@ module Wiki
       asset    ||= load_instance()
       asset_id ||= asset.media_asset_id
 
-      version    = param(:version)
+      version    = param(:version).to_i
 
       if Aurita.user.may_view_content?(asset) then
 
         Media_Asset_Download.create(:media_asset_id => asset_id, 
                                     :user_group_id => Aurita.user.user_group_id)
-
+        
         filename   = asset.title.to_s.gsub(' ','_')
         filename   = 'download' if filename.to_s == ''
-        filename  << " v#{version}" if version
-        filename  << ".#{asset.extension}"
-        asset_id  << '.' << version if version
 
-        send_file("/assets/asset_#{asset_id}.#{asset.extension}", :filename => filename)
+        if version > 0 && version < asset.version then
+          version_entity = Media_Asset_Version.find(1).with(:media_asset_id => asset.media_asset_id, 
+                                                            :version        => version).entity
+          filename  << " v#{version}" 
+          filename  << ".#{version_entity.extension}"
+          send_file("/assets/#{asset.filename(:version => version_entity)}", :filename => filename)
+        else
+          filename  << ".#{asset.extension}"
+          send_file("/assets/#{asset.filename}", :filename => filename)
+        end
+        
       else 
-      # set_http_status(401)
+        set_http_status(403)
       end
     end # }}}
 
@@ -503,6 +510,13 @@ module Wiki
       }.to_a
 
       media_asset_tags = view_string(:editable_tag_list, :content => media_asset)
+
+      current_version  = Media_Asset_Version.create_shallow(:media_asset_id    => media_asset.media_asset_id, 
+                                                            :mime              => media_asset.mime, 
+                                                            :version           => media_asset.version, 
+                                                            :timestamp_created => media_asset.changed, # not 'created'
+                                                            :user_group_id     => media_asset.user_group_id)
+      versions = [ current_version ] + versions
 
       render_view(:media_asset_info, 
                   :owner_user_group     => owner_user_group, 

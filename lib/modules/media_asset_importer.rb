@@ -130,17 +130,44 @@ module Wiki
     #
     #   asset_1234.jpg => asset_1234.x.jpg   (x+1 being most recent version number)
     #   
-    def import_new_version(file_info={})
+    def import_new_version(params={})
+      
+      file_info                     = params[:file]
+      version_entity                = params[:version_entity]
 
+      old_version                   = @media_asset.version
+      # If a media asset does not have any version yet, its 
+      # version is 0, and its first real version number is 1: 
+      old_version                   = 1 if old_version == 0
+      new_version                   = old_version + 1
+      # Attribute values of the current version of this 
+      # media asset will be overwritten by applying the new file 
+      # in import(file_info), so save this information in the 
+      # media_asset_version entity provided. 
+      version_entity.mime           = @media_asset.mime
+      version_entity.version        = old_version
+      version_entity.filesize       = @media_asset.bytes
+      version_entity.checksum       = @media_asset.checksum
+      version_entity.media_asset_id = @media_asset.media_asset_id
+      version_entity.commit
+      
+      @media_asset.mime             = file_info[:mime]
+      @media_asset.version          = new_version
+      @media_asset.commit
+      
+      # Move existing media_asset files so they won't be overwritten 
+      # by importing the new version: 
+      #
       FileUtils.move(@media_asset.fs_path(), 
-                     @media_asset.fs_path(:version => @media_asset.version.to_s))
+                     @media_asset.fs_path(:version => old_version))
       if @media_asset.has_preview? then
         @@variants.keys.each { |v| 
           begin
-            FileUtils.move(@media_asset.fs_path(:size => v), 
-                           @media_asset.fs_path(:size => v, :version => @media_asset.version.to_s))
+            FileUtils.move(@media_asset.fs_path(:variant => v), 
+                           @media_asset.fs_path(:variant => v, :version => old_version))
           rescue ::Exception => excep
-            @@logger.log("Could not save version for image variant: #{@media_asset.fs_path(:size => v, :version => @media_asset.version.to_s)}")
+            @@logger.log("Could not save version for image variant: #{@media_asset.fs_path(:variant => v, 
+                                                                                           :version => old_version)}")
           end
         }
       end
