@@ -45,6 +45,10 @@ module Wiki
       self.get_attribute_values()[:filesize].to_i.filesize
     end
 
+    def bytes
+      self.get_attribute_values()[:filesize].to_i
+    end
+
     def self.bootstrap
       create(:media_asset_id => 1, 
              :tags => '{}', 
@@ -70,6 +74,25 @@ module Wiki
         instance.commit!
       end
       instance
+    end
+
+    # Return Media_Asset_Version entity with given version number  
+    # associated to this Media_Asset instance. 
+    # For a greedy variant, see #versions, which returns all version 
+    # entities. 
+    #
+    def version(version_nr)
+      Media_Asset_Version.find(1).with(:media_asset_id => media_asset_id, 
+                                       :version        => version_nr).entity
+    end
+    
+    # Return array of all Media_Asset_Version entities 
+    # associated to this Media_Asset instance. 
+    # For a non-greedy variant, see #version, which returns a specific 
+    # version entity. 
+    #
+    def versions
+      Media_Asset_Version.find(:all).with(:media_asset_id => media_asset_id).sort_by(:version, :asc).entities
     end
 
     def self.after_commit(instance)
@@ -128,7 +151,7 @@ module Wiki
       filename_ext   = params[:extension] 
       folder         = ''
 
-      if ma_version.to_i > 0 then 
+      if ma_version then 
         a_id = "#{media_asset_id}.#{ma_version.to_s}"
       else 
         a_id = media_asset_id
@@ -165,9 +188,24 @@ module Wiki
       return fs_path(:extension => 'jpg') 
     end
 
-    def filename(version=0)
-      return "asset_#{media_asset_id}.#{extension}" if version == 0
-      return "asset_#{media_asset_id}.#{version}.#{extension}"
+    def filename(params={})
+      ver = params[:version]
+      if ver.nil? || ver.to_i == 0 then
+        return "asset_#{media_asset_id}.#{extension}" 
+      else
+        version_nr     = 0
+        version_info   = false
+        # MIME type and extension can change in every version
+        if ver.is_a?(Media_Asset_Version) then
+          version_info = ver
+          version_nr   = ver.version
+        else
+          version_info = Media_Asset_Version.find(1).with(:media_asset_id => media_asset_id, 
+                                                          :version        => ver).entity
+          version_nr   = ver
+        end
+        return "asset_#{media_asset_id}.#{version_nr}.#{version_info.extension}"
+      end
     end
     def url(version=0)
       if version.is_a?(Hash)
@@ -232,13 +270,15 @@ module Wiki
       @doctype
     end
 
-    def icon(size=:tiny, version=nil, append_checksum=true)
+    def icon(size=:tiny, ver=nil, append_checksum=true)
       cs = ''
       if append_checksum then
         cs = "?#{checksum}"
       end
-      return "<img src=\"/aurita/assets/#{size}/asset_#{media_asset_id}.jpg#{cs}\" />" if has_preview? && version.nil?
-      return "<img src=\"/aurita/assets/#{size}/asset_#{media_asset_id}.#{version}.jpg#{cs}\" />" if has_preview? 
+      version_icon = (!ver.nil? && ver.to_i != version().to_i) # version is current version
+      return "<img src=\"/aurita/assets/#{size}/asset_#{media_asset_id}.jpg#{cs}\" />" if has_preview? && !version_icon
+      # For historical reasons, version x has file name asset_(id).(x+1).ext
+      return "<img src=\"/aurita/assets/#{size}/asset_#{media_asset_id}.#{ver}.jpg#{cs}\" />" if has_preview? 
       return "<img src=\"/aurita/assets/#{size}/asset_#{extension}.jpg\" />"
     end
 

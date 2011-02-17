@@ -33,29 +33,25 @@ module Wiki
     end
   
     def perform_add
-      log('VERSION: Adding')
+      use_decorator(:iframe)
+      
+      log('Media_Asset_Version: Adding')
       instance = false
       begin
         base_media_asset = Media_Asset.load(:media_asset_id => param(:media_asset_id))
-        version          = (base_media_asset.version.to_i + 1)
+        file_info        = receive_file(param(:upload_file))
+        
         instance         = Media_Asset_Version.create(:media_asset_id => param(:media_asset_id), 
-                                                      :user_group_id  => Aurita.user.user_group_id, 
-                                                      :version        => version)
-        base_media_asset.version = version
-        base_media_asset.commit
-        log('VERSION ATTRIBS: ' << instance.attr.inspect)
-        log('VERSION: uploading file')
-        file_info = receive_file(param(:upload_file))
-        log('VERSION: file uploaded')
-        Media_Asset_Importer.new(base_media_asset).import_new_version(file_info)
-        redirect_to(:controller     => 'Wiki::Media_Asset', 
-                    :action         => :show, 
-                    :media_asset_id => base_media_asset.media_asset_id)
+                                                      :user_group_id  => Aurita.user.user_group_id)
+        
+        Media_Asset_Importer.new(base_media_asset).import_new_version(:file           => file_info, 
+                                                                      :version_entity => instance)
         return instance
       rescue ::Exception => excep
-        log.error('VERSION: ' << excep.message)
-        log.error('VERSION: ' << excep.backtrace.join("\nVERSION: "))
+        log.error('Media_Asset_Version: ' << excep.message)
+        log.error('Media_Asset_Version: ' << excep.backtrace.join("\nMedia_Asset_Version: "))
         instance.delete if instance
+        raise excep
       end
     end
 
