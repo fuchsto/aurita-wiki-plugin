@@ -51,7 +51,7 @@ module Wiki
                                              Article.is_accessible)
       articles.sort_by(Wiki::Article.article_id, :desc)
 
-      article_result = Aurita::GUI::Autocomplete_Result.new()
+      article_result = Aurita::GUI::Autocomplete_Result.new(:key => tags.join('_'))
       
       key = tags.join(' ')
       articles.each { |a|

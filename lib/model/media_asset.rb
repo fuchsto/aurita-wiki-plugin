@@ -212,7 +212,7 @@ module Wiki
     end
 
     def has_preview? 
-      is_image? || extension == 'pdf'
+      is_image? || extension == 'pdf' || (is_video? && Aurita::Project_Configuration.use_ffmpeg)
     end
 
     def doctype

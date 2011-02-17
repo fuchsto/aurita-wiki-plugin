@@ -88,6 +88,26 @@ module Wiki
       Article_Version.value_of.max(:version).with(Article_Version.article_id == article_id).to_i
     end
 
+    def add_partial(partial, params={})
+      position = params[:position]
+      
+      if !position && params[:after_asset] then
+        position   = Container.load(:asset_id_child => params[:after_asset]).sortpos + 1
+      elsif !position then
+        max_offset = Container.value_of.max(:sortpos).where(Container.content_id_parent == content_id)
+        max_offset = 0 if max_offset.nil? 
+        position = max_offset.to_i+1
+      else
+        position = position.to_i
+      end
+
+      container = Container.create(
+                    :content_id_parent => content_id, 
+                    :asset_id_child    => partial.asset_id, 
+                    :sortpos           => position
+                  )
+    end
+
     # Returns part of an article hierarchy. 
     def elements(params={})
       amount   = params[:max]
@@ -130,8 +150,9 @@ module Wiki
       text_asset = text_assets(:amount => 1).first
       text       = text_asset.text if text_asset
       text     ||= ''
+      text       = text.gsub(/<[^>]+>/,'').gsub('&nbsp;',' ')
       text       = text[0..length].split(' ')[0..-2].join(' ')
-      text.gsub(/<[^>]+>/,'').gsub('&nbsp;',' ')
+      text
     end
     
     def teaser_image
@@ -140,12 +161,25 @@ module Wiki
       media_assets(:amount => 1).first
     end
 
-    # Returns Text_Asset instances (paragraphs) of 
+    # Returns Media_Asset instances (paragraphs) of 
     # this article, as array, ordered by their appearance 
     # in the article. 
     # Note that Media_Asset instances can only be part 
-    # of an article as file attachment of its Text_Asset 
-    # instances. 
+    # of an article as part of Media_Container instances: 
+    #
+    #   Article
+    #   |- Text_Asset
+    #   |- Text_Asset
+    #   |- Media_Container
+    #      |- Media_Asset  \
+    #      |- Media_Asset   )
+    #      |- ...          / \
+    #   |- ...                \
+    #   |- ...                 )- Returned by article.media_assets
+    #   |- Media_Container    /
+    #      |- Media_Asset  \ /
+    #      |- Media_Asset   ) 
+    #      |- ...          /
     #
     def media_assets(params={})
     # {{{
@@ -161,10 +195,32 @@ module Wiki
           c.limit(amount)
         }
       }.to_a.map { |mc|
-        assets += mc.media_assets
+        assets += mc.media_assets(params[:filter])
       }
       assets
     end # }}} 
+
+    # Like Article#media_assets, but returns non-image files only. 
+    #
+    def files(params={})
+      filter = Media_Asset.mime.not_ilike('image/%')
+      if params[:filter] then
+        filter = filter & params[:filter]
+      end
+      params[:filter] = filter
+      media_assets(params)
+    end
+
+    # Like Article#media_assets, but returns image files only. 
+    #
+    def images(params={})
+      filter = Media_Asset.mime.ilike('image/%')
+      if params[:filter] then
+        filter = filter & params[:filter]
+      end
+      params[:filter] = filter
+      media_assets(params)
+    end
     
   end 
 

@@ -70,7 +70,9 @@ module GUI
                                                                          :key        => t) { t } }.join(' ') 
         } +
         HTML.p.informal { 
-           tl(:categories) + ': ' << @entity.categories.map { |c| link_to(c) { c.category_name } }.join(', ') 
+        # Nasty n+1 issue when loading @entity.categories here ...
+        #  
+        #  tl(:categories) + ': ' << @entity.categories.map { |c| link_to(c) { c.category_name } }.join(', ') 
         }
       }
       type    = @entity.extension.upcase

@@ -275,6 +275,7 @@ table.media_asset_table td.date {
   text-align: center; 
   padding: 2px; 
   display: block; 
+  overflow: hidden; 
   background: url('/aurita/images/icons/loading.gif') no-repeat scroll 88px 11px; 
 }
 .media_asset_thumbnail .image.no_loading_icon { 
@@ -447,7 +448,7 @@ table.media_asset_table td.date {
 }
 
 .article_view .context_menu_element .article_text { 
-  border-left: 1px solid transparent; 
+/*  border-left: 1px solid transparent; */
 }
 .article_view .context_menu_element .article_text.context_hover { 
   border-left: 1px solid #dadada; 
@@ -580,4 +581,17 @@ table.media_asset_table td.date {
 .media_asset_selection_list_entry .label { 
   width: 188px; 
   overflow: hidden; 
+}
+
+.article_text .form_box, 
+.article_partial_divide .form_box { 
+  width: auto; 
+  margin-bottom: 5px; 
+  background-color: transparent; 
+}
+
+.article_text ul li.form_field, 
+.article_partial_divide ul li.form_field { 
+  list-style-type: none; 
+  margin-left: 1px; 
 }

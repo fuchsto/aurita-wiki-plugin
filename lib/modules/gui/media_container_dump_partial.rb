@@ -1,33 +1,39 @@
 
-require('aurita')
-require('aurita-gui')
-require('aurita-gui/html')
-require('aurita-gui/element')
-require('aurita-gui/widget')
-Aurita.import_module :gui, :link_helpers
-Aurita.import_plugin_module :wiki, :gui, :media_asset_thumbnail
-
-
 module Aurita
 module Plugins
 module Wiki
 module GUI
 
-  class Media_Container_Partial < Aurita::GUI::Widget
+  class Media_Container_Dump_Partial < Aurita::GUI::Widget
   include Aurita::GUI
   include Aurita::GUI::Link_Helpers
-
-    attr_accessor :media_container
-
-    def initialize(media_container, params={})
-      @media_container = media_container
+    
+    def initialize(part)
+      @part = part
+      @media_container = Media_Container.get(part[:media_container_id])
+      @media_asset_ids = @part[:dump]
       super()
     end
-
+    
     def element
+      # Preserve order by mapping 
+      media_assets = @media_asset_ids.map { |m|
+        Media_Asset.get(m)
+      }
+      images = []
+      files  = []
+
+      media_assets.each { |m|
+        if m.is_image? then
+          images << m
+        else
+          files << m
+        end
+      }
+
       HTML.div.media_container_partial { 
         HTML.div.images { 
-          @media_container.media_assets(Media_Asset.mime.ilike('image/%')).map { |image|
+          images.map { |image|
             entry = HTML.div.image_partial { 
               link_to(image) { GUI::Media_Asset_Thumbnail.new(image, :size => :preview).string }
             }
@@ -36,7 +42,7 @@ module GUI
         } + 
         HTML.div(:style => 'clear: both;') + 
         HTML.div.files { 
-          @media_container.media_assets(Media_Asset.mime.not_ilike('image/%')).map { |file|
+          files.map { |file|
             entry = HTML.div.file_partial { 
               link_to(file) { GUI::Media_Asset_Thumbnail.new(file, :size => :tiny).string }
             }

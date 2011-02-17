@@ -4,8 +4,6 @@
                          :name => "container_form_#{media_container.asset_id}", 
                          :id   => "container_form_#{media_container.asset_id}") %>
     <%= gui.hidden_field(:media_container_id => media_container.media_container_id,
-                         :content_id_parent  => container.content_id_parent,
-                         :asset_id_child     => container.asset_id_child,
                          :article_content_id => article.content_id) %>
 
     <div class="toolbar">

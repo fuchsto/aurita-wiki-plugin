@@ -31,7 +31,7 @@ module Wiki
     end
 
     def version_dump
-      text
+      # overload version dump implementation in specialized models
     end
 
   end 

@@ -11,12 +11,15 @@ public--media_folder--phyical_path : Name
 
 public--media_asset_folder--physical_path : Ordnername
 public--media_asset_folder--access : Zugriff erlauben f&uuml;r
+public--media_asset_folder--locked : Schreibgesch&uuml;tzt
 
 public--media_asset--title : Titel
 public--media_asset--description : Beschreibung
 description : Beschreibung
 by : von
 versions : Versionen
+
+no_permission_to_access_content : Sie haben keine Berechtigung f&uuml;r diesen Inhalt
 
 files : Dateien
 

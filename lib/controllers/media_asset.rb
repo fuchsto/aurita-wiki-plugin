@@ -10,9 +10,9 @@ Aurita.import_plugin_model :wiki, :media_asset_folder
 Aurita.import_plugin_module :wiki, :media_asset_renderer
 Aurita.import_plugin_module :wiki, :media_asset_importer
 Aurita.import_plugin_module :wiki, :media_meta_data
-Aurita.import_plugin_module :wiki, 'gui/media_asset_version_list'
-Aurita.import_plugin_module :wiki, 'gui/media_asset_list'
-Aurita.import_plugin_module :wiki, 'gui/media_asset_selection_field'
+Aurita.import_plugin_module :wiki, :gui, :media_asset_version_list
+Aurita.import_plugin_module :wiki, :gui, :media_asset_list
+Aurita.import_plugin_module :wiki, :gui, :media_asset_selection_field
 
 Aurita::Main.import_controller :content_comment
 Aurita::Main.import_controller :category
@@ -450,6 +450,13 @@ module Wiki
       end
     end # }}}
 
+    def icon
+      m = load_instance()
+      HTML.div(:class => "media_asset_thumbnail #{param(:size)}") { 
+        m.icon(param(:size)) 
+      } 
+    end
+
     def show_latest
       show(Media_Asset.latest_of_user.media_asset_id)
     end
@@ -656,6 +663,7 @@ module Wiki
                                                     :label      => tl(:select_file), 
                                                     :row_action => 'Wiki::Media_Asset/editor_list_variant_choice', 
                                                     :id         => :media_asset))
+
       element = decorate_form(form, 
                               :buttons => Proc.new { |btn_params|
                                 Text_Button.new(:class   => :submit, 

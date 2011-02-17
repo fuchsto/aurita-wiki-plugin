@@ -108,7 +108,6 @@ module Wiki
 
     def toolbar_buttons
     # {{{
-
       result = []
       if Aurita.user.may(:create_articles) then
         result << Text_Button.new(:icon    => :add_article, 
@@ -116,9 +115,7 @@ module Wiki
           tl(:write_new_article) 
         } 
       end
-
       return result
-
     end # }}}
 
     def recent_changes
@@ -430,6 +427,7 @@ module Wiki
                           tl(:article_is_in_category).gsub('{1}', article.categories.map { |c| c.category_name }.join(', ')) }
       end
 
+=begin
       if Aurita.user.may_edit_content?(article) && param(:edit_inline_content_id) then
         edit_inline_content_id = param(:edit_inline_content_id) unless edit_inline_content_id
         if param(:edit_inline_type) == 'TEXT_ASSET' then
@@ -460,6 +458,7 @@ module Wiki
                    :asset_id          => media_container.asset_id)
         end
       end
+=end
       exec_js("Aurita.Wiki.add_recently_viewed('Wiki::Article', '#{article.article_id}', '#{article.title.gsub("'",'&apos;').gsub('"','&quot;')}'); ")
       editable = Aurita.user.may_edit_content?(article)
       exec_js("Aurita.Wiki.init_article(#{article.article_id}, { editable: #{editable} });")

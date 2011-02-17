@@ -29,10 +29,15 @@ module Wiki
     end
 
     def decorate_part(part, article=nil)
-      article        ||= @article
-      partial = Plugin_Register.get(Hook.wiki.article_version.hierarchy.partial, 
-                                    :article    => article, 
-                                    :part       => part).first
+      part[:model] = eval(part[:model])
+      STDERR.puts '---------- PART ----------'
+      STDERR.puts part.inspect
+      STDERR.puts '---------- END -----------'
+      article ||= @article
+      partial   = Plugin_Register.get(Hook.wiki.article_version.hierarchy.partial, 
+                                      :article => article, 
+                                      :part    => part).first
+      partial ||= HTML.div { part.inspect }
       tce = HTML.div(:class => :article_text) { 
         partial
       }
@@ -43,7 +48,6 @@ module Wiki
       article        ||= @article
       article_comments = Content_Comment_Controller.list_string(article.content_id) 
       article_tags     = view_string(:editable_tag_list, :content => article)
-      article_version  = Article_Version.value_of.max(:version).with(Article_Version.article_id == article.article_id).to_i
       
       author_user      = User_Profile.load(:user_group_id => article.user_group_id) 
       latest_version   = article.latest_version
@@ -61,14 +65,12 @@ module Wiki
       template = @templates[:article]
       template = @templates[:article_public] if @viewparams['public'] == 'false' 
       @string = view_string(template, 
-                            :version_entry    => @version_entry, 
+                            :article_version  => @version_entry, 
                             :article          => article, 
                             :article_content  => article_string, 
-                            :article_version  => article_version, 
                             :last_change_user => last_change_user, 
                             :author_user      => author_user, 
                             :content_tags     => article_tags, 
-                            :content_comments => article_comments, 
                             :entry_counter    => 0)
     end
 

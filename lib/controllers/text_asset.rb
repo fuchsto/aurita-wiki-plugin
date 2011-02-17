@@ -9,6 +9,7 @@ Aurita.import_plugin_module :wiki, :gui, :article_select_field
 Aurita.import_plugin_module :wiki, :gui, :media_asset_selection_field
 Aurita.import_plugin_module :wiki, :gui, :text_asset_partial
 Aurita.import_plugin_module :wiki, :gui, :text_asset_dump_partial
+Aurita.import_plugin_module :wiki, :gui, :text_asset_editor
 
 module Aurita
 module Plugins
@@ -49,9 +50,8 @@ module Wiki
     end
 
     def article_partial(params={})
-      article    = params[:article]
-      text_asset = params[:part]
-      viewparams = params[:viewparams]
+      text_asset   = params[:part]
+      text_asset ||= load_instance
       GUI::Text_Asset_Partial.new(text_asset)
     end
 
@@ -62,20 +62,39 @@ module Wiki
       GUI::Text_Asset_Dump_Partial.new(text_asset)
     end
 
-    def update_inline
-      text_asset = Text_Asset.find(1).with(Text_Asset.asset_id == param(:asset_id)).entity
-      article    = text_asset.article
-      editor     = Textarea_Field.new(:name => Text_Asset.text, :value => text_asset.text)
-      editor.style_class = 'fullwidth'
+    # Partial without Context_Element decoration
+    def update
+      text_asset   = load_instance()
+      text_asset ||= Text_Asset.find(1).with(Text_Asset.asset_id == param(:asset_id)).entity
+      article      = text_asset.article
 
-      render_view(:container_inline_form, 
-                  :article           => article, 
-                  :text_asset_id     => text_asset.text_asset_id, 
-                  :content_id_parent => param(:content_id_parent), 
-                  :asset_id_child    => param(:asset_id_child), 
-                  :article_id        => article.article_id, 
-                  :content_id        => text_asset.content_id, 
-                  :text              => text_asset.text)
+      return unless Aurita.user.may_edit_content?(article)
+      
+      GUI::Text_Asset_Editor.new(:text_asset  => text_asset, 
+                                 :article     => article, 
+                                 :after_asset => param(:after_asset))
+
+    end
+
+    def add
+      # undef
+    end
+
+    # Partial as Context_Element (returns GUI::Article_Partial)
+    def partial
+      text_asset   = load_instance()
+      text_asset ||= Text_Asset.find(1).with(Text_Asset.asset_id == param(:asset_id)).entity
+      article      = text_asset.article
+
+      return unless Aurita.user.may_edit_content?(article)
+      
+      partial = GUI::Text_Asset_Editor.new(:text_asset  => text_asset, 
+                                           :article     => article, 
+                                           :after_asset => param(:after_asset))
+      
+      GUI::Article_Partial.new(:article => article, 
+                               :partial => partial, 
+                               :entity  => text_asset)
     end
 
     def perform_add()
@@ -91,44 +110,42 @@ module Wiki
       content_id_parent = param(:content_id_parent) 
       content_id_parent = param(:content_id) unless content_id_parent
       instance   = super()
+      
+      article = Article.find(1).with(Article.content_id == content_id_parent).entity
 
       position   = param(:position)
       position ||= param(:sortpos)
-
-      if !position && param(:after_asset) then
-        position   = Container.load(:asset_id_child => param(:after_asset)).sortpos + 1
-      elsif !position then
-        max_offset = Container.value_of.max(:sortpos).where(Container.content_id_parent == param(:content_id))
-        max_offset = 0 if max_offset.nil? 
-        position   = max_offset.to_i+1
-      end
-
-      container = Container.create(
-                    :content_id_parent => content_id_parent, 
-                    :asset_id_child    => instance.asset_id, 
-                    :sortpos           => position
-                  )
-
-      article = Article.find(1).with(Article.content_id == content_id_parent).entity
-      article.commit_version('ADD:TEXT_ASSET')
-
-      redirect_to(article, :edit_inline_content_id => instance.content_id, 
-                           :article_id             => article.article_id, 
-                           :edit_inline_type       => 'TEXT_ASSET')
+      article.add_partial(instance, 
+                          :position    => position, 
+                          :after_asset => param(:after_asset))
+      
+      dom_insert(:after_element => "article_part_asset_#{param(:after_asset)}",
+                 :action        => :partial, 
+                 :text_asset_id => instance.text_asset_id, 
+                 :after_asset   => param(:after_asset))
 
       return instance
     end
 
     def perform_delete()
+=begin
+# See Container.perform_delete
 
-      content_id = Container.value_of(Container.content_id_parent).where(
-                      Container.content_id_child == param(:content_id)
-                   ).to_i
+      content_id   = param(:content_id)
+      content_id ||= Container.value_of(Container.content_id_parent).where(
+                       Container.content_id_child == param(:content_id)
+                     ).to_i
       article = load_instance().article
-      article.commit_version('DELETE:TEXT_ASSET')
-      exec_js("Element.hide('container_#{param(:content_id)}'); ")
+      # Load text asset in container
+      asset = Asset.find(1).with(Asset.asset_id == container.asset_id_child).polymorphic.entity
 
-      super()
+      exec_js("Element.hide('article_part_asset_#{asset_asset_id}'); ")
+
+      result = super()
+      container.delete
+      article.commit_version('D:Text_Asset')
+      result
+=end
     end
 
     def perform_update
@@ -138,10 +155,16 @@ module Wiki
       else
         @params[:display_text] = Tagging.link_text_tags(Text_Asset_Parser.parse(param(:text).to_s.dup))
       end
-      result  = super()
-      article = load_instance().article
-      article.commit_version('UPDATE:TEXT_ASSET')
-      redirect_to(article)
+      result   = super()
+      instance = load_instance()
+      article  = load_instance().article
+      
+      article.commit_version('U:Text_Asset')
+  
+      redirect(:element       => "article_part_asset_#{instance.asset_id}_contextual", 
+               :action        => :article_partial, 
+               :text_asset_id => instance.text_asset_id)
+
       return result
     end
 

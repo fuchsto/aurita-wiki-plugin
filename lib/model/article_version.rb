@@ -42,7 +42,11 @@ module Wiki
                                :user_group_id => Aurita.user.user_group_id, 
                                :action_type   => action_type, 
                                :dump          => dump)
+      else 
+        log "No change in article found"
       end
+      reindex_content()
+      Content.touch(content_id)
     end
 
     def latest_version_number

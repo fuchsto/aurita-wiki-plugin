@@ -44,7 +44,7 @@ module Wiki
       # Load container itself
       container = load_instance()
 
-      Content.touch(container.content_id_parent, 'DELETE:CONTAINER')
+      Content.touch(container.content_id_parent, 'DELETE:Container')
 
       # Load text asset in container
       asset = Asset.find(1).with(Asset.asset_id == container.asset_id_child).polymorphic.entity
