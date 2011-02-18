@@ -483,8 +483,7 @@ module Wiki
       media_asset_id = media_asset.media_asset_id
 
       if media_asset.deleted then
-        puts tl(:file_has_been_deleted)
-        return
+        return HTML.div.warning_box { tl(:file_has_been_deleted) }
       end
 
       author = User_Profile.load(:user_group_id => media_asset.user_group_id)

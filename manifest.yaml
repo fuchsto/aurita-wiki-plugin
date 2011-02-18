@@ -1,0 +1,9 @@
+
+plugin_name : wiki
+version : '0.1'
+author : Tobias Fuchs
+email : twh.fuchs@gmail.com
+
+namespace : Wiki
+languages : de, en
+
