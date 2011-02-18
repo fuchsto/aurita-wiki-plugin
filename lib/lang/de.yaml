@@ -116,7 +116,7 @@ article_does_not_exist : Artikel existiert nicht (mehr).
 
 no_permission_to_access_article : Sie haben keine Berechtigung f&uuml;r diesen Artikel
 article_owned_by_user : Artikel wurde angelegt von Benutzer {1}&nbsp;
-article_is_in_category : in Kategorie {1}
+article_is_in_category : in Rubrik {1}
 
 create_articles : Artikel erstellen
 create_article : Neuer Artikel
@@ -207,12 +207,12 @@ allow_public_comments : Kommentare erlauben
 
 article_title_hint : Der Name des Artikels, der auch bei der Suche ber&uuml;cksichtigt wird
 article_tags_hint : Begriffe, unter denen dieser Artikel gruppiert und wiedergefunden werden kann
-article_category_hint : Eine oder mehrere Kategorien, in denen dieser Artikel freigegeben werden soll. Benutzer m&uuml;ssen Mitglied mindestens einer der hier gew&auml;hlten Kategorien sein, den Artikel lesen und bearbeiten zu k&ouml;nnen
+article_category_hint : Eine oder mehrere Rubriken, in denen dieser Artikel freigegeben werden soll. Benutzer m&uuml;ssen Mitglied mindestens einer der hier gew&auml;hlten Rubriken sein, den Artikel lesen und bearbeiten zu k&ouml;nnen
 
 media_asset_file_hint : W&auml;hlen Sie eine oder mehrere Dateien f&uuml;r den Upload
 media_asset_title_hint : (Optional) Der Name der Datei, falls der urspr&uuml;ngliche Dateiname nicht verwendet werden soll. Der Dateiname wird bei der Suche ber&uuml;cksichtigt, unterschiedliche Dateien k&ouml;nnen denselben Dateinamen haben. 
 media_asset_tags_hint : Begriffe, unter denen die Datei wiedergefunden und gruppiert werden soll. 
-media_asset_category_hint : Kategorien, in der die Datei freigegeben werden soll. Benutzer m&uuml;ssen Mitglied mindestens einer der hier gew&auml;hlten Kategorien sein, um die Datei &ouml;ffnen und bearbeiten zu k&ouml;nnen. 
+media_asset_category_hint : Rubriken, in der die Datei freigegeben werden soll. Benutzer m&uuml;ssen Mitglied mindestens einer der hier gew&auml;hlten Rubriken sein, um die Datei &ouml;ffnen und bearbeiten zu k&ouml;nnen. 
 media_asset_description_hint : (Optional) Beschreibung f&uuml;r die Datei. 
 media_asset_folder_hint : Ordner, in dem diese Datei abgelegt wird. 
 
