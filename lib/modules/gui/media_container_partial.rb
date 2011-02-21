@@ -40,7 +40,9 @@ module GUI
             entry = HTML.div.file_partial { 
               link_to(file) { GUI::Media_Asset_Thumbnail.new(file, :size => :tiny).string }
             }
-            link_to(file) { Context_Menu_Element.new(entry, :entity => file).string } + 
+            link_to(file) { 
+              Context_Menu_Element.new(entry, :entity => file) 
+            } + 
             HTML.div.file_partial_separator { } 
           }
         } + 

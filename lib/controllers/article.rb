@@ -108,14 +108,12 @@ module Wiki
 
     def toolbar_buttons
     # {{{
-      result = []
       if Aurita.user.may(:create_articles) then
-        result << Text_Button.new(:icon    => :add_article, 
-                                  :action  => 'Wiki::Article/add') { 
+        return Text_Button.new(:icon    => :add_article, 
+                               :action  => 'Wiki::Article/add') { 
           tl(:write_new_article) 
         } 
       end
-      return result
     end # }}}
 
     def recent_changes
@@ -269,8 +267,13 @@ module Wiki
       form.add(Category_Selection_List_Field.new())
       form[Content.tags] = Tag_Autocomplete_Field.new(:name => Content.tags, :label => tl(:tags))
       form[Content.tags].required!
+      
       exec_js('Aurita.Main.init_autocomplete_tags();')
-      Page.new(:header => tl(:create_article)) { decorate_form(form) }
+
+      form = decorate_form(form)
+      return form unless param(:element) == 'app_main_content'
+
+      Page.new(:header => tl(:create_article)) { form }
 
     end # }}}
 

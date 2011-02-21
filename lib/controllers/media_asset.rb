@@ -427,6 +427,7 @@ module Wiki
       asset_req  = param(:asset).to_s.split('.')
       asset_id   = asset_req[0]
       asset_id ||= param(:media_asset_id)
+      asset_id ||= param(:id)
       asset      = Media_Asset.load(:media_asset_id => asset_id) if asset_id
       asset    ||= load_instance()
       asset_id ||= asset.media_asset_id

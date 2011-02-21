@@ -33,7 +33,8 @@ module GUI
     attr_accessor :row_onclick
 
     def initialize(media_assets, params={})
-      params[:class] = :media_asset_table unless params[:class]
+      params[:class]   ||= :media_asset_table 
+      params[:headers] ||= [ '', tl(:description), tl(:type), tl(:filesize), tl(:changed) ]
       super(media_assets, params)
       @row_class   = params[:row_class] 
       @row_class ||= Media_Asset_Select_List_Row
