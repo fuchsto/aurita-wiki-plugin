@@ -37,7 +37,7 @@
       <% if Aurita.user.may_write_to_folder?(folder) then %>
         <%= gui.button(:icon    => :upload_small, 
                        :onclick => gui.link_to(:controller      => 'Wiki::Media_Asset', 
-                                               :action          => :add, 
+                                               :action          => :add_flash, 
                                                :media_folder_id => folder.media_asset_folder_id, 
                                                :element         => :upload_file_section)) { 
               tl(:upload_file_to_folder) 

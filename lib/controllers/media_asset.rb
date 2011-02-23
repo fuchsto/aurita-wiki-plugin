@@ -18,6 +18,8 @@ Aurita::Main.import_controller :content_comment
 Aurita::Main.import_controller :category
 Aurita.import_module :gui, :hierarchy_node_select_field
 Aurita.import_module :gui, :multi_file_field
+Aurita.import_module :gui, :multi_file_flash_field
+Aurita.import_module :gui, :flash_upload_form_decorator
 
 begin
   Aurita.import_plugin_model :bookmarking, :media_asset_bookmark
@@ -64,6 +66,47 @@ module Wiki
        Media_Asset.description.to_s     => tl(:media_asset_description_hint), 
        Media_Asset.media_folder_id.to_s => tl(:media_asset_folder_hint), 
       }
+    end
+
+    def flash_upload
+      STDERR.puts 'UPLOAD =============='
+      STDERR.puts @params['Filedata'].inspect
+
+      instance = false
+      begin
+        file_uploaded   = param(:Filedata)
+        title           = file_uploaded[:filename].to_s
+        param[:title]   = title.split('.')[0..-2].join('.')
+        param[:tags]    = title.gsub('_',' ').gsub('-',' ').split(' ')
+        if(param(:token)) then
+          param[:user_group_id] = param(:token)
+        end
+        
+        instance        = Media_Asset.create(@params)
+
+        if param(:category_id) then
+          instance.set_categories(param(:category_id));
+        else
+          instance.set_categories([ 100 ]);
+        end
+
+        raise ::Exception.new("Could not create Media_Asset instance") unless instance
+        file_info = receive_file(file_uploaded)
+        # file_info now stores information needed by Media_Asset_Importer 
+        # to handle this file correctly (e.g. create previews, set file name
+        # extension ...)
+        
+        Media_Asset_Importer.new(instance).import(file_info)
+        STDERR.puts 'END UPLOAD =========='
+      rescue ::Exception => excep
+        Aurita.log { 'Error in file upload: ' << excep.message } 
+        excep.backtrace.each { |l| Aurita.log { l } } 
+        begin
+          instance.delete 
+        rescue ::Exception => ignore
+        end
+        raise excep
+      end
     end
 
     def recent_changes_in_category(params={}) 
@@ -159,6 +202,48 @@ module Wiki
         asset.commit()
       end
       exec_js("Aurita.Wiki.after_media_asset_delete(#{media_asset_id}); ")
+    end # }}}
+
+    def add_flash
+    # {{{
+      
+    # TODO: Implement redirect to plain HTML upload form if flash is not installed: 
+=begin
+      if(no_flash) then
+        redirect(:to => :add)
+        return
+      end
+=end
+
+      folder_id   = param(:media_asset_folder_id)
+      folder_id ||= param(:media_folder_id)
+      folder_id ||= Aurita.user.media_asset_folder_id
+      form = add_form()
+
+      form[:action].value = :flash_upload
+
+      form[Media_Asset.media_folder_id] = GUI::Hierarchy_Node_Select_Field.new(:name  => Media_Asset.media_folder_id.to_s, 
+                                                                               :label => tl(:folder), 
+                                                                               :value => folder_id) 
+      category = Category_Selection_List_Field.new()
+      if param(:media_container_id) then
+        article        = Media_Container.get(param(:media_container_id)).article
+        category.value = [ article.category_id ] if article
+        form.add(Hidden_Field.new(:name  => :media_container_id, 
+                                  :value => param(:media_container_id))) 
+      end
+      file = GUI::Multi_File_Flash_Field.new(:id => :flash_upload_applet, :name => 'upload_file[]')
+      
+      form.add(file)
+      form.add(category)
+      form[Content.tags] = Tag_Autocomplete_Field.new(:name => Content.tags.to_s, :label => tl(:tags))
+      form[Content.tags].required!
+      form[Media_Asset.title] = nil
+      
+      element = GUI::Flash_Upload_Form_Decorator.new(form)
+      element = Page.new(:header => tl(:upload_file)) { element } if param(:element) == 'app_main_content'
+
+      return element
     end # }}}
 
     def add
