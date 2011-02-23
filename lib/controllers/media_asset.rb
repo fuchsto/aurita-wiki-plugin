@@ -69,15 +69,12 @@ module Wiki
     end
 
     def flash_upload
-      STDERR.puts 'UPLOAD =============='
-      STDERR.puts @params['Filedata'].inspect
-
       instance = false
       begin
         file_uploaded   = param(:Filedata)
         title           = file_uploaded[:filename].to_s
         param[:title]   = title.split('.')[0..-2].join('.')
-        param[:tags]    = title.gsub('_',' ').gsub('-',' ').split(' ')
+        param[:tags]    = param(:tags) +  ' ' + title.gsub('_',' ').gsub('-',' ').split(' ')
         if(param(:token)) then
           param[:user_group_id] = param(:token)
         end
@@ -97,7 +94,6 @@ module Wiki
         # extension ...)
         
         Media_Asset_Importer.new(instance).import(file_info)
-        STDERR.puts 'END UPLOAD =========='
       rescue ::Exception => excep
         Aurita.log { 'Error in file upload: ' << excep.message } 
         excep.backtrace.each { |l| Aurita.log { l } } 
