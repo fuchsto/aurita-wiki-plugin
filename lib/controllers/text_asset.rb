@@ -193,12 +193,13 @@ module Wiki
                                                     :label      => tl(:link_to_media_asset), 
                                                     :row_action => 'Wiki::Media_Asset/editor_list_link_choice', 
                                                     :id         => :media_asset_link))
+=begin
       form.add(GUI::Media_Asset_Selection_Field.new(:name       => :media_asset_download, 
                                                     :key        => :media_asset_id, 
                                                     :label      => tl(:link_to_media_asset_download), 
                                                     :row_action => 'Wiki::Media_Asset/editor_list_download_link_choice', 
                                                     :id         => :media_asset_download_link))
-
+=end
       plugin_get(Hook.wiki.text_asset.link_editor).each { |field|
         form.add(field)
       }

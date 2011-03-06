@@ -5,8 +5,11 @@ Aurita.import_plugin_module :wiki, :article_hierarchy_default_decorator
 begin
 # require('hpricot')
 require('prawn')
-require('prawn/format')
+# require('prawn/format') Use style classes instead!
+# http://github.com/sandal/prawn-format/blob/master/examples/style-classes.rb
 require 'htmlentities'
+
+=begin
 
 module Prawn
   module Format
@@ -24,7 +27,10 @@ module Prawn
   end
 end
 
+=end
+
 rescue LoadError => le
+  Aurita.log { "Wiki::Article_Hierarchy_PDF_Decorator needs htmlentities, prawn and prawn-format to be installed" }
 end
 require('enumerator')
 
@@ -112,6 +118,10 @@ module Wiki
       coder = HTMLEntities.new
       text  = coder.decode(text)
       text.gsub!('<li>',"<br /><li>")
+
+# Without prawn-format
+      text.gsub!('<br />','')
+      return pdf.text(text)
       pdf.text(text, :size => @style[:font_size], 
                      :tags => { :ol => { :width => '2em' }, 
                                 :ul => { :width => '2em' }, 

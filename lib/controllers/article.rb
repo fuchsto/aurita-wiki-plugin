@@ -164,7 +164,7 @@ module Wiki
     def find_in_category(category, key)
       Article.all_with((Article.has_tag(key.to_s.split(' ')) | 
                         Article.title.ilike("%#{key}%")) & 
-                       Article.in_category(category.category_id)).sort_by(:article_id, :desc).entities
+                       Article.in_category(category.category_id)).sort_by(Article.changed, :desc).entities
     end
 
     def find_all(params)
@@ -175,7 +175,7 @@ module Wiki
       tags = key.split(' ')
       articles = Article.all_with((Article.has_tag(tags) | 
                                    Article.title.ilike("%#{key}%")) &
-                                  Article.is_accessible).sort_by(:article_id, :desc).entities
+                                   Article.is_accessible).sort_by(Article.changed, :desc).entities
       return unless articles.first
       box = Box.new(:type => :none, :class => :topic_inline)
       box.body = view_string(:article_list, :articles => articles, :client_id => param[:client_id])
@@ -201,7 +201,7 @@ module Wiki
       articles    = Article.find(num).with((Article.has_tag(tags) | 
                                       Article.title.ilike("%#{key}%")
                                      ) & 
-                                     filter).sort_by(Wiki::Article.article_id, :desc).entities
+                                     filter).sort_by(Wiki::Article.changed, :desc).entities
       
       num -= articles.length unless num == :all
       begin
