@@ -25,6 +25,8 @@ module Wiki
       GUI::Media_Container_Dump_Partial.new(media_container)
     end
 
+    # Partial as Context_Element (returns GUI::Article_Partial), 
+    # only used by perform_add. 
     def partial
       instance    = load_instance()
       instance  ||= Media_Container.find(1).with(Media_Container.asset_id == param(:asset_id_child)).entity
@@ -68,10 +70,6 @@ module Wiki
                           :position    => position, 
                           :after_asset => param(:after_asset))
 
-#      redirect_to(article, :edit_inline_content_id => instance.content_id, 
-#                           :article_id             => article.article_id, 
-#                           :edit_inline_type       => 'MEDIA_CONTAINER')
-      
       dom_insert(:after_element      => "article_part_asset_#{param(:after_asset)}",
                  :action             => :partial, 
                  :media_container_id => instance.media_container_id, 
