@@ -66,6 +66,10 @@ module Wiki
 
     html_encode :title, :header
 
+    add_output_filter(:title, :header) { |v|
+      v.to_s.gsub('&apos;','`').gsub('"','&quot;')
+    }
+
     # Returns true if this article is assigned to a 
     # versioned category. 
     def versioned
