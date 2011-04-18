@@ -55,6 +55,9 @@ module Wiki
     add_variant(:tiny) { |img, asset| 
       img.resize_to_fit(70,70).write(Aurita.project_path + "public/assets/tiny/asset_#{asset.media_asset_id}.jpg") { self.quality = 82 }
     } 
+    add_variant(:icon) { |img, asset| 
+      img.resize_to_fit(25,25).write(Aurita.project_path + "public/assets/icon/asset_#{asset.media_asset_id}.jpg") { self.quality = 82 }
+    } 
 
     def self.variants
       @@variants

@@ -87,8 +87,9 @@ module GUI
     attr_accessor :row_onclick, :onselect
 
     def initialize(media_assets, params={})
-      params[:class] = [ :media_asset_table, :media_asset_select_variant_list ] unless params[:class]
-      params[:column_css_classes] = [ :icon, :info, :type, :variant ] unless params[:column_css_classes]
+      params[:class]              ||= [ :media_asset_table, :media_asset_select_variant_list ]
+      params[:column_css_classes] ||= [ :icon, :info, :type, :variant ]
+      params[:headers]            ||= [ '', tl(:description), tl(:type), tl(:variant) ]
       super(media_assets, params)
       @row_class   = params[:row_class] 
       @row_class ||= Media_Asset_Select_Variant_List_Row
