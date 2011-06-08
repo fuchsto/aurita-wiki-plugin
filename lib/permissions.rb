@@ -41,6 +41,9 @@ module Wiki
                         :type    => :bool, 
                         :default => true)
 
+    register_permission(:edit_extended_article_options, 
+                        :type    => :bool, 
+                        :default => true)
   end
 
 end

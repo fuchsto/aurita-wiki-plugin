@@ -46,6 +46,7 @@ edit_article : Bearbeiten
 delete_article : L&ouml;schen
 delete_article_versions : Alte Versionen l&ouml;schen
 write_new_article : Neuer Artikel
+write_new_entry : Neuer Eintrag
 used_in_articles : Eingebunden in
 
 text : Text
@@ -127,6 +128,7 @@ view_foreign_article_versions : Alte Versionen fremder Artikel ansehen
 view_foreign_media_versions : Alte Versionen fremder Dateien ansehen
 reactivate_foreign_article_versions : Versionen fremder Artikel wiederherstellen
 reactivate_foreign_media_versions : Versionen fremder Dateien wiederherstellen
+edit_extended_article_options : Erweiterte Artikeloptionen
 
 file_is_being_uploaded : Datei wird im Hintergrund auf den Server geladen. 
 

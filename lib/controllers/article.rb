@@ -272,8 +272,10 @@ module Wiki
 
       form = decorate_form(form)
       return form unless param(:element) == 'app_main_content'
-
-      Page.new(:header => tl(:create_article)) { form }
+  
+      header = tl(:create_article)
+      header = tl(:write_new_entry) if Aurita.user.may(:use_portal_view)
+      Page.new(:header => header) { form }
 
     end # }}}
 
