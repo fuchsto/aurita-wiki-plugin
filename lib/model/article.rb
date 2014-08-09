@@ -70,6 +70,10 @@ module Wiki
       v.to_s.gsub('&apos;','`').gsub('"','&quot;')
     }
 
+    add_input_filter(:teaser) { |v|
+      v.to_s.gsub("'", %q(\\\'))
+    }
+
     # Returns true if this article is assigned to a 
     # versioned category. 
     def versioned
@@ -83,7 +87,7 @@ module Wiki
     alias is_versioned? versioned
 
     def readable_id
-      title.downcase.gsub(' ','_')
+      title.to_s.downcase.gsub(' ','_')
     end
 
     # Return highest version number of this 
@@ -148,17 +152,39 @@ module Wiki
       }.to_a
     end # }}}
 
-    def teaser_text(params={})
-      length     = params[:length]
-      length   ||= 200
+    def html_content
+      text_assets.map { |t| t.text.to_s }.join('<br /><br />')
+    end
+
+    def text_content
       text_asset = text_assets(:amount => 1).first
       text       = text_asset.text if text_asset
       text     ||= ''
       text       = text.gsub(/<[^>]+>/,'').gsub('&nbsp;',' ')
-      text       = text[0..length].split(' ')[0..-2].join(' ')
       text
     end
     
+    def has_content?
+      return text_content.gsub(/\s/,'').length > 0
+    end
+
+    def teaser_text(params={})
+      length     = params[:length]
+      length   ||= 200
+
+      text = teaser
+
+      if text.to_s == '' then
+        text_asset = text_assets(:amount => 1).first
+        text       = text_asset.text if text_asset
+      end
+      text ||= ''
+      text = text.gsub(/<[^>]+>/,'').gsub('&nbsp;',' ')
+      text = text[0..length] unless length == :full
+      text = text.split(' ')[0..-2].join(' ')
+      text
+    end
+
     def teaser_image
       image = Media_Asset.get(teaser_media_asset_id)
       return image if image

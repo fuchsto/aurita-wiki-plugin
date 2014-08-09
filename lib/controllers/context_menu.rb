@@ -33,7 +33,9 @@ module Wiki
         }
 
         if Aurita.user.may(:change_meta_data_of_foreign_articles) || Aurita.user.user_group_id == article.user_group_id then 
-          entry(:edit_article, "Wiki::Article/update/article_id=#{article_id}", targets)
+#         entry(:edit_article, "Wiki::Article/update/article_id=#{article_id}", targets)
+
+          load_entry(:edit_article, 'app_main_content' => "Wiki::Article/update/article_id=#{article_id}")
         end
         if Aurita.user.is_admin? || Aurita.user.user_group_id == article.user_group_id then 
           entry(:edit_article_permissions, "Content_Permissions/editor/content_id=#{content_id}", targets)
@@ -53,7 +55,7 @@ module Wiki
 
       if Aurita.user.may_edit_content?(media_asset) then
         if Aurita.user.may(:change_meta_data_of_foreign_files) || media_asset.user_group_id == Aurita.user.user_group_id then
-          entry(:edit_asset, "Wiki::Media_Asset/update/media_asset_id=#{media_asset_id}")
+          load_entry(:edit_asset, 'app_main_content' => "Wiki::Media_Asset/update/media_asset_id=#{media_asset_id}")
         end
         entry(:new_asset_version, "Wiki::Media_Asset_Version/add/media_asset_id=#{media_asset_id}")
         if Aurita.user.may(:delete_foreign_files) || media_asset.user_group_id == Aurita.user.user_group_id then
@@ -63,9 +65,11 @@ module Wiki
         #  load_entry(:edit_image, 'app_main_content' => "Wiki::Image_Editor/main/media_asset_id=#{media_asset_id}")
         end
       end
-      entry(:bookmark_asset, "Bookmarking::Media_Asset_Bookmark/perform_add/media_asset_id=#{media_asset_id.to_s}")
+    # entry(:bookmark_asset, "Bookmarking::Media_Asset_Bookmark/perform_add/media_asset_id=#{media_asset_id.to_s}")
       entry(:recommend_asset, "Content_Recommendation/editor/type=ASSET&content_id=#{content_id}")
-      link_entry(:download_asset, "#{Aurita::Project_Configuration.remote_path}/aurita/Wiki::Media_Asset/proxy/media_asset_id=#{media_asset.media_asset_id}")
+      if Aurita.user.may_download_file?(media_asset) then
+        link_entry(:download_asset, "#{Aurita::Project_Configuration.remote_path}/aurita/Wiki::Media_Asset/proxy/media_asset_id=#{media_asset.media_asset_id}")
+      end
     end
 
     def media_asset_version

@@ -44,6 +44,25 @@ module Wiki
     register_permission(:edit_extended_article_options, 
                         :type    => :bool, 
                         :default => true)
+
+    register_permission(:download_files, 
+                        :type    => :bool, 
+                        :default => true)
+    register_permission(:request_files, 
+                        :type    => :bool, 
+                        :default => false)
+    register_permission(:approve_requested_files, 
+                        :type    => :bool, 
+                        :default => false)
+    register_permission(:view_approved_files_list, 
+                        :type    => :bool, 
+                        :default => false)
+    register_permission(:view_all_requested_files, 
+                        :type    => :bool, 
+                        :default => false)
+    register_permission(:download_approved_files, 
+                        :type    => :bool, 
+                        :default => true)
   end
 
 end

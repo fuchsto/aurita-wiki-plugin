@@ -1,6 +1,10 @@
 
 require('aurita')
-require('RMagick')
+begin
+  require('RMagick')
+rescue LoadError => e
+  # ignore
+end
 Aurita.import_plugin_module :wiki, :media_asset_helpers
 
 module Aurita
@@ -30,7 +34,10 @@ module Wiki
   #
   class Image_Manipulation
   include Media_Asset_Helpers
-  include Magick
+  begin
+    include Magick
+  rescue ::Exception => e
+  end
 
     @@logger = Aurita::Log::Class_Logger.new(self)
 
@@ -232,6 +239,40 @@ module Wiki
       @img = ImageList.new(@media_asset.fs_path) 
       @work_count = 0
     end # }}}
+
+    def import(path=nil)
+      id     = @media_asset.media_asset_id
+      ext    = @media_asset.extension.dup.downcase
+      path ||= Aurita.project_path(:public, :assets, "asset_#{id}.#{ext}")
+      begin
+        img = ImageList.new(path) 
+      rescue ::Exception => e
+        @@logger.log("IMAGE UP | Error: #{e.message}")
+        raise ::Exception.new('Error importing file: ' << path)
+      end
+      img.write(Aurita.project_path(:public, :assets, "asset_#{id}.jpg"))
+    end
+
+    def create_pdf_preview()
+      id   = @media_asset.media_asset_id
+      ext  = @media_asset.extension.dup.downcase
+      ext << '[0]' 
+      if Aurita.project.full_pdf_rendering then 
+        # Additionally export all pages of PDF as separate (large) images
+        # in paths like 
+        #   asset_<media_asset_id>-<page idx>.jpg
+        #
+        img = ImageList.new(path) {
+          self['density'] = '150x150'
+        }
+        img.write(Aurita.project_path(:public, :assets, "asset_#{id}.png")) { 
+          self['quality'] = 85
+        }
+      end
+      path = Aurita.project_path(:public, :assets, "asset_#{id}.#{ext}")
+      img  = ImageList.new(path)
+      img.write(Aurita.project_path(:public, :assets, "asset_#{id}.png")) 
+    end
 
     # Generate all thumbnail sizes from given magick image
     def create_image_variants(variants)

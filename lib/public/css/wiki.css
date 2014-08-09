@@ -263,15 +263,49 @@ table.media_asset_table td.date {
 
 .media_asset_thumbnail { 
   float: left; 
-  width: 200px; 
+  width: 204px; 
   background-color: white; 
 /*  height: 200px; */
   margin-left: 2px; 
   margin-top: 3px; 
 }
+.media_asset_thumbnail.requested { 
+  background-color: #cfddfb; 
+}
+.media_asset_thumbnail.requested .info { 
+  background-color: #cfddfb; 
+}
+.media_asset_thumbnail.approved { 
+  background-color: #cfcfcf;
+}
+.media_asset_thumbnail.approved .info { 
+  background-color: #cfcfcf; 
+}
+
+.media_asset_thumbnail .request_file_button, 
+.media_asset_thumbnail .approve_file_button { 
+  display: block; 
+  height: 25px; 
+}
+.media_asset_thumbnail .request_file_button label, 
+.media_asset_thumbnail .approve_file_button label { 
+  display: inline; 
+  float: left; 
+}
+.media_asset_thumbnail .request_file_button input, 
+.media_asset_thumbnail .approve_file_button input { 
+  display: inline; 
+  float: left; 
+  margin: 4px; 
+  margin-right: 2px;
+  margin-left: 7px;
+  margin-top: 6px; 
+}
 
 .media_asset_thumbnail .image { 
-  height: 120px; 
+/*  height: 120px; */
+  height: 200px; 
+  width: 200px; 
   text-align: center; 
   padding: 2px; 
   display: block; 
@@ -458,6 +492,10 @@ table.media_asset_table td.date {
   margin-top: 4px; 
   margin-left: 25px; 
   padding: 2px; 
+}
+
+.media_asset_table tr.requested { 
+  background: #cfddfb; 
 }
 
 .media_asset_grid .context_menu_button, .media_asset_folder_grid .context_menu_button { 

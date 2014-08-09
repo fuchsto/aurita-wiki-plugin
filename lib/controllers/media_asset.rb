@@ -7,12 +7,12 @@ Aurita::Main.import_model :content_access
 Aurita.import_plugin_model :wiki, :media_asset
 Aurita.import_plugin_model :wiki, :media_asset_version
 Aurita.import_plugin_model :wiki, :media_asset_folder
-Aurita.import_plugin_module :wiki, :media_asset_renderer
 Aurita.import_plugin_module :wiki, :media_asset_importer
 Aurita.import_plugin_module :wiki, :media_meta_data
 Aurita.import_plugin_module :wiki, :gui, :media_asset_version_list
 Aurita.import_plugin_module :wiki, :gui, :media_asset_list
 Aurita.import_plugin_module :wiki, :gui, :media_asset_selection_field
+Aurita.import_plugin_module :wiki, :gui, :media_asset_grid
 
 Aurita::Main.import_controller :content_comment
 Aurita::Main.import_controller :category
@@ -53,6 +53,7 @@ module Wiki
        Category.category_id, 
        Media_Asset.description, 
        Media_Asset.media_folder_id, 
+       Media_Asset.preview_media_asset_id, 
        :media_container_id
       ]
     end
@@ -65,6 +66,65 @@ module Wiki
        Category.category_id.to_s        => tl(:media_asset_category_hint), 
        Media_Asset.description.to_s     => tl(:media_asset_description_hint), 
        Media_Asset.media_folder_id.to_s => tl(:media_asset_folder_hint), 
+      }
+    end
+
+    def toolbar_buttons
+    # {{{
+      if Aurita.user.may?(:approve_requested_files) then
+        Text_Button.new(:icon   => :add_article, 
+                        :action => 'Wiki::Media_Asset/approval_grid') { 
+          tl(:approve_files) 
+        } 
+      end
+    end # }}}
+
+    def approval_list
+    # {{{
+      assets = Media_Asset.select { |m|
+        m.join(Media_Asset_Request).on(Media_Asset_Request.media_asset_id == Media_Asset.media_asset_id) { |mr|
+          mr.where(Media_Asset.has_category_in(Aurita.user.category_ids))
+          mr.order_by(:time_requested, :desc)
+        }
+      }
+      table   = GUI::Media_Asset_Table.new(assets)
+      headers = [ HTML.th { '&nbsp;' }, 
+                  HTML.th { tl(:approved) }, 
+                  HTML.th { tl(:requested) }, 
+                  HTML.th { tl(:description) }, 
+                  HTML.th { tl(:filetype) }, 
+                  HTML.th { tl(:filesize) }, 
+                  HTML.th { tl(:created) }, 
+                  HTML.th { tl(:changed) } ]
+      table.headers = headers
+
+      even = true
+      table.rows.each { |r|
+        r.add_css_class :even if even
+        r.add_css_class :odd  if !even
+        even = !even
+      }
+
+      Page.new(:id => :approve_files, :header => tl(:approve_files)) { 
+        table
+      }
+    end # }}}
+
+    def approval_grid
+      assets = Media_Asset.select { |m|
+        m.where((Media_Asset.has_category_in(Aurita.user.category_ids)) & 
+                (Media_Asset.media_asset_id.in( 
+                   Media_Asset_Request.select(:media_asset_id) { |mr| 
+                     mr.where(true)
+                   }
+                )) & 
+                (Media_Asset.deleted == 'f')
+               )
+        m.order_by(:media_asset_id, :desc)
+      }.to_a
+
+      Page.new(:id => :media_asset_approval_grid, :header => tl(:approve_files)) {
+        GUI::Media_Asset_Grid.new(assets)
       }
     end
 
@@ -111,7 +171,7 @@ module Wiki
                (Media_Asset.content_id.in(Content_Category.select(:content_id) { |cid| 
                    cid.where(Content_Category.category_id == params[:category_id]) 
                } ))
-      list_str = list(clause, :limit => 100, :order => [ Media_Asset.changed, :desc ])
+      list_str = list(clause, :limit => 20, :order => [ Media_Asset.changed, :desc ])
       return Element.new(:content => list_str) if list_str
     end # }}}
 
@@ -147,7 +207,8 @@ module Wiki
       clause = (Media_Asset.content_id.in(Content_Category.select(:content_id) { |cid| 
                    cid.where(Content_Category.category_id == params[:category_id]) 
                } ))
-      list_str = list(clause, :limit => 30, :order => [ Media_Asset.changed, :desc ])
+    # list_str = list(clause, :limit => 30, :order => [ Media_Asset.changed, :desc ])
+      list_str = list(clause, :order => [ Media_Asset.changed, :desc ])
       return unless list_str
       body   = Element.new(:content => list_str) 
       box    = Box.new(:class => :topic_inline, 
@@ -190,7 +251,7 @@ module Wiki
       if args[:physically] then
         super()
       else
-        return unless asset.user_group_id == Aurita.user.user_group_id or Aurita.user.is_admin?
+        return unless ( asset.user_group_id == Aurita.user.user_group_id || Aurita.user.may?(:delete_foreign_files) || Aurita.user.is_admin? )
         asset.deleted = true
         Container.delete { |c|
           c.where(c.content_id_child == asset.content_id)
@@ -218,16 +279,31 @@ module Wiki
 
       form[:action].value = :flash_upload
 
+      default_cats = [] 
+
       form[Media_Asset.media_folder_id] = GUI::Hierarchy_Node_Select_Field.new(:name  => Media_Asset.media_folder_id.to_s, 
                                                                                :label => tl(:folder), 
                                                                                :value => folder_id) 
       category = Category_Selection_List_Field.new()
+      article  = false
       if param(:media_container_id) then
-        article        = Media_Container.get(param(:media_container_id)).article
-        category.value = [ article.category_id ] if article
+        article = Media_Container.get(param(:media_container_id)).article
         form.add(Hidden_Field.new(:name  => :media_container_id, 
                                   :value => param(:media_container_id))) 
       end
+      
+      if article then
+        default_cats << article.category_id 
+      else
+        begin
+          general_cat = Category.find(1).with(:special => :general).first
+          default_cats << general_cat.category_id if general_cat
+        rescue ::Exception => ignore
+        end
+      end
+
+      category.value = default_cats
+      
       file = GUI::Multi_File_Flash_Field.new(:id => :flash_upload_applet, :name => 'upload_file[]')
       
       form.add(file)
@@ -293,16 +369,33 @@ module Wiki
     # {{{
       media_asset = load_instance()
       form = update_form()
+
       form[Media_Asset.media_folder_id] = GUI::Hierarchy_Node_Select_Field.new(:name => Media_Asset.media_folder_id.to_s, 
                                                                                :label => tl(:folder), 
                                                                                :value => media_asset.media_folder_id)
+      form[Media_Asset.preview_media_asset_id] = GUI::Media_Asset_Selection_Field.new(:name  => Media_Asset.preview_media_asset_id.to_s, 
+                                                                                      :label => tl(:preview_image), 
+                                                                                      :value => media_asset.preview_media_asset_id, 
+                                                                                      :mime_type  => :image)
+
       category = Category_Selection_List_Field.new()
       category.value = media_asset.category_ids
+
       form[Content.tags] = Tag_Autocomplete_Field.new(:name => Content.tags.to_s, :label => tl(:tags), :value => media_asset.tags)
       form[Content.tags].required!
+      
       exec_js('Aurita.Main.init_autocomplete_tags();')
       form.add(category)
-      render_form(form, :title => title)
+
+      # render_form(form, :title => title)
+      
+      form = decorate_form(form) 
+
+      return form unless param(:element) == 'app_main_content'
+
+      Page.new(:id => :approve_files, :header => tl(:edit_asset)) { 
+        form
+      }
     end # }}}
     def update_section
     # {{{
@@ -311,6 +404,14 @@ module Wiki
     
     def delete
       form = delete_form
+      form.fields = [
+       'upload_file[]', 
+       Media_Asset.title, 
+       Content.tags, 
+       Category.category_id, 
+       Media_Asset.media_folder_id, 
+       :media_container_id
+      ]
       form[Media_Asset.media_folder_id].hidden = true
       form[Media_Asset.description].hidden = true
       render_form(form)
@@ -393,7 +494,10 @@ module Wiki
       super()
       media_asset = load_instance()
       media_asset.set_categories(param(:category_id))
-      exec_js("Aurita.flash('#{tl(:changes_have_been_saved)}');")
+
+      # exec_js("Aurita.flash('#{tl(:changes_have_been_saved)}');")
+
+      redirect_to(media_asset)
     end # }}}
 
     def perform_unpack
@@ -515,10 +619,10 @@ module Wiki
 
       version    = param(:version).to_i
 
-      if Aurita.user.may_view_content?(asset) then
+      if Aurita.user.may_download_file?(asset) then
 
         Media_Asset_Download.create(:media_asset_id => asset_id, 
-                                    :user_group_id => Aurita.user.user_group_id)
+                                    :user_group_id  => Aurita.user.user_group_id)
         
         filename   = asset.title.to_s.gsub(' ','_')
         filename   = 'download' if filename.to_s == ''
@@ -533,7 +637,6 @@ module Wiki
           filename  << ".#{asset.extension}"
           send_file("/assets/#{asset.filename}", :filename => filename)
         end
-        
       else 
         set_http_status(403)
       end
@@ -583,21 +686,24 @@ module Wiki
                             :user_group_id => Aurita.user.user_group_id, 
                             :res_type      => 'MEDIA_ASSET')
 
-      versions = Media_Asset_Version.select { |v| 
-        v.join(Media_Asset).using(:media_asset_id) { |ma| 
-          ma.where(Media_Asset_Version.media_asset_id == media_asset_id)
-          ma.order_by(Media_Asset_Version.version, :desc)
-        }
-      }.to_a
-
-      media_asset_tags = view_string(:editable_tag_list, :content => media_asset)
-
+      versions = []
+      if media_asset.user_group_id == Aurita.user.user_group_id || Aurita.user.may?(:view_foreign_media_versions) then
+        versions = Media_Asset_Version.select { |v| 
+          v.join(Media_Asset).using(:media_asset_id) { |ma| 
+            ma.where(Media_Asset_Version.media_asset_id == media_asset_id)
+            ma.order_by(Media_Asset_Version.version, :desc)
+          }
+        }.to_a
+      end
       current_version  = Media_Asset_Version.create_shallow(:media_asset_id    => media_asset.media_asset_id, 
                                                             :mime              => media_asset.mime, 
                                                             :version           => media_asset.version, 
                                                             :timestamp_created => media_asset.changed, # not 'created'
                                                             :user_group_id     => media_asset.user_group_id)
+
       versions = [ current_version ] + versions
+
+      media_asset_tags = view_string(:editable_tag_list, :content => media_asset)
 
       render_view(:media_asset_info, 
                   :owner_user_group     => owner_user_group, 
@@ -860,8 +966,11 @@ module Wiki
 
       pages = []
       idx   = 0 
+      host  = Aurita.project.host
+      host  = "http://#{host}" unless host.include?('://')
+      
       while File.exists?(Aurita.project.base_path + "public/assets/asset_#{ma_id}-#{idx}.png") do
-        pages << Aurita.project.host + "/aurita/assets/asset_#{ma_id}-#{idx}.png"
+        pages << host + "/aurita/assets/asset_#{ma_id}-#{idx}.png"
         idx += 1
       end
       XML::Document.new { 

@@ -20,7 +20,8 @@ versions : Versions
 files : Files
 
 articles : Articles
-recently_changed_articles : Recently changed
+recently_changed_articles : Recently changed articles
+recently_changed_files : Recently changed files
 recently_viewed_articles : Recently read
 article_index : All articles
 return_to_default_view : Back
@@ -120,6 +121,11 @@ view_foreign_article_versions : View versions of other users&apos; articles
 view_foreign_media_versions : View versions of other users&apos; files
 reactivate_foreign_article_versions : Rollback old versions of other users&apos; articles
 reactivate_foreign_media_versions : Rollback old versions of other users&apos; files
+edit_extended_article_options : Edit extended article options
+download_files : Download files
+download_approved_files : Download approved files
+request_files : Request files
+approve_requested_files : Approve requested files
 
 file_is_being_uploaded : File is being uploaded
 
@@ -166,3 +172,18 @@ edit_media_container : Edit files
 article_title_hint : Der Name des Artikels, der auch bei der Suche ber&uuml;cksichtigt wird
 article_tags_hint : Begriffe, unter denen dieser Artikel gruppiert und wiedergefunden werden kann
 article_category_hint : Eine oder mehrere Kategorien, in denen dieser Artikel freigegeben werden soll. Benutzer m&uuml;ssen Mitglied mindestens einer der hier gew&auml;hlten Kategorien sein, den Artikel lesen und bearbeiten zu k&ouml;nnen
+
+media_asset_tags_hint : Enter tags for the files. You can use the portal search function to quickly find files by their tags. 
+media_asset_category_hint : Choose the categories the files will be published in. 
+media_asset_folder_hint : Choose the directory the files will be placed in. 
+media_asset_description_hint : Describe the files to be uploaded
+
+requested : Requested
+my_requested_files : My requested files
+requested_files : Requested files
+approved : Approved
+approve_files : Approve files
+approved_files : Approved files
+all_requested_files : All requested files
+view_approved_files_list : View list of approved files
+view_all_requested_files : View all requested files

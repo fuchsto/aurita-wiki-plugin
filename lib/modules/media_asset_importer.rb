@@ -1,11 +1,14 @@
 
 require('aurita')
 require('fileutils')
-require('RMagick')
 require('rubygems')
 require('mime/types')
 Aurita.import_plugin_module :wiki, :media_asset_helpers
-Aurita.import_plugin_module :wiki, :image_manipulation
+begin
+  Aurita.import_plugin_module :wiki, :image_manipulation
+rescue LoadError => e
+  # Ignore missing RMagick gem
+end
 
 module Aurita
 module Plugins
@@ -13,11 +16,20 @@ module Wiki
 
   class Media_Asset_Importer
   include Media_Asset_Helpers
-  include Magick
+  begin
+    include Magick
+  rescue ::Exception => e
+  end
+
+    @@image_renderer = Aurita::Plugins::Wiki::Image_Manipulation
 
     @@variants = {}
 
     @@logger = Aurita::Log::Class_Logger.new(self)
+
+    def self.use_image_renderer(renderer_klass) 
+      @@image_renderer = renderer_klass
+    end
 
     # Add an image variant. Example: 
     #
@@ -34,6 +46,24 @@ module Wiki
       @@variants[name.to_sym] = block 
     end
 
+    def self.set_default_variants
+      add_variant(:medium) { |img, asset|
+        img.resize_to_fit(320,320).write(Aurita.project_path + "public/assets/medium/asset_#{asset.media_asset_id}.jpg") { self.quality = 92 }
+      }
+      add_variant(:thumb) { |img, asset|
+        img.resize_to_fit(120,120).write(Aurita.project_path + "public/assets/thumb/asset_#{asset.media_asset_id}.jpg") { self.quality = 82 }
+      }
+      add_variant(:small) { |img, asset|
+        img.resize_to_fit(95,95).write(Aurita.project_path + "public/assets/small/asset_#{asset.media_asset_id}.jpg") { self.quality = 82 }
+      }
+      add_variant(:tiny) { |img, asset| 
+        img.resize_to_fit(70,70).write(Aurita.project_path + "public/assets/tiny/asset_#{asset.media_asset_id}.jpg") { self.quality = 82 }
+      } 
+      add_variant(:icon) { |img, asset| 
+        img.resize_to_fit(25,25).write(Aurita.project_path + "public/assets/icon/asset_#{asset.media_asset_id}.jpg") { self.quality = 82 }
+      } 
+    end
+
     # Remove an image variant. 
     #
     #   Media_Asset_Importer.remove_variant(:huge)
@@ -41,23 +71,6 @@ module Wiki
     def self.remove_variant(name)
       @@variants.delete_at(name.to_sym)
     end
-
-    @@logger = Aurita::Log::Class_Logger.new(self)
-    add_variant(:medium) { |img, asset|
-      img.resize_to_fit(320,320).write(Aurita.project_path + "public/assets/medium/asset_#{asset.media_asset_id}.jpg") { self.quality = 92 }
-    }
-    add_variant(:thumb) { |img, asset|
-      img.resize_to_fit(120,120).write(Aurita.project_path + "public/assets/thumb/asset_#{asset.media_asset_id}.jpg") { self.quality = 82 }
-    }
-    add_variant(:small) { |img, asset|
-      img.resize_to_fit(95,95).write(Aurita.project_path + "public/assets/small/asset_#{asset.media_asset_id}.jpg") { self.quality = 82 }
-    }
-    add_variant(:tiny) { |img, asset| 
-      img.resize_to_fit(70,70).write(Aurita.project_path + "public/assets/tiny/asset_#{asset.media_asset_id}.jpg") { self.quality = 82 }
-    } 
-    add_variant(:icon) { |img, asset| 
-      img.resize_to_fit(25,25).write(Aurita.project_path + "public/assets/icon/asset_#{asset.media_asset_id}.jpg") { self.quality = 82 }
-    } 
 
     def self.variants
       @@variants
@@ -108,7 +121,7 @@ module Wiki
         raise ::Exception.new("Failed to import file from path #{file_info[:server_filepath].inspect} to #{@media_asset.fs_path.inspect}. Media asset: #{@media_asset.inspect}")
       end
       File.chmod(0777, @media_asset.fs_path)
-
+      
       @@logger.log('IMAGE UP | Importing')
       if @media_asset.has_preview? then
         @@logger.log('FILE IMPORT: Create preview')
@@ -200,53 +213,32 @@ module Wiki
     # {{{
       begin
         @@logger.log('IMAGE UP | Importing image')
-        id  = @media_asset.media_asset_id
-
-        ext = @media_asset.extension.dup.downcase
+        image_renderer = @@image_renderer.new(@media_asset)
+        
+        id   = @media_asset.media_asset_id
+        ext  = @media_asset.extension.dup.downcase
         path = Aurita.project_path(:public, :assets, "asset_#{id}.#{ext}")
-        if ext == 'pdf' then
-          # Only render first page of PDF for thumbnails
-          ext << '[0]' 
-          if Aurita.project.full_pdf_rendering then 
-            # Additionally export all pages of PDF as separate (large) images
-            # in paths like 
-            #   asset_<media_asset_id>-<page idx>.jpg
-            #
-            img = ImageList.new(path) {
-              self['density'] = '150x150'
-            }
-            img.write(Aurita.project_path(:public, :assets, "asset_#{id}.png")) { 
-              self['quality'] = 85
-            }
-          end
-        elsif @media_asset.is_video? then
-          begin
-            dest = Aurita.project_path(:public, :assets, "asset_#{id}.jpg")
-            # File.open(source, 'w')
-            # system "ffmpeg -i #{path}  -ar 22050 -ab 32 -acodec mp3
-            #         -s 480x360 -vcodec flv -r 25 -qscale 8 -f flv -y #{ dest }"
-            system("ffmpeg -i '#{path}' -ss 00:00:10 -vframes 1 -f image2 -vcodec mjpeg '#{dest}'")
-            ext = 'jpg'
-          rescue ::Exception => e
-          end
-        end
-
-        path = Aurita.project_path(:public, :assets, "asset_#{id}.#{ext}")
+        
         @@logger.log("IMAGE UP | Path is #{path}")
         # Every image needs a jpeg base image (esp. needed for PDF): 
-        begin
-          img = ImageList.new(path) 
-        rescue ::Exception => e
-          @@logger.log("IMAGE UP | Error: #{e.message}")
-          raise ::Exception.new('Error importing file: ' << path)
+        STDERR.puts "Importing #{path} using #{image_renderer.class.inspect}"
+        image_renderer.import(path)
+        image_renderer.create_image_variants(@@variants)
+
+        if ext == 'pdf' then
+          image_renderer.create_pdf_preview()
+        elsif @media_asset.is_video? then
+          dest = Aurita.project_path(:public, :assets, "asset_#{id}.jpg")
+          # File.open(source, 'w')
+          # system "ffmpeg -i #{path}  -ar 22050 -ab 32 -acodec mp3
+          #         -s 480x360 -vcodec flv -r 25 -qscale 8 -f flv -y #{ dest }"
+          system("ffmpeg -i '#{path}' -ss 00:00:10 -vframes 1 -f image2 -vcodec mjpeg '#{dest}'")
+          ext = 'jpg'
         end
-        img.write(Aurita.project_path(:public, :assets, "asset_#{id}.jpg"))
-        
-        Image_Manipulation.new(@media_asset).create_image_variants(@@variants)
       rescue ::Exception => e
-        @@logger.log('Error when trying to create image versions: ' << e.message)
+        STDERR.puts('Error when trying to create image versions: ' << e.message)
         e.backtrace.each { |m| 
-          @@logger.log(m)
+          STDERR.puts(m)
         }
       end
     end # }}}
@@ -262,7 +254,7 @@ module Wiki
       elsif file_or_filename.respond_to?(:read)
         size = file_or_filename.length 
         file = file_or_filename
-        file_path = File.path
+        file_path = file.path
       end
 
       size ||= 0
@@ -274,9 +266,11 @@ module Wiki
         :original_filename => @media_asset.original_filename
       }
 
+      STDERR.puts "PATH: #{file_path} -> #{file_info[:server_filename]}"
+
       server_filename = file_info[:server_filename]
       @@logger.log 'Import file from ' << file_path.inspect
-      @@logger.log 'Import file to ' << Aurita.project_path + 'public/assets/tmp/' << server_filename
+      @@logger.log 'Import file to ' << Aurita.project_path + 'public/assets/tmp/' << server_filename.to_s
       if file_or_filename.is_a? String then
         dest_path = Aurita.project_path + 'public/assets/tmp/' << server_filename
         FileUtils.copy(file_path, dest_path) if file_path != dest_path

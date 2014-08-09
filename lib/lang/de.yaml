@@ -15,6 +15,8 @@ public--media_asset_folder--locked : Schreibgesch&uuml;tzt
 
 public--media_asset--title : Titel
 public--media_asset--description : Beschreibung
+public--media_asset--preview_media_asset_id : Vorschaubild
+preview_image : Vorschaubild
 description : Beschreibung
 by : von
 versions : Versionen
@@ -42,7 +44,7 @@ recommendation_text : \1 empfielt Ihnen den Artikel [appurl=\3]\2[/appurl]
 version_created_by : Version von
 
 article : Artikel
-edit_article : Bearbeiten
+edit_article : Artikel bearbeiten
 delete_article : L&ouml;schen
 delete_article_versions : Alte Versionen l&ouml;schen
 write_new_article : Neuer Artikel
@@ -129,6 +131,10 @@ view_foreign_media_versions : Alte Versionen fremder Dateien ansehen
 reactivate_foreign_article_versions : Versionen fremder Artikel wiederherstellen
 reactivate_foreign_media_versions : Versionen fremder Dateien wiederherstellen
 edit_extended_article_options : Erweiterte Artikeloptionen
+download_files : Dateien downloaden
+download_approved_files : Freigegebene Dateien downloaden
+request_files : Dateien anfordern
+approve_requested_files : Angeforderte Dateien freigeben
 
 file_is_being_uploaded : Datei wird im Hintergrund auf den Server geladen. 
 
@@ -223,5 +229,11 @@ media_asset_folder_hint : Ordner, in dem diese Datei abgelegt wird.
 public--article--teaser_text : Vorspann
 public--article--teaser_media_asset_id : Vorschaubild
 
-
-
+requested : Angefordert
+requested_files : Alle angeforderten Dateien
+my_requested_files : Angeforderten Dateien
+approved : Freigegeben
+approve_files : Dateifreigabe
+approved_files : Freigegebene Dateien
+all_requested_files : Alle angeforderten Dateien
+view_approved_files_list : Liste aller freigegebenen Dateien sehen

@@ -190,8 +190,10 @@ module Wiki
 
     def filename(params={})
       ver = params[:version]
+      ext = params[:extension] 
+      ext ||= extension
       if ver.nil? || ver.to_i == 0 then
-        return "asset_#{media_asset_id}.#{extension}" 
+        return "asset_#{media_asset_id}.#{ext}" 
       else
         version_nr     = 0
         version_info   = false
@@ -204,9 +206,10 @@ module Wiki
                                                           :version        => ver).entity
           version_nr   = ver
         end
-        return "asset_#{media_asset_id}.#{version_nr}.#{version_info.extension}"
+        return "asset_#{media_asset_id}.#{version_nr}.#{version_info.ext}"
       end
     end
+    
     def url(version=0)
       if version.is_a?(Hash)
         "/aurita/assets/#{rel_name(version)}" 
@@ -270,7 +273,13 @@ module Wiki
       @doctype
     end
 
+    def preview_image
+      Media_Asset.get(preview_media_asset_id)
+    end
+
     def icon(size=:tiny, ver=nil, append_checksum=true)
+      return preview_image.icon if preview_image
+
       cs = ''
       if append_checksum then
         cs = "?#{checksum}"
@@ -284,6 +293,8 @@ module Wiki
 
     # Absolute URL path to file. 
     def icon_path(params)
+      return preview_image.icon_path(params) if preview_image
+
       c = "?#{checksum}" if has_preview? 
       "/aurita/assets/#{rel_name(params)}#{c}"
     end

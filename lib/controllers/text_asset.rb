@@ -110,7 +110,7 @@ module Wiki
 
       content_id_parent = param(:content_id_parent) 
       content_id_parent = param(:content_id) unless content_id_parent
-      instance   = super()
+      instance = super()
       
       article = Article.find(1).with(Article.content_id == content_id_parent).entity
 

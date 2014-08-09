@@ -42,7 +42,10 @@ module GUI
     def element
       HTML.div.media_asset_grid { 
         @entities.map { |e| 
-          element = Media_Asset_Thumbnail.new(e, :thumbnail_size => @thumbnail_size)
+          thumb_attribs = {}
+          thumb_attribs[:thumbnail_size] = @thumbnail_size 
+          thumb_attribs[:img_attribs]    = { :rel => "lightbox[set_#{@dom_id}]" }
+          element = Media_Asset_Thumbnail.new(e, thumb_attribs)
           @decorator.call(e, element)
         } + HTML.div(:style => 'clear: both;')
       }

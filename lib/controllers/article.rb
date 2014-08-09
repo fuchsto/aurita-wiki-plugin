@@ -17,6 +17,7 @@ Aurita.import_plugin_module :wiki, :article_hierarchy_default_decorator
 Aurita.import_plugin_module :wiki, :article_hierarchy_pdf_decorator
 Aurita.import_plugin_module :wiki, :article_dump_default_decorator
 Aurita.import_plugin_module :wiki, :article_hierarchy_sortable_decorator
+Aurita.import_plugin_module :wiki, :gui, :article_selection_list_entry
 
 begin
   Aurita.import_plugin_model :memo, :memo_article
@@ -43,7 +44,7 @@ module Wiki
        Category.category_id
       ]
     end
-
+    
     def form_hints
       { 
         Article.title.to_s        => tl(:article_title_hint), 
@@ -51,7 +52,7 @@ module Wiki
         Category.category_id.to_s => tl(:article_category_hint)
       }
     end
-
+    
     def hierarchy_entry_type
       { 
         :name       => 'ARTICLE', 
@@ -59,6 +60,7 @@ module Wiki
         :request    => 'Wiki::Article_Selection_Field' 
       }
     end
+    
     def hierarchy_entry(params)
       entry = params[:entry]
       if entry.attr[:type] == 'ARTICLE' then
@@ -73,7 +75,7 @@ module Wiki
       article = Article.find(1).with(Article.content_id == param(:content_id)).entitiy
       article.touch if article
     end
-
+    
     def invalidate_and_show(params={})
     # {{{
 
@@ -85,12 +87,12 @@ module Wiki
                   :article_id => article.article_id)
 
     end # }}}
-
+    
     def commit_version
       article = load_instance()
       article.commit_version if (article && Aurita.user.may_edit_content?(article))
     end
-
+    
     def list_category(params)
     # {{{
       articles = Article.select { |a|
@@ -166,7 +168,7 @@ module Wiki
                         Article.title.ilike("%#{key}%")) & 
                        Article.in_category(category.category_id)).sort_by(Article.changed, :desc).entities
     end
-
+    
     def find_all(params)
     # {{{
       
@@ -259,14 +261,17 @@ module Wiki
     def index
       puts list
     end
-
+    
     def add
     # {{{
+      default_cat_id = param(:category_id) 
 
       form = add_form()
       form.add(Category_Selection_List_Field.new())
       form[Content.tags] = Tag_Autocomplete_Field.new(:name => Content.tags, :label => tl(:tags))
       form[Content.tags].required!
+
+      form[Category.category_id].value = default_cat_id if default_cat_id
       
       exec_js('Aurita.Main.init_autocomplete_tags();')
 
@@ -300,7 +305,11 @@ module Wiki
         form.add(is_locked)
       end
 
-      render_form(form)
+#     render_form(form)
+      
+      return form unless param(:element) == 'app_main_content'
+
+      Page.new(:header => tl(:edit_article)) { decorate_form(form) }
 
     end # }}}
 
@@ -315,11 +324,11 @@ module Wiki
     # {{{
       article = super()
       article.set_categories(param(:category_id))
-
-      @params.set('public.text_asset.text', tl(:text_asset_blank_text))
+      
+      @params.set('public.text_asset.text', 'Editieren')
       @params.set('public.article.content_id', article.content_id)
-      text_asset = Text_Asset_Controller.new(@params).perform_add()
-
+      text_asset = Aurita::Plugins::Wiki::Text_Asset_Controller.new(@params).perform_add()
+      
       redirect_to(article, :edit_inline_content_id => text_asset.content_id, 
                            :article_id             => article.article_id, 
                            :edit_inline_type       => 'TEXT_ASSET')
@@ -357,7 +366,7 @@ module Wiki
     def self.touch_article(article_id)
       Article.load(:article_id => article_id).touch
     end
-
+    
     def show_own_latest
     # {{{
 
@@ -376,7 +385,7 @@ module Wiki
       show(latest_article_id, edit_inline_content_id)
 
     end # }}}
-
+    
     def show_pdf
     # {{{
       use_decorator :none
@@ -603,7 +612,7 @@ module Wiki
     def recently_changed
       puts recently_changed_string()
     end
-
+    
     def recently_viewed_string
       articles = Article_Access.of_user(Aurita.user.user_group_id, 5)
       articles = []
@@ -665,6 +674,13 @@ module Wiki
       return viewed_articles
 
     end # }}}
+
+    def selection_choice
+      field_name   = param(:name)
+      field_name ||= 'article_ids[]'
+      article      = Article.get(param(:article_id))
+      GUI::Article_Selection_List_Entry.new(:article => article, :name => field_name)
+    end
 
   end # class
   

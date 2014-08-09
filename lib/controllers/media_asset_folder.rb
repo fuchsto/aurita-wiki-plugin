@@ -305,6 +305,7 @@ module Wiki
     end
 
     def table_widget
+    # {{{
       folder        = load_instance
       sort          = param(:sort, :created)
       sort_dir      = param(:sort_dir, :asc)
@@ -320,13 +321,16 @@ module Wiki
 
       table         = GUI::Media_Asset_Table.new(folders + assets)
       headers       = [ '&nbsp;' ] 
+      headers      += [ HTML.th { tl(:requested) }, HTML.th { tl(:approved) } ]
       headers      += [ HTML.th { tl(:description) }, HTML.th { tl(:filetype) }, HTML.th { tl(:filesize) }, HTML.th { tl(:created) }, HTML.th { tl(:changed) } ]
-      header_idx = 1
+    # header_idx = 1
+      header_idx = 3
       [ 'title', 'mime', 'filesize', 'created', 'changed' ].each { |s|
         if sort.to_s == s && sort_dir.to_s == 'asc' then dir = 'desc' 
         else dir = 'asc' 
         end
-        headers[header_idx].onclick = link_to(folder, :action   => :show_table, 
+        headers[header_idx].onclick = link_to(folder, 
+                                              :action  => :show_table, 
                                               :element => "media_asset_folder_table_#{folder.media_asset_folder_id}", 
                                               :sort    => s, :sort_dir => dir)
         headers[header_idx].add_css_class(:active) if s == sort.to_s
@@ -340,7 +344,7 @@ module Wiki
         even = !even
       }
       table
-    end
+    end # }}}
 
     def show_table
       table_widget()

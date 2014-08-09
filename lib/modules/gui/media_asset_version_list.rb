@@ -40,6 +40,7 @@ module GUI
   include Aurita::GUI
   include Aurita::GUI::Datetime_Helpers
   include Aurita::GUI::Link_Helpers
+  include Aurita::GUI::I18N_Helpers
 
     def initialize(media_asset_version, params={})
       super(media_asset_version, params)
@@ -51,7 +52,10 @@ module GUI
         HTML.p.name { @entity.media_asset.title } 
       }
       version = @entity.version
-      user    = link_to(@entity.user) { @entity.user.user_group_name } 
+      user    = link_to(@entity.user) { 
+        @entity.user.user_group_name 
+      } if @entity && @entity.user
+      user ||= '-'
       changed = datetime(@entity.timestamp_created)
       [ icon, info, version, user, changed ]
     end

@@ -25,7 +25,13 @@ module GUI
   include Aurita::GUI
 
     def initialize(media_assets, params={})
-      params[:column_css_classes] = [ :icon, :info, :type, :size, :date, :date ] unless params[:column_css_classes]
+      if !params[:column_css_classes] then
+        if Aurita.user.may?(:request_files) then
+          params[:column_css_classes] = [ :icon, :requested, :info, :type, :size, :date, :date ] 
+        else
+          params[:column_css_classes] = [ :icon, :info, :type, :size, :date, :date ] 
+        end
+      end
       params[:class] = :media_asset_table unless params[:class]
       super(media_assets, params)
       @row_class   = params[:row_class] 
@@ -57,10 +63,16 @@ module GUI
   include Aurita::GUI::Link_Helpers
 
     def initialize(media_asset, params={})
+      @requested = media_asset.requested_by?(Aurita.user) 
+
       super(media_asset, params)
+      add_css_class(:requested) if @requested
     end
 
     def cells
+    # requested = @entity.requested_by?(Aurita.user) 
+      file_approved = @entity.approved?
+
       icon = Context_Menu_Button_Bar.new(@entity.dom_id).to_s + link_to(@entity) { @entity.icon() }
       info = HTML.div { 
         HTML.p.name { link_to(@entity) { @entity.title } } +
@@ -75,11 +87,35 @@ module GUI
         #  tl(:categories) + ': ' << @entity.categories.map { |c| link_to(c) { c.category_name } }.join(', ') 
         }
       }
+      request = HTML.div.request_file_button { 
+        if file_approved && @requested || !Aurita.user.may?(:request_files) then
+          (@requested)? tl(:yes) : tl(:no)
+        elsif Aurita.user.may?(:request_files) then 
+          HTML.input(:type    => :checkbox, 
+                     :checked => ((@requested)? :checked : nil ), 
+                     :name    => "request_file_#{@entity.media_asset_id}", 
+                     :onclick => "Aurita.Wiki.request_file(this, this.ancestors()[2], #{@entity.media_asset_id});") 
+        end
+      }
+      approve = HTML.div.approve_file_button { 
+        if Aurita.user.may?(:approve_requested_files) then
+          HTML.input(:type    => :checkbox, 
+                     :checked => ((file_approved)? :checked : nil ), 
+                     :name    => "request_file_#{@entity.media_asset_id}", 
+                     :onclick => "Aurita.Wiki.approve_file(this, this.ancestors()[2], #{@entity.media_asset_id});") 
+        else 
+          (file_approved)? tl(:yes) : tl(:no)
+        end
+      }
       type    = @entity.extension.upcase
       size    = @entity.filesize
       created = datetime(@entity.created)
       changed = datetime(@entity.changed)
-      [ icon, info, type, size, created, changed ]
+      
+      res  = [ icon ]
+      res += [ request ] # if Aurita.user.may?(:request_files)
+      res += [ approve ] # if Aurita.user.may?(:approve_requested_files)
+      res += [ info, type, size, created, changed ]
     end
 
   end
